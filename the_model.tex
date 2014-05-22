@@ -1,0 +1,44 @@
+A \emph{social network} is a graph that is either directed or undirected. 
+In this paper, we deal with social networks that are modeled as undirected 
+graphs. In the context of community detection in social networks, we make 
+the following assumptions. 
+
+Firstly, we assume that we know what the 
+network at hand represents. That is, we have a sense of context about the network.
+The network could represent friendships as in the Facebook network; 
+co-authorships as in the DBLP network; it could be a network of professionals 
+such as LinkedIn, or a network of movie lovers such as IMDB. 
+Secondly, we assume that we know what is it that constitutes a community. 
+This is crucial because, for one, we do not define what a community is. 
+We take it as being given as part of the 
+input specification. While this may appear as an artifice, in many situations 
+in real life, when we are required to find communities, we do in fact know what 
+it is that we are searching for. For example, we might want to find the set of 
+people with a given political leaning, or a set of people who love a particular 
+genre of movie or a set of people with a specific skill-set and experience. 
+In each of these cases, we have a sense of what it is that is required to be found. 
+
+In broad brush-strokes, this is how our algorithm works.  It requires that we know
+some members from each community that we are aiming to discover. We call these members 
+\emph{seed nodes}. A seed node can belong to several communitites and our algorithm 
+actually finds out overlapping communities in the network. The algorithm uses the 
+partial community information and propagates it to the other nodes of the network 
+by simulating a random walk from non-seed nodes to the set of seed nodes. 
+
+Suppose that $x_1, \ldots, x_s$ are the seed nodes in the network and that a random walk starting at 
+a non-seed node~$u$ reaches these nodes with probabilities $p_1, \ldots, p_s$. If out 
+of these~$s$ seed nodes, $x_{i_1}, \ldots, x_{i_r}$ belong to a community~$C$, then 
+the algorithm assigns a probability of $\sum_{j = 1}^r p_{i_j}$ for the event 
+that~$u$ belongs to~$C$. For each community, we can now assign a probability for 
+the event that~$u$ belongs to it. The communities that the algorithm 
+assigns~$u$ are those for which the probabilities exceed a certain threshold. 
+
+The random walk can be represented by a transition matrix and the walk itself can be simulated 
+by multiplying this matrix with itself repeatedly. This, however, takes $O(n^3)$
+time, where~$n$ is the number of nodes in the network. One of the contributions of 
+this paper is to show how this can be reduced to solving a set of Laplacian system 
+of linear equations (one set per seed node), which by the work of Speilman and 
+Teng~\cite{Vis13} can be done in $O(m \log n)$ time, where~$m$ is the number of edges
+in the graph. We assume that our networks are sparse in the sense that $m = O(n)$, 
+so that the running time of our algorithm can  be bounded by $O(s n \log n)$.    
+         

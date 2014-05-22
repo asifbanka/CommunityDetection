@@ -1,0 +1,51 @@
+\documentclass[12pt]{article}
+\input{header}
+%\usepackage[left=3m,right=3m,top=4cm,bottom=4cm]{geometry}
+
+%\usepackage{authblk}
+
+\title{Overlapping Communities in Social Networks}
+
+\date{}
+
+
+\begin{document}
+\maketitle
+%\thispagestyle{empty}
+
+\begin{abstract}
+%\input{abstract}
+\end{abstract}
+\newpage
+%\setcounter{page}{1}
+
+\section{The Model}
+\input{the_model}
+
+\newpage
+
+% Redefine conference citation, if needed...
+\def\redefineme{
+    \def\LNCS{LNCS}%
+    \def\ICALP##1{Proc. of ##1 ICALP}%
+    \def\FOCS##1{Proc. of ##1 FOCS}%
+    \def\COCOON##1{Proc. of ##1 COCOON}%
+    \def\SODA##1{Proc. of ##1 SODA}%
+    \def\SWAT##1{Proc. of ##1 SWAT}%
+    \def\IWPEC##1{Proc. of ##1 IWPEC}%
+    \def\IWOCA##1{Proc. of ##1 IWOCA}%
+    \def\ISAAC##1{Proc. of ##1 ISAAC}%
+    \def\STACS##1{Proc. of ##1 STACS}%    \def\IWOCA##1{Proc. of ##1 IWOCA}%
+    \def\ESA##1{Proc. of ##1 ESA}%
+    \def\WG##1{Proc. of ##1 WG}%
+    \def\LIPIcs##1{LIPIcs}%
+    \def\LIPIcs{LIPIcs}%
+    \def\LICS##1{Proc. of ##1 LICS}%
+}
+
+%\clearpage
+\bibliographystyle{abbrv}
+\bibliography{cross,conf}
+
+
+\end{document}
