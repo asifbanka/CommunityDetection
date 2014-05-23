@@ -1,21 +1,21 @@
-A \emph{social network} is a graph that is either directed or undirected. 
-In this paper, we deal with social networks that are modeled as undirected 
+A \emph{social network} consists of a set of social actors and a set of ties 
+between them. A social network is modeled as a graph which may be directed 
+or undirected. In this paper, we deal with social networks that are modeled as undirected 
 graphs. In the context of community detection in social networks, we make 
 the following assumptions. 
 
-Firstly, we assume that we know what the 
-network at hand represents. That is, we have a sense of context about the network.
-The network could represent friendships as in the Facebook network; 
-co-authorships as in the DBLP network; it could be a network of professionals 
-such as LinkedIn, or a network of movie lovers such as IMDB. 
-Secondly, we assume that we know what is it that constitutes a community. 
-This is crucial because, for one, we do not define what a community is. 
-We take it as being given as part of the 
-input specification. While this may appear as an artifice, in many situations 
-in real life, when we are required to find communities, we do in fact know what 
+Our first assumption is that we know what the network at hand represents. That is, 
+we have a sense of context about the network. The network could represent 
+friendships as in the Facebook network; co-authorships as in the DBLP network; 
+it could be a network of professionals such as LinkedIn, or a network of movie 
+lovers such as IMDB. Secondly, we assume that we know what is it that constitutes 
+a community within the network. This is crucial because, for one, we do not 
+formally define what a community is. We take it as being given as part of the 
+input specification. While this may appear as an artifice, in many real-life situations 
+where we are required to find communities, we do in fact know what 
 it is that we are searching for. For example, we might want to find the set of 
 people with a given political leaning, or a set of people who love a particular 
-genre of movie or a set of people with a specific skill-set and experience. 
+genre of movie, or a set of people with a specific skill-set and experience. 
 In each of these cases, we have a sense of what it is that is required to be found. 
 
 In broad brush-strokes, this is how our algorithm works.  It requires that we know
@@ -62,33 +62,83 @@ as follows. We first assume that the nodes of~$G$ are ordered as
 $u_1, \ldots, u_{n - s}, x_{1}, \ldots, x_{s}$, where $u_1, \ldots, u_{n - s}$
 represent the non-seed nodes of the network and $x_1, \ldots, x_s$, the seed nodes.
 For a non-seed node~$u$ with neighbors~$z_1, \ldots, z_d$, we define
-\[
-	\mat{P}(u, z_i) = \frac{1}{d}, \quad \mbox{ for all } 1 \leq i \leq d.
-\]
-For a non-seed node~$x$, 
-\[
+\begin{equation}\label{eqn:defining_prob_nonseed}
+	\mat{P}(u, z_i) = \left \{ 
+							\begin{array}{ll}
+								\frac{1}{d} & \mbox{for all } 1 \leq i \leq d \\
+								0			& \mbox{otherwise.}
+							\end{array}
+						\right.
+\end{equation}
+For a seed node~$x$, 
+\begin{equation}\label{eqn:defining_prob_seed}
 	\mat{P}(x,z) = 	\left \{ 
 						\begin{array}{ll}
 							1 & \mbox{if $z = x$} \\
 							0 & \mbox{if $z \neq x$.}
 						\end{array}
 					\right.
-\] 
+\end{equation}
+
 The matrix $\mat{P}$ may be written as:
-\[
+\begin{equation}\label{eqn:canonical_form_P}
 	\mat{P} = 	\left [ \begin{array}{ll}
 						\mat{Q}  & \mat{R} \\
 						 \mat{0}_{s \times (n - s)} & \mat{I}_{s \times s}
 						\end{array}
 				\right ],
-\]
+\end{equation}
 where~$\mat{Q}$ is the $(n - s) \times (n - s)$ sub-matrix that represents the transition 
 from non-seed nodes to non-seed nodes; $\mat{R}$ is the $(n - s) \times s$ sub-matrix 
 that represents the transition from non-seed nodes to seed nodes. The $s \times s$ identity 
 matrix $\mat{I}$ represents the fact that once a seed node is reached, one cannot transition away 
-from it. Here $\mat{0}_{s \times (n - s)}$ represents an $s \times (n - s)$ matris of zeros. 
+from it. Here $\mat{0}_{s \times (n - s)}$ represents an $s \times (n - s)$ matrix of zeros. 
 Observe that each row of $\mat{P}$ sums up to~$1$, and hence $\mat{P}$ is stochastic.
 
 It is well-known that such a stochastic matrix represents, what is known as, an 
-\emph{absorbing Markov chain} (see, for example, Chapter~11 of Grinstead and Snell~\cite{GS}).  
+absorbing Markov chain (see, for example, Chapter~11 of Grinstead and Snell~\cite{GS98}).  
+A Markov chain is called \emph{absorbing} if it satisfies two conditions. 
+It must have at least one absorbing state~$i$, where state~$i$ is defined to be absorbing if and only if 
+$\mat{P}(i,i) = 1$ and $\mat{P}(i, j) = 0$ for all $j \neq i$. Secondly, it must be possible to transition 
+from every state to some absorbing state (perhaps in multiple steps). 
 
+The transition matrix $\mat{P}$ that we defined via equations~(\ref{eqn:defining_prob_nonseed}) 
+and~(\ref{eqn:defining_prob_seed}) satisfy these two properties. To see this, note that 
+the transition matrix implicitly defines an arc-weighted  directed graph on the nodes 
+of the network. Call this directed graph $D_\mat{P}$. For non-seed nodes~$u$ and~$v$ that 
+are connected by an edge in the network, there exist two arcs $(u, v)$ and $(v, u)$ 
+in $D_\mat{P}$ with weights $1/\deg_{G}(u)$ and $1/\deg_{G}(v)$, respectively. If $x$ 
+is a seed node with $p$ non-seed neighbors $u_1, \ldots, u_p$, then the edges~$\{u_i, x\}$ 
+in~$G$, for $1 \leq i \leq p$, are represented by arcs~$(u_i, x)$ (with weight $1 /\deg_G(u_i)$) 
+in $D_\mat{P}$. In addition, $x$ has self-loop with weight~$1$. It is worthwhile to note 
+that if two seed nodes are adjacent in~$G$, then the corresponding edge does not have a 
+directed counterpart in $D_\mat{P}$.  
+
+Now from the theory of Markov chains, the state of the system after a $t$-step transition 
+is given by the matrix product $\mat{P}^t$. Moreover, $\mat{P}^t(u, v)$ may be interpreted 
+as the probability that a random walk starting at node~$u$ will end up at node~$v$ 
+after~$t$ steps. Since the underlying network is connected, every non-seed node can reach a seed
+node by some path and such a dipath continues to exist in $D_{\mat{P}}$. This shows that $D_{\mat{P}}$
+is indeed an absorbing Markov chain. An easy property of such Markov chains is the following:
+\begin{equation}\label{exp:rth_product_of_P}
+	\mat{P}^r = \left [ \begin{array}{ll}
+						\mat{Q}^r  					& \sum_{i = 0}^{r - 1}\mat{Q}^i \cdot \mat{R} \\
+						 \mat{0}_{s \times (n - s)} & \mat{I}_{s \times s}
+						\end{array}
+				\right ].
+\end{equation} 
+
+The absorbing states, in our case, 
+correspond to the seed nodes of the network. Since we assume that out network is represented by 
+a connected graph, it is possible to 
+
+We summarize some of the properties of such a Markov chain. 
+\begin{proposition}\label{prop:limiting_Q}
+	Let $\mat{P}$ be the $n \times n$ transition matrix that defines an absorbing Markov chain
+	and suppose that $\mat{P}$ is in the canonical form specified by equation~(\ref{eqn:canonical_form_P}). 
+	Then
+	\begin{enumerate}
+		\item $\mat{P}^{r}$ 
+		\item $\lim_{r \to \infty} \mat{Q} = \mat{0}_{(n - s) \times (n - s)}.$
+	\end{enumerate} 
+\end{proposition}
