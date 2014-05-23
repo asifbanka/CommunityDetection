@@ -114,10 +114,10 @@ in $D_\mat{P}$. In addition, $x$ has self-loop with weight~$1$. It is worthwhile
 that if two seed nodes are adjacent in~$G$, then the corresponding edge does not have a 
 directed counterpart in $D_\mat{P}$.  
 
-Now from the theory of Markov chains, the state of the system after a $t$-step transition 
-is given by the matrix product $\mat{P}^t$. Moreover, $\mat{P}^t(u, v)$ may be interpreted 
+Now from the theory of Markov chains, the state of the system after a $r$-step transition 
+is given by the matrix product $\mat{P}^r$. Moreover, $\mat{P}^r (u, v)$ may be interpreted 
 as the probability that a random walk starting at node~$u$ will end up at node~$v$ 
-after~$t$ steps. Since the underlying network is connected, every non-seed node can reach a seed
+after~$r$ steps. Since the underlying network is connected, every non-seed node can reach a seed
 node by some path and such a dipath continues to exist in $D_{\mat{P}}$. This shows that $D_{\mat{P}}$
 is indeed an absorbing Markov chain. An easy property of such Markov chains is the following:
 \begin{equation}\label{exp:rth_product_of_P}
@@ -126,19 +126,16 @@ is indeed an absorbing Markov chain. An easy property of such Markov chains is t
 						 \mat{0}_{s \times (n - s)} & \mat{I}_{s \times s}
 						\end{array}
 				\right ].
-\end{equation} 
+\end{equation}  
+The 
 
-The absorbing states, in our case, 
-correspond to the seed nodes of the network. Since we assume that out network is represented by 
-a connected graph, it is possible to 
-
-We summarize some of the properties of such a Markov chain. 
+We summarize some of the properties of an absorbing Markov chain. 
 \begin{proposition}\label{prop:limiting_Q}
 	Let $\mat{P}$ be the $n \times n$ transition matrix that defines an absorbing Markov chain
 	and suppose that $\mat{P}$ is in the canonical form specified by equation~(\ref{eqn:canonical_form_P}). 
 	Then
 	\begin{enumerate}
-		\item $\mat{P}^{r}$ 
 		\item $\lim_{r \to \infty} \mat{Q} = \mat{0}_{(n - s) \times (n - s)}.$
+		\item 
 	\end{enumerate} 
 \end{proposition}
