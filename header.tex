@@ -7,11 +7,12 @@
 \usepackage{paralist}
 
 % MATHEMATICS
-%\usepackage{amsmath} % AMS packages
+\usepackage{amsmath,amssymb} % AMS packages
 %\usepackage[warning, all]{onlyamsmath}
 
 % COLORS and GRAPHICS
 \usepackage{graphicx}
+\usepackage[left=3cm,right=3cm,top=4cm,bottom=4cm]{geometry}
 
 % FIGURES and TABLES
 \usepackage{booktabs} % Better tables
@@ -21,11 +22,10 @@
 
 \usepackage{microtype} % Prettifies pdf output. Uncomment if you have trouble with this. Will also reduce page count.
 
-%\usepackage[ruled,longend,vlined]{algorithm2e}
+\usepackage[ruled,longend,vlined]{algorithm2e}
 
 \newcommand{\N}{\ensuremath{\mathbf{N}}\xspace} % Natural numbers
 \newcommand{\R}{\ensuremath{\mathbf{R}}\xspace}	
-%\usepackage[left=3m,right=3m,top=4cm,bottom=4cm]{geometry}
 % Real numbers
 \newcommand{\Z}{\ensuremath{\mathbf{R}}\xspace}	% Integers
 \newcommand{\Q}{\ensuremath{\mathbf{Q}}\xspace}	% Fractions
@@ -34,7 +34,7 @@
 \newcommand{\pr}{\ensuremath{\mathbf{Pr}}}
 \newcommand{\mat}[1]{\ensuremath{\mathbf{#1}}}
 \newcommand{\vect}[1]{\ensuremath{#1}}
-
+\newcommand{\bvect}{\ensuremath{\mathbf{B}}}
 %\newcommand{\qed}{\hfill $\Box$}
 
 \newtheorem{lemma}{Lemma}

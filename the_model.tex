@@ -41,4 +41,54 @@ of linear equations (one set per seed node), which by the work of Speilman and
 Teng~\cite{Vis13} can be done in $O(m \log n)$ time, where~$m$ is the number of edges
 in the graph. We assume that our networks are sparse in the sense that $m = O(n)$, 
 so that the running time of our algorithm can  be bounded by $O(s n \log n)$.    
-         
+        
+\subsection{Absorbing Markov Chains and Random Walks}
+We now provide a formal description of our model. We assume that our network 
+is a simple undirected graph $G = (V,E)$ with~$n$ nodes and~$m$ edges, where $m = O(n)$.
+We also know that there are~$k$ communities which may overlap in an arbitrary fashion.
+In practical situations, we have~$k \ll n$. 
+Moreover, we have some partial information about each community in that we know
+$\log n$ members of each community. Call such members of the network \emph{seed nodes} and the remaining 
+nodes \emph{non-seed nodes}. Together, we know the community information of $k \cdot \log n$ seed nodes. 
+The community information of a node~$u$ is represented by a $1 \times k$ vector called the \emph{belonging vector} 
+of~$u$, denoted by~$\bvect (u) = (\beta_{u, 1}, \ldots, \beta_{u, k})$. The entry $\beta_{u, i}$ 
+of the belonging vector represents the probability that node~$u$ belongs to community~$i$.  
+We point out that $\sum_{i = 1}^k \beta_{u, i}$ need not be~$1$. An example of this situation 
+is when~$u$ belongs to multiple communities with probability~$1$.
+The objective is to find out the belonging vectors of all non-seed nodes. 
+
+To model our random walk, we define an $n \times n$ transition matrix $\mat{P}$ 
+as follows. We first assume that the nodes of~$G$ are ordered as 
+$u_1, \ldots, u_{n - s}, x_{1}, \ldots, x_{s}$, where $u_1, \ldots, u_{n - s}$
+represent the non-seed nodes of the network and $x_1, \ldots, x_s$, the seed nodes.
+For a non-seed node~$u$ with neighbors~$z_1, \ldots, z_d$, we define
+\[
+	\mat{P}(u, z_i) = \frac{1}{d}, \quad \mbox{ for all } 1 \leq i \leq d.
+\]
+For a non-seed node~$x$, 
+\[
+	\mat{P}(x,z) = 	\left \{ 
+						\begin{array}{ll}
+							1 & \mbox{if $z = x$} \\
+							0 & \mbox{if $z \neq x$.}
+						\end{array}
+					\right.
+\] 
+The matrix $\mat{P}$ may be written as:
+\[
+	\mat{P} = 	\left [ \begin{array}{ll}
+						\mat{Q}  & \mat{R} \\
+						 \mat{0}_{s \times (n - s)} & \mat{I}_{s \times s}
+						\end{array}
+				\right ],
+\]
+where~$\mat{Q}$ is the $(n - s) \times (n - s)$ sub-matrix that represents the transition 
+from non-seed nodes to non-seed nodes; $\mat{R}$ is the $(n - s) \times s$ sub-matrix 
+that represents the transition from non-seed nodes to seed nodes. The $s \times s$ identity 
+matrix $\mat{I}$ represents the fact that once a seed node is reached, one cannot transition away 
+from it. Here $\mat{0}_{s \times (n - s)}$ represents an $s \times (n - s)$ matris of zeros. 
+Observe that each row of $\mat{P}$ sums up to~$1$, and hence $\mat{P}$ is stochastic.
+
+It is well-known that such a stochastic matrix represents, what is known as, an 
+\emph{absorbing Markov chain} (see, for example, Chapter~11 of Grinstead and Snell~\cite{GS}).  
+
