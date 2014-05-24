@@ -48,10 +48,11 @@ is a simple undirected graph $G = (V,E)$ with~$n$ nodes and~$m$ edges, where $m 
 We also know that there are~$k$ communities which may overlap in an arbitrary fashion.
 In practical situations, we have~$k \ll n$. 
 Moreover, we have some partial information about each community in that we know
-$\log n$ members of each community. Call such members of the network \emph{seed nodes} and the remaining 
-nodes \emph{non-seed nodes}. Together, we know the community information of $k \cdot \log n$ seed nodes. 
-The community information of a node~$u$ is represented by a $1 \times k$ vector called the \emph{belonging vector} 
-of~$u$, denoted by~$\bvect (u) = (\beta_{u, 1}, \ldots, \beta_{u, k})$. The entry $\beta_{u, i}$ 
+$\log n$ members of each community. Call such members of the network \emph{seed nodes} 
+and the remaining nodes \emph{non-seed nodes}. Together, we know the community information 
+of $k \cdot \log n$ seed nodes. The community information of a node~$u$ is represented 
+by a $1 \times k$ vector called the \emph{belonging vector} of~$u$, denoted 
+by~$\bvect (u) = (\beta_{u, 1}, \ldots, \beta_{u, k})$. The entry $\beta_{u, i}$ 
 of the belonging vector represents the probability that node~$u$ belongs to community~$i$.  
 We point out that $\sum_{i = 1}^k \beta_{u, i}$ need not be~$1$. An example of this situation 
 is when~$u$ belongs to multiple communities with probability~$1$.
@@ -61,15 +62,21 @@ To model our random walk, we define an $n \times n$ transition matrix $\mat{P}$
 as follows. We first assume that the nodes of~$G$ are ordered as 
 $u_1, \ldots, u_{n - s}, x_{1}, \ldots, x_{s}$, where $u_1, \ldots, u_{n - s}$
 represent the non-seed nodes of the network and $x_1, \ldots, x_s$, the seed nodes.
-For a non-seed node~$u$ with neighbors~$z_1, \ldots, z_d$, we define
+Consider a non-seed node~$u$ with $d_1$ non-seed neighbors $v_1, \ldots, v_{d_1}$
+and $d_2$ seed neighbors $x_1, \ldots, x_{d_2}$. It is possible that either $d_1 = 0$
+or that $d_2 = 0$ (but not both). For such a vertex, we define
 \begin{equation}\label{eqn:defining_prob_nonseed}
-	\mat{P}(u, z_i) = \left \{ 
+	\mat{P}(u, z) = \left \{ 
 							\begin{array}{ll}
-								\frac{1}{d} & \mbox{for all } 1 \leq i \leq d \\
+								\frac{\alpha_1}{d_1} & \mbox{if } z \in \{v_1, \ldots, v_{d_1}\} \\
+                                \frac{\alpha_2}{d_2} & \mbox{if } z \in \{x_1, \ldots, x_{d_2}\} \\
 								0			& \mbox{otherwise.}
 							\end{array}
 						\right.
 \end{equation}
+where $\alpha_1$ and $\alpha_2$ are non-negative constants satisfying the condition
+$\alpha_1 + \alpha_2 = 1$. Note that the sum of the entries of row~$u$ of~$\mat{P}$
+is~$1$. 
 For a seed node~$x$, 
 \begin{equation}\label{eqn:defining_prob_seed}
 	\mat{P}(x,z) = 	\left \{ 
@@ -80,7 +87,7 @@ For a seed node~$x$,
 					\right.
 \end{equation}
 
-The matrix $\mat{P}$ may be written as:
+It is usual to write the transition matrix $\mat{P}$ in the following canonical form:
 \begin{equation}\label{eqn:canonical_form_P}
 	\mat{P} = 	\left [ \begin{array}{ll}
 						\mat{Q}  & \mat{R} \\
@@ -93,26 +100,29 @@ from non-seed nodes to non-seed nodes; $\mat{R}$ is the $(n - s) \times s$ sub-m
 that represents the transition from non-seed nodes to seed nodes. The $s \times s$ identity 
 matrix $\mat{I}$ represents the fact that once a seed node is reached, one cannot transition away 
 from it. Here $\mat{0}_{s \times (n - s)}$ represents an $s \times (n - s)$ matrix of zeros. 
-Observe that each row of $\mat{P}$ sums up to~$1$, and hence $\mat{P}$ is stochastic.
+Since each row of $\mat{P}$ sums up to~$1$, this matrix is stochastic.
 
 It is well-known that such a stochastic matrix represents, what is known as, an 
 absorbing Markov chain (see, for example, Chapter~11 of Grinstead and Snell~\cite{GS98}).  
 A Markov chain is called \emph{absorbing} if it satisfies two conditions. 
-It must have at least one absorbing state~$i$, where state~$i$ is defined to be absorbing if and only if 
-$\mat{P}(i,i) = 1$ and $\mat{P}(i, j) = 0$ for all $j \neq i$. Secondly, it must be possible to transition 
-from every state to some absorbing state (perhaps in multiple steps). 
+It must have at least one absorbing state~$i$, where state~$i$ is defined 
+to be absorbing if and only if $\mat{P}(i,i) = 1$ and $\mat{P}(i, j) = 0$ 
+for all $j \neq i$. Secondly, it must be possible to transition from every state to 
+    some absorbing state (perhaps in multiple steps). 
 
 The transition matrix $\mat{P}$ that we defined via equations~(\ref{eqn:defining_prob_nonseed}) 
 and~(\ref{eqn:defining_prob_seed}) satisfy these two properties. To see this, note that 
 the transition matrix implicitly defines an arc-weighted  directed graph on the nodes 
-of the network. Call this directed graph $D_\mat{P}$. For non-seed nodes~$u$ and~$v$ that 
+of the network. Call this directed graph $G_\mat{P}$. For non-seed nodes~$u$ and~$v$ that 
 are connected by an edge in the network, there exist two arcs $(u, v)$ and $(v, u)$ 
-in $D_\mat{P}$ with weights $1/\deg_{G}(u)$ and $1/\deg_{G}(v)$, respectively. If $x$ 
-is a seed node with $p$ non-seed neighbors $u_1, \ldots, u_p$, then the edges~$\{u_i, x\}$ 
-in~$G$, for $1 \leq i \leq p$, are represented by arcs~$(u_i, x)$ (with weight $1 /\deg_G(u_i)$) 
-in $D_\mat{P}$. In addition, $x$ has self-loop with weight~$1$. It is worthwhile to note 
+in $G_\mat{P}$ with weights $1/d_1(u)$ and $1/d_1(v)$, respectively\footnote{We use 
+$d_1(z)$ to denote the number of non-seed neighbors of~$z$ and $d_2(z)$ to denote 
+the number of seed neighbors.}. If $x$ is a seed node with $p$ non-seed neighbors 
+$u_1, \ldots, u_p$, then the edges~$\{u_i, x\}$ in~$G$, for $1 \leq i \leq p$, 
+are represented by arcs~$(u_i, x)$ (with weight $1 /d_2(u_i)$) in $G_\mat{P}$. 
+In addition, $x$ has self-loop with weight~$1$. It is worthwhile to note 
 that if two seed nodes are adjacent in~$G$, then the corresponding edge does not have a 
-directed counterpart in $D_\mat{P}$.  
+directed counterpart in $G_\mat{P}$.  
 
 Now from the theory of Markov chains, the state of the system after a $r$-step transition 
 is given by the matrix product $\mat{P}^r$. Moreover, $\mat{P}^r (u, v)$ may be interpreted 
@@ -127,7 +137,10 @@ is indeed an absorbing Markov chain. An easy property of such Markov chains is t
 						\end{array}
 				\right ].
 \end{equation}  
-The 
+It can be shown that $\lim_{r \to \infty} \mat{Q}^{r} = \mat{0}$ and that 
+the series $\sum_{r = 0}^{\infty} \mat{Q}^{r}$ actually converges to 
+$(\mat{I} - \mat{Q})^{-1}$. This matrix series is called the \emph{fundamental matrix}
+of the absorbing Markov chain. 
 
 We summarize some of the properties of an absorbing Markov chain. 
 \begin{proposition}\label{prop:limiting_Q}
@@ -135,7 +148,7 @@ We summarize some of the properties of an absorbing Markov chain.
 	and suppose that $\mat{P}$ is in the canonical form specified by equation~(\ref{eqn:canonical_form_P}). 
 	Then
 	\begin{enumerate}
-		\item $\lim_{r \to \infty} \mat{Q} = \mat{0}_{(n - s) \times (n - s)}.$
-		\item 
+		\item $\lim_{r \to \infty} \mat{Q} = \mat{0}_{(n - s) \times (n - s)}$.
+		\item $\sum_{r = 0}^{\infty} \mat{Q}^r \cdot \mat{R} = (\mat{I} - \mat{Q})^{-1} \cdot \mat{R}$.
 	\end{enumerate} 
 \end{proposition}
