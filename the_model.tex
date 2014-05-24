@@ -140,7 +140,7 @@ is indeed an absorbing Markov chain. An easy property of such Markov chains is t
 It can be shown that $\lim_{r \to \infty} \mat{Q}^{r} = \mat{0}$ and that 
 the series $\sum_{r = 0}^{\infty} \mat{Q}^{r}$ actually converges to 
 $(\mat{I} - \mat{Q})^{-1}$. This matrix series is called the \emph{fundamental matrix}
-of the absorbing Markov chain. 
+of the absorbing Markov chain and is denoted by $\mat{N}$. 
 
 We summarize some of the properties of an absorbing Markov chain. 
 \begin{proposition}\label{prop:limiting_Q}
@@ -152,3 +152,10 @@ We summarize some of the properties of an absorbing Markov chain.
 		\item $\sum_{r = 0}^{\infty} \mat{Q}^r \cdot \mat{R} = (\mat{I} - \mat{Q})^{-1} \cdot \mat{R}$.
 	\end{enumerate} 
 \end{proposition}
+
+We wish to determine the matrix $\mat{N} \cdot \mat{R}$. Entry $(u, x)$ of this 
+matrix is the probability that a random walk starting at~$u$ ends up at~$x$. The 
+belonging vector of $u$ would then be computed as:
+\begin{equation}\label{eqn:belonging_vector}
+	\beta(u) = \sum_{i = 1}^{s} p(u, x_i) \beta(x_i).
+\end{equation}
