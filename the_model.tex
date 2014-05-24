@@ -153,11 +153,11 @@ We summarize some of the properties of an absorbing Markov chain.
 	\end{enumerate} 
 \end{proposition}
 
-We wish to determine the matrix $\mat{N} \cdot \mat{R}$: the entry $(u, x)$ of this 
+We wish to determine the matrix $\mat{N} \mat{R}$: the entry $(u, x)$ of this 
 matrix is the probability that a random walk starting at~$u$ ends up at the seed 
 node~$x$. Once we have determined this matrix, the belonging vector of $u$ can 
 be computed as:
 \begin{equation}\label{eqn:belonging_vector}
-	\beta(u) = \sum_{i = 1}^{s} (\mat{N} \cdot \mat{R}) (u, x_i) \beta(x_i).
+	\beta(u) = \sum_{i = 1}^{s} (\mat{N} \mat{R}) (u, x_i) \cdot \beta(x_i).
 \end{equation}
 
