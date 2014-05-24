@@ -160,4 +160,8 @@ be computed as:
 \begin{equation}\label{eqn:belonging_vector}
 	\beta(u) = \sum_{i = 1}^{s} (\mat{N} \mat{R}) (u, x_i) \cdot \beta(x_i).
 \end{equation}
-
+If we compute $\mat{N}$ by first computing the inverse $(\mat{I} - \mat{Q})^{-1}$
+and then multiplying the result by $\mat{R}$, we taken time $O(n^3)$. In the 
+next subsection, we show how to reduce this problem to that of solving a 
+Laplacian system of linear equations which takes time $O(m \log n)$, where $m$
+the number of edges. 
