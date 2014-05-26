@@ -168,12 +168,36 @@ the number of edges.
 
 \subsection{Laplacian Systems of Equations}
 
-The Laplacian of an unweighted undirected graph $G = (V, E)$ is defined to be 
-$\mat{L} = \mat{D} - \mat{A}$, where $\mat{A}$ is the adjacency matrix of the graph~$G$ 
-and $\mat{D}$ is the diagonal matrix of vertex degrees. 
+The \emph{Laplacian} of an undirected graph~$G$ is defined to be $\mat{L} = \mat{D} - \mat{A}$, 
+where $\mat{A}$ is the adjacency matrix of the graph~$G$ and $\mat{D}$ is the 
+diagonal matrix of vertex degrees. We assume that $G$ is unweighted but one can 
+generalize the definition to the weighted case.  
 A Laplacian system of linear equations is a system of equations of the form:
 \[
 	\mat{L} \cdot \vect{x} = \vect{b},
 \]
 where $\vect{x}$ is a vector of unknowns $\vect{x} = \trans{(x_1, \ldots, x_n)}$ 
-and $\vect{b}$ an vector of constants $\vect{b} = \trans{b_1, \ldots, b_n}$.
+and $\vect{b}$ an vector of constants $\vect{b} = \trans{(b_1, \ldots, b_n)}$. 
+There is near-linear time algorithm for solving such a system of linear equations 
+and this result is crucial to the analysis of the running time of our algorithm. 
+
+Given an $n \times n$ matrix~$\mat{D}$ and $\vect{e} \in \R^{n}$, consider the 
+system of linear equations $\mat{D} \vect{x} = \vect{e}$, with variables
+$\vect{x} = \trans{(x_1, \ldots, x_n)}$. Such a system has a solution if and only if
+$\vect{e}$ is in the image of matrix~$\mat{D}$. If $\mat{D}$ is invertible, then 
+the system has a solution for all $\vect{e} \in \R^n$. However, if $\vect{e}$ 
+is in the image of $\mat{D}$, then the inverse of $\mat{D}$ is well-defined 
+and is denoted by $\pseudo{\mat{D}}$. This is called the \emph{pseudo-inverse}
+of $\mat{D}$. 
+\begin{proposition} \label{prop:Laplacian_systems} {\textrm{\cite{Vis13}}}
+	There is an algorithm which takes a graph Laplacian $\mat{L}$, a vector 
+	$\vect{b}$, and an error parameter~$\epsilon > 0$, and returns $\vect{x}$
+	such that:
+		\[
+			\norm{\vect{x} - \pseudo{\mat{L}} \vect{b}}_{\mat{L}} \leq \epsilon \norm{\pseudo{\mat{L}} \vect{b}}_{\mat{L}}, 
+		\]
+	where $\norm{\vect{y}}_{\mat{L}} := \sqrt{\trans{\vect{y}} \mat{L} \vect{y}}$. The algorithm runs in 
+	time $O(m \cdot \log n \cdot \log 1 / \epsilon)$ time, where $m$ is the number of non-zero 
+	entries in $\mat{L}$.
+\end{proposition} 
+ 
