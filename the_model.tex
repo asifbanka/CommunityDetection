@@ -200,4 +200,15 @@ of $\mat{D}$.
 	time $O(m \cdot \log n \cdot \log 1 / \epsilon)$ time, where $m$ is the number of non-zero 
 	entries in $\mat{L}$.
 \end{proposition} 
- 
+
+
+We can use Proposition~\ref{prop:Laplacian_systems} to upper-bound the time taken to 
+calculate $\mat{N} \mat{R}$, where $\mat{N}$ is the fundamental matrix of the absorbing
+Markov chain and $\mat{R}$ is as in equation~(\ref{eqn:canonical_form_P}).
+\begin{lemma}\label{lemma:computing_NR}
+Let $\mat{P}$ be an $n \times n$ transition matrix of an absorbing Markov chain in canonical form 
+(see equation~(\ref{eqn:canonical_form_P})). Then one can compute 
+$\sum_{r = 0}^{\infty} \mat{Q}^r \cdot \mat{R}$ in $O(s \cdot m \cdot \log n)$ time, 
+where $s$ is the number of absorbing states of the Markov chain and $m$ is the number 
+of non-zero entries of $\mat{P}$.  
+\end{lemma}   
