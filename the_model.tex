@@ -165,3 +165,15 @@ and then multiplying the result by $\mat{R}$, we taken time $O(n^3)$. In the
 next subsection, we show how to reduce this problem to that of solving a 
 Laplacian system of linear equations which takes time $O(m \log n)$, where $m$
 the number of edges. 
+
+\subsection{Laplacian Systems of Equations}
+
+The Laplacian of an unweighted undirected graph $G = (V, E)$ is defined to be 
+$\mat{L} = \mat{D} - \mat{A}$, where $\mat{A}$ is the adjacency matrix of the graph~$G$ 
+and $\mat{D}$ is the diagonal matrix of vertex degrees. 
+A Laplacian system of linear equations is a system of equations of the form:
+\[
+	\mat{L} \cdot \vect{x} = \vect{b},
+\]
+where $\vect{x}$ is a vector of unknowns $\vect{x} = \trans{(x_1, \ldots, x_n)}$ 
+and $\vect{b}$ an vector of constants $\vect{b} = \trans{b_1, \ldots, b_n}$.
