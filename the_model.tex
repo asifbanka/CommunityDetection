@@ -62,21 +62,16 @@ To model our random walk, we define an $n \times n$ transition matrix $\mat{P}$
 as follows. We first assume that the nodes of~$G$ are ordered as 
 $u_1, \ldots, u_{n - s}, x_{1}, \ldots, x_{s}$, where $u_1, \ldots, u_{n - s}$
 represent the non-seed nodes of the network and $x_1, \ldots, x_s$, the seed nodes.
-Consider a non-seed node~$u$ with $d_1$ non-seed neighbors $v_1, \ldots, v_{d_1}$
-and $d_2$ seed neighbors $x_1, \ldots, x_{d_2}$. It is possible that either $d_1 = 0$
-or that $d_2 = 0$ (but not both). For such a vertex, we define
+For a non-seed node~$u$:
 \begin{equation}\label{eqn:defining_prob_nonseed}
 	\mat{P}(u, z) = \left \{ 
 							\begin{array}{ll}
-								\frac{\alpha_1}{d_1} & \mbox{if } z \in \{v_1, \ldots, v_{d_1}\} \\
-                                \frac{\alpha_2}{d_2} & \mbox{if } z \in \{x_1, \ldots, x_{d_2}\} \\
-								0			& \mbox{otherwise.}
+								\frac{1}{\deg (u)} & \mbox{ if } \{u, z\} \in E(G) \\
+								0			& \mbox{ otherwise.}
 							\end{array}
 						\right.
 \end{equation}
-where $\alpha_1$ and $\alpha_2$ are non-negative constants satisfying the condition
-$\alpha_1 + \alpha_2 = 1$. Note that the sum of the entries of row~$u$ of~$\mat{P}$
-is~$1$. 
+Note that the sum of the entries of row~$u$ is~$1$. 
 For a seed node~$x$, 
 \begin{equation}\label{eqn:defining_prob_seed}
 	\mat{P}(x,z) = 	\left \{ 
@@ -113,16 +108,15 @@ for all $j \neq i$. Secondly, it must be possible to transition from every state
 The transition matrix $\mat{P}$ that we defined via equations~(\ref{eqn:defining_prob_nonseed}) 
 and~(\ref{eqn:defining_prob_seed}) satisfy these two properties. To see this, note that 
 the transition matrix implicitly defines an arc-weighted  directed graph on the nodes 
-of the network. Call this directed graph $G_\mat{P}$. For non-seed nodes~$u$ and~$v$ that 
+of the network. Call this directed graph $G_{\mat{P}}$. For non-seed nodes~$u$ and~$v$ that 
 are connected by an edge in the network, there exist two arcs $(u, v)$ and $(v, u)$ 
-in $G_\mat{P}$ with weights $1/d_1(u)$ and $1/d_1(v)$, respectively\footnote{We use 
-$d_1(z)$ to denote the number of non-seed neighbors of~$z$ and $d_2(z)$ to denote 
-the number of seed neighbors.}. If $x$ is a seed node with $p$ non-seed neighbors 
+in $G_{\mat{P}}$ with weights $1/\deg (u)$ and $1/ \deg (v)$, respectively.
+If $x$ is a seed node with $p$ non-seed neighbors 
 $u_1, \ldots, u_p$, then the edges~$\{u_i, x\}$ in~$G$, for $1 \leq i \leq p$, 
-are represented by arcs~$(u_i, x)$ (with weight $1 /d_2(u_i)$) in $G_\mat{P}$. 
+are represented by arcs~$(u_i, x)$ (with weight $1 / \deg (u_i)$) in $G_{\mat{P}}$. 
 In addition, $x$ has self-loop with weight~$1$. It is worthwhile to note 
 that if two seed nodes are adjacent in~$G$, then the corresponding edge does not have a 
-directed counterpart in $G_\mat{P}$.  
+directed counterpart in $G_{\mat{P}}$.  
 
 Now from the theory of Markov chains, the state of the system after a $r$-step transition 
 is given by the matrix product $\mat{P}^r$. Moreover, $\mat{P}^r (u, v)$ may be interpreted 
@@ -168,10 +162,35 @@ the number of edges.
 
 \subsection{Laplacian Systems of Equations}
 
-The \emph{Laplacian} of an undirected graph~$G$ is defined to be $\mat{L} = \mat{D} - \mat{A}$, 
-where $\mat{A}$ is the adjacency matrix of the graph~$G$ and $\mat{D}$ is the 
-diagonal matrix of vertex degrees. We assume that $G$ is unweighted but one can 
-generalize the definition to the weighted case.  
+The \emph{Laplacian} of an unweighted, undirected graph~$G$ is defined to 
+be 
+\[
+\mat{L}_G = \mat{D}_G - \mat{A}_G,
+\] 
+where $\mat{A}_G$ is the adjacency matrix 
+of the graph~$G$ and $\mat{D}_G$ is the diagonal matrix of vertex degrees. 
+A weighted graph $G = (V, E)$ has an associated weight function 
+$w \colon V \times V \to \R$ which satisfies the conditions: 
+\begin{inparaenum}[(1)]
+	\item $w(u, v) = w(v, u)$;  
+	\item $w(u, v) \geq 0$; and, 
+	\item if $\{u, v\} \notin E$ then $w(u, v) = 0$. 
+\end{inparaenum}
+In the context of weighted graphs, 
+the degree~$\deg_G (u)$ of a vertex~$u$ is defined to be 
+\[\label{eqn:weighted_degree}
+	\deg_G (u) = \sum_{v \in V} w(u, v). 
+\] 
+The adjacency matrix $\mat{A}_{G}$ is defined as:
+\[\label{eqn:weighted_adj_matrix}
+	\mat{A}_{G}(u, v) = w(u, v),
+\]
+and the Laplacian is defined as before as: 
+\[\label{eqn:weighted_laplacian}
+	\mat{L}_G = \mat{D}_G - \mat{A}_G,
+\]
+where $\mat{D}_G$ is the diagonal matrix of vertex degrees in the weighted graph~$G$.
+
 A Laplacian system of linear equations is a system of equations of the form:
 \[
 	\mat{L} \cdot \vect{x} = \vect{b},
@@ -181,13 +200,13 @@ and $\vect{b}$ an vector of constants $\vect{b} = \trans{(b_1, \ldots, b_n)}$.
 There is near-linear time algorithm for solving such a system of linear equations 
 and this result is crucial to the analysis of the running time of our algorithm. 
 
-Given an $n \times n$ matrix~$\mat{D}$ and $\vect{e} \in \R^{n}$, consider the 
-system of linear equations $\mat{D} \vect{x} = \vect{e}$, with variables
+Given an $n \times n$ matrix~$\mat{A}$ and $\vect{b} \in \R^{n}$, consider the 
+system of linear equations $\mat{A} \vect{x} = \vect{b}$, with variables
 $\vect{x} = \trans{(x_1, \ldots, x_n)}$. Such a system has a solution if and only if
-$\vect{e}$ is in the image of matrix~$\mat{D}$. If $\mat{D}$ is invertible, then 
-the system has a solution for all $\vect{e} \in \R^n$. However, if $\vect{e}$ 
-is in the image of $\mat{D}$, then the inverse of $\mat{D}$ is well-defined 
-and is denoted by $\pseudo{\mat{D}}$. This is called the \emph{pseudo-inverse}
+$\vect{b}$ is in the image of matrix~$\mat{A}$. If $\mat{A}$ is invertible, then 
+the system has a solution for all $\vect{b} \in \R^n$. However, if $\vect{b}$ 
+is in the image of $\mat{A}$, then the inverse of $\mat{A}$ is well-defined 
+and is denoted by $\pseudo{\mat{A}}$. This is called the \emph{pseudo-inverse}
 of $\mat{D}$. 
 \begin{proposition} \label{prop:Laplacian_systems} {\textrm{\cite{Vis13}}}
 	There is an algorithm which takes a graph Laplacian $\mat{L}$, a vector 
@@ -201,6 +220,8 @@ of $\mat{D}$.
 	entries in $\mat{L}$.
 \end{proposition} 
 
+This result can be generalized to linear systems $\mat{A} \vect{x} = \vect{b}$, where 
+$\vect{b}$ is a symmetric (weakly) diagonally dominant matrix.
 
 We can use Proposition~\ref{prop:Laplacian_systems} to upper-bound the time taken to 
 calculate $\mat{N} \mat{R}$, where $\mat{N}$ is the fundamental matrix of the absorbing
@@ -213,13 +234,33 @@ $\sum_{r = 0}^{\infty} \mat{Q}^r \cdot \mat{R}$ in $O(s \cdot m \cdot \log n)$ t
 where $s$ is the number of seed nodes and $m$ is the number of edges in the graph~$G$.
 \end{lemma}  
 \begin{proof}
-Recall that the we ordered the nodes of $G$ as $\{u_1, \ldots, u_{n - s}, x_1, \ldots, x_s\}$, 
+Recall that we ordered the nodes of $G$ as $\{u_1, \ldots, u_{n - s}, x_1, \ldots, x_s\}$, 
 where $u_1, \ldots, u_{n - s}$ denote the non-seed nodes and $x_1, \ldots, x_s$ denote 
 seed nodes. Define $G_1 := G[u_1, \ldots, u_{n - s}]$, the subgraph induced by the non-seed nodes 
-of~$G$. Let $\mat{A}_1$ and $\mat{D}_1$ denote, respectively, the adjacency matrix and the 
-diagonal matrix of vertex degrees of $G_1$. Then we can express 
+of~$G$. Let $\mat{A}_1$ denote the adjacency matrix of the graph $G_1$; let 
+$\mat{D}_1$ denote the $(n - s) \times (n - s)$ diagonal matrix satisfying 
+$\mat{D}_1(u_i, u_i) = \deg_{G}(u_i)$ for all $1 \leq i \leq n - s$.  That is, the 
+entries of $\mat{D}_1$ are not the degrees of the vertices in the induced subgraph~$G_1$ 
+but in the graph~$G$. We can then express 
 $\mat{I} - \mat{Q}$ as 
 \[
-	\mat{I}  - \mat{Q} = \inv{\mat{D}_1} (\mat{D}_1 - \alpha_1 \mat{A}_1).
+	\mat{I}  - \mat{Q} = \inv{\mat{D}_1} (\mat{D}_1 - \mat{A}_1).
 \]   
+Note that $\mat{D}_1 - \mat{A}_1$ is not really the Laplacian of the graph $G_1$
+but is symmetric and weakly diagonally dominant. Let us suppose that $\mat{X}$ 
+is an $(n - s) \times s$ matrix such that 
+\[
+	\mat{X} = (\mat{I} - \mat{Q})^{-1} \cdot \mat{R}.
+\]
+Then $(\mat{I} - \mat{Q}) \mat{X} = \mat{R}$, which may be rewritten as
+$(\mat{D}_1 - \mat{A}_1) \mat{X} = \mat{D}_1 \cdot \mat{R}$. The latter 
+equation may be written as a set of linear equation systems:
+\begin{equation}\label{eqn:laplacian_linear_eqn}
+	(\mat{D}_1 - \mat{A}_1) \cdot \vect{x}_i = \mat{D}_1 \cdot \vect{r}_i  \quad (\mbox{for } 1 \leq i \leq s),
+\end{equation} 
+where $\vect{x}_i$ and $\vect{r}_i$ are the $i\th$ columns of $\mat{X}$ and $\mat{R}$, respectively. 
+By Proposition~\ref{prop:Laplacian_systems}, the time taken to solve each of these systems 
+is $O(m \log n)$. Together, they can be solved in time $O(s \cdot m \cdot \log n)$, which
+is what was claimed.  
+
 \end{proof} 
