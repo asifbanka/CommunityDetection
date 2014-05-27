@@ -206,9 +206,20 @@ We can use Proposition~\ref{prop:Laplacian_systems} to upper-bound the time take
 calculate $\mat{N} \mat{R}$, where $\mat{N}$ is the fundamental matrix of the absorbing
 Markov chain and $\mat{R}$ is as in equation~(\ref{eqn:canonical_form_P}).
 \begin{lemma}\label{lemma:computing_NR}
-Let $\mat{P}$ be an $n \times n$ transition matrix of an absorbing Markov chain in canonical form 
-(see equation~(\ref{eqn:canonical_form_P})). Then one can compute 
+Given a graph~$G$, let $\mat{P}$ be the $n \times n$ transition matrix in canonical form 
+(see equation~(\ref{eqn:canonical_form_P})) defined by equations~(\ref{eqn:defining_prob_nonseed}) 
+and~(\ref{eqn:defining_prob_seed}). Then one can compute 
 $\sum_{r = 0}^{\infty} \mat{Q}^r \cdot \mat{R}$ in $O(s \cdot m \cdot \log n)$ time, 
-where $s$ is the number of absorbing states of the Markov chain and $m$ is the number 
-of non-zero entries of $\mat{P}$.  
-\end{lemma}   
+where $s$ is the number of seed nodes and $m$ is the number of edges in the graph~$G$.
+\end{lemma}  
+\begin{proof}
+Recall that the we ordered the nodes of $G$ as $\{u_1, \ldots, u_{n - s}, x_1, \ldots, x_s\}$, 
+where $u_1, \ldots, u_{n - s}$ denote the non-seed nodes and $x_1, \ldots, x_s$ denote 
+seed nodes. Define $G_1 := G[u_1, \ldots, u_{n - s}]$, the subgraph induced by the non-seed nodes 
+of~$G$. Let $\mat{A}_1$ and $\mat{D}_1$ denote, respectively, the adjacency matrix and the 
+diagonal matrix of vertex degrees of $G_1$. Then we can express 
+$\mat{I} - \mat{Q}$ as 
+\[
+	\mat{I}  - \mat{Q} = \inv{\mat{D}_1} (\mat{D}_1 - \alpha_1 \mat{A}_1).
+\]   
+\end{proof} 
