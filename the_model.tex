@@ -160,24 +160,31 @@ next subsection, we show how to reduce this problem to that of solving a
 Laplacian system of linear equations which takes time $O(m \log n)$, where $m$
 the number of edges. 
 
-\subsection{Laplacian Systems of Equations}
+\subsection{Symmetric Diagonally Dominant Linear Systems}
 
-The \emph{Laplacian} of an unweighted, undirected graph~$G$ is defined to 
-be 
+An $n \times n$ matrix $\mat{A} = [a_{ij}]$ is \emph{diagonally dominant} if 
+\[
+	|a_{ii}| \geq \sum_{j \neq i} {|a_{ij}|} \mbox{ for all } i = 1, \ldots, n.
+\] 
+A matrix is \emph{symmetric diagonally dominant (SDD)} if, in addition to the above, 
+it is symmetric. 
+
+An example of a symmetric, diagonally dominant matrix is the graph Laplacian. 
+Given an unweighted, undirected graph~$G$, the \emph{Laplacian} of $G$ 
+is defined to be 
 \[
 \mat{L}_G = \mat{D}_G - \mat{A}_G,
 \] 
-where $\mat{A}_G$ is the adjacency matrix 
-of the graph~$G$ and $\mat{D}_G$ is the diagonal matrix of vertex degrees. 
-A weighted graph $G = (V, E)$ has an associated weight function 
+where $\mat{A}_G$ is the adjacency matrix of the graph~$G$ and $\mat{D}_G$ 
+is the diagonal matrix of vertex degrees. This definition extends 
+to weighted graphs. A weighted graph $G = (V, E)$ has an associated weight function 
 $w \colon V \times V \to \R$ which satisfies the conditions: 
 \begin{inparaenum}[(1)]
 	\item $w(u, v) = w(v, u)$;  
 	\item $w(u, v) \geq 0$; and, 
 	\item if $\{u, v\} \notin E$ then $w(u, v) = 0$. 
 \end{inparaenum}
-In the context of weighted graphs, 
-the degree~$\deg_G (u)$ of a vertex~$u$ is defined to be 
+In the context of weighted graphs, the degree~$\deg_G (u)$ of a vertex~$u$ is defined to be 
 \[\label{eqn:weighted_degree}
 	\deg_G (u) = \sum_{v \in V} w(u, v). 
 \] 
@@ -191,39 +198,67 @@ and the Laplacian is defined as before as:
 \]
 where $\mat{D}_G$ is the diagonal matrix of vertex degrees in the weighted graph~$G$.
 
-A Laplacian system of linear equations is a system of equations of the form:
+A symmetric, diagonally dominant (SDD) system of linear equations is a system of 
+equations of the form:
 \[
-	\mat{L} \cdot \vect{x} = \vect{b},
+	\mat{A} \cdot \vect{x} = \vect{b},
 \]
-where $\vect{x}$ is a vector of unknowns $\vect{x} = \trans{(x_1, \ldots, x_n)}$ 
-and $\vect{b}$ an vector of constants $\vect{b} = \trans{(b_1, \ldots, b_n)}$. 
+where $\mat{A}$ is an SDD matrix, $\vect{x} = \trans{(x_1, \ldots, x_n)}$ 
+is a vector of unknowns, and $\vect{b} = \trans{(b_1, \ldots, b_n)}$ is a vector of constants. 
 There is near-linear time algorithm for solving such a system of linear equations 
 and this result is crucial to the analysis of the running time of our algorithm. 
 
-Given an $n \times n$ matrix~$\mat{A}$ and $\vect{b} \in \R^{n}$, consider the 
-system of linear equations $\mat{A} \vect{x} = \vect{b}$, with variables
-$\vect{x} = \trans{(x_1, \ldots, x_n)}$. Such a system has a solution if and only if
-$\vect{b}$ is in the image of matrix~$\mat{A}$. If $\mat{A}$ is invertible, then 
-the system has a solution for all $\vect{b} \in \R^n$. However, if $\vect{b}$ 
-is in the image of $\mat{A}$, then the inverse of $\mat{A}$ is well-defined 
-and is denoted by $\pseudo{\mat{A}}$. This is called the \emph{pseudo-inverse}
-of $\mat{D}$. 
-\begin{proposition} \label{prop:Laplacian_systems} {\textrm{\cite{Vis13}}}
-	There is an algorithm which takes a graph Laplacian $\mat{L}$, a vector 
-	$\vect{b}$, and an error parameter~$\epsilon > 0$, and returns $\vect{x}$
+The solution of $n \times n$ system of linear equations takes $O(n^3)$ time 
+if one uses Gaussian elimination. \texttt{More stuff here on sparse systems ...}
+Speilman and Teng made a seminal contribution in this direction and 
+showed that SDD linear systems can be solved in nearly-linear 
+time~\cite{ST04,EEST05,ST08}. Speilman and Teng's algorithm (the ST-solver)
+iteratively produces a sequence of approximate solutions which converge to the 
+actual solution of the system $\mat{A} \vect{x} = \vect{b}$. The performance 
+of such an iterative system is measured in terms of the time taken to reduce 
+an appropriately defined approximation error by a constant factor. The time 
+complexity of the ST-solver was reported to be at least $O(m \log^{15} n)$~\cite{KMP11}.  
+Koutis, Miller and Peng~\cite{KMP10,KMP11} developed a simpler and faster algorithm 
+for finding $\epsilon$-approximate solutions to SDD systems in time 
+$\tilde{O}(m \log n \log (1/\epsilon) )$, where the $\tilde{O}$ notation hides 
+a factor that is at most $(\log \log n)^2$. A highly readable account 
+of SDD systems is the monograph by Vishnoi~\cite{Vis13}. We summarize the 
+main result that we use as a black-box.  
+\begin{proposition} \label{prop:SDD_systems} {\textrm{\cite{KMP11,Vis13}}}
+	Given a system of linear equations $\mat{A} \vect{x} = \vect{b}$, where $\mat{A}$
+	is an SDD matrix, there exists an algorithm to compute $\tilde{\vect{x}}$  
 	such that:
 		\[
-			\norm{\vect{x} - \pseudo{\mat{L}} \vect{b}}_{\mat{L}} \leq \epsilon \norm{\pseudo{\mat{L}} \vect{b}}_{\mat{L}}, 
+			\norm{\tilde{\vect{x}} - \vect{x}}_{\mat{A}} \leq \epsilon \norm{\vect{x}}_{\mat{A}}, 
 		\]
-	where $\norm{\vect{y}}_{\mat{L}} := \sqrt{\trans{\vect{y}} \mat{L} \vect{y}}$. The algorithm runs in 
-	time $O(m \cdot \log n \cdot \log 1 / \epsilon)$ time, where $m$ is the number of non-zero 
-	entries in $\mat{L}$.
+	where $\norm{\vect{y}}_{\mat{A}} := \sqrt{\trans{\vect{y}} \mat{A} \vect{y}}$. The algorithm runs in 
+	time $\tilde{O}(m \cdot \log n \cdot \log (1 / \epsilon) )$ time, where $m$ is the number of non-zero 
+	entries in $\mat{A}$. The $\tilde{O}$ notation hides a factor of at most $(\log \log n)^2$.
 \end{proposition} 
 
-This result can be generalized to linear systems $\mat{A} \vect{x} = \vect{b}$, where 
-$\vect{b}$ is a symmetric (weakly) diagonally dominant matrix.
+%Given an $n \times n$ matrix~$\mat{A}$ and $\vect{b} \in \R^{n}$, consider the 
+%system of linear equations $\mat{A} \vect{x} = \vect{b}$, with variables
+%$\vect{x} = \trans{(x_1, \ldots, x_n)}$. Such a system has a solution if and only if
+%$\vect{b}$ is in the image of matrix~$\mat{A}$. If $\mat{A}$ is invertible, then 
+%the system has a solution for all $\vect{b} \in \R^n$. However, if $\vect{b}$ 
+%is in the image of $\mat{A}$, then the inverse of $\mat{A}$ is well-defined 
+%and is denoted by $\pseudo{\mat{A}}$. This is called the \emph{pseudo-inverse}
+%of $\mat{D}$. 
+%\begin{proposition} \label{prop:Laplacian_systems} {\textrm{\cite{ST08,Vis13}}}
+%	There is an algorithm which takes a graph Laplacian $\mat{L}$, a vector 
+%	$\vect{b}$, and an error parameter~$\epsilon > 0$, and returns $\vect{x}$
+%	such that:
+%		\[
+%			\norm{\vect{x} - \pseudo{\mat{L}} \vect{b}}_{\mat{L}} \leq \epsilon \norm{\pseudo{\mat{L}} \vect{b}}_{\mat{L}}, 
+%		\]
+%	where $\norm{\vect{y}}_{\mat{L}} := \sqrt{\trans{\vect{y}} \mat{L} \vect{y}}$. The algorithm runs in 
+%	time $O(m \cdot \log n \cdot \log 1 / \epsilon)$ time, where $m$ is the number of non-zero 
+%	entries in $\mat{L}$.
+%\end{proposition} 
+%This result can be generalized to linear systems $\mat{A} \vect{x} = \vect{b}$, where 
+%$\vect{b}$ is a symmetric (weakly) diagonally dominant matrix.
 
-We can use Proposition~\ref{prop:Laplacian_systems} to upper-bound the time taken to 
+We can use Proposition~\ref{prop:SDD_systems} to upper-bound the time taken to 
 calculate $\mat{N} \mat{R}$, where $\mat{N}$ is the fundamental matrix of the absorbing
 Markov chain and $\mat{R}$ is as in equation~(\ref{eqn:canonical_form_P}).
 \begin{lemma}\label{lemma:computing_NR}
@@ -246,9 +281,8 @@ $\mat{I} - \mat{Q}$ as
 \[
 	\mat{I}  - \mat{Q} = \inv{\mat{D}_1} (\mat{D}_1 - \mat{A}_1).
 \]   
-Note that $\mat{D}_1 - \mat{A}_1$ is not really the Laplacian of the graph $G_1$
-but is symmetric and weakly diagonally dominant. Let us suppose that $\mat{X}$ 
-is an $(n - s) \times s$ matrix such that 
+Note that $\mat{D}_1 - \mat{A}_1$ is a symmetric and diagonally dominant matrix. 
+Let us suppose that $\mat{X}$ is an $(n - s) \times s$ matrix such that 
 \[
 	\mat{X} = (\mat{I} - \mat{Q})^{-1} \cdot \mat{R}.
 \]
@@ -259,7 +293,7 @@ equation may be written as a set of linear equation systems:
 	(\mat{D}_1 - \mat{A}_1) \cdot \vect{x}_i = \mat{D}_1 \cdot \vect{r}_i  \quad (\mbox{for } 1 \leq i \leq s),
 \end{equation} 
 where $\vect{x}_i$ and $\vect{r}_i$ are the $i\th$ columns of $\mat{X}$ and $\mat{R}$, respectively. 
-By Proposition~\ref{prop:Laplacian_systems}, the time taken to solve each of these systems 
+By Proposition~\ref{prop:SDD_systems}, the time taken to solve each of these systems 
 is $O(m \log n)$. Together, they can be solved in time $O(s \cdot m \cdot \log n)$, which
 is what was claimed.  
 
