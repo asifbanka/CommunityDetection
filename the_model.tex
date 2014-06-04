@@ -37,10 +37,12 @@ The random walk can be represented by a transition matrix and the walk itself ca
 by multiplying this matrix with itself repeatedly. This, however, takes $O(n^3)$
 time, where~$n$ is the number of nodes in the network. One of the contributions of 
 this paper is to show how this can be reduced to solving a set of (symmetric, diagonally dominant) 
-systems of linear equations (one set per community), which by the work of Speilman and 
-Teng~\cite{ST04,EEST05,ST08,Vis13} can be done in $O(m \log n)$ time, where~$m$ is the number of edges
-in the graph. We assume that our networks are sparse in the sense that $m = O(n)$, 
-so that the running time of our algorithm can  be bounded by $O(n \log n)$.    
+systems of linear equations (one set per community), which can be done in $O(m \log n)$ time, 
+where~$m$ is the number of edges in the graph. The fact that such systems can be solved in 
+almost linear time was due to work that was spearheaded by Speilman and 
+Teng~\cite{ST04,EEST05,ST08,KMP10,KMP11,Vis13}. We assume that our networks are 
+sparse in the sense that $m = O(n)$, so that the running time of our algorithm can  
+be bounded by $O(n \log n)$.    
         
 \subsection{Absorbing Markov Chains and Random Walks}
 We now provide a formal description of our model. We assume that our network 
