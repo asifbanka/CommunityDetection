@@ -271,8 +271,8 @@ Markov chain and $\mat{R}$ is as in equation~(\ref{eqn:canonical_form_P}).
 Given a graph~$G$, let $\mat{P}$ be the $n \times n$ transition matrix in canonical form 
 (see equation~(\ref{eqn:canonical_form_P})) defined by equations~(\ref{eqn:defining_prob_nonseed}) 
 and~(\ref{eqn:defining_prob_seed}). Then one can compute 
-$\sum_{r = 0}^{\infty} \mat{Q}^r \cdot \mat{R}$ in $O(s \cdot m \cdot \log n)$ time, 
-where $s$ is the number of seed nodes and $m$ is the number of edges in the graph~$G$.
+the affinity vectors of all non-seed nodes in time $O(m \cdot \log n + ms + n)$ per community, 
+where~$m$ is the number of edges in the graph~$G$ and $s$ is the number of seed nodes.
 \end{lemma}  
 \begin{proof}
 Recall that we ordered the nodes of $G$ as $\{u_1, \ldots, u_{n - s}, x_1, \ldots, x_s\}$, 
@@ -284,23 +284,59 @@ $\mat{D}_1(u_i, u_i) = \deg_{G}(u_i)$ for all $1 \leq i \leq n - s$.  That is, t
 entries of $\mat{D}_1$ are not the degrees of the vertices in the induced subgraph~$G_1$ 
 but in the graph~$G$. We can then express 
 $\mat{I} - \mat{Q}$ as 
-\[
+\begin{equation} \label{eqn:I-Q}
 	\mat{I}  - \mat{Q} = \inv{\mat{D}_1} (\mat{D}_1 - \mat{A}_1).
-\]   
+\end{equation}
 Note that $\mat{D}_1 - \mat{A}_1$ is a symmetric and diagonally dominant matrix. 
 Let us suppose that $\mat{X}$ is an $(n - s) \times s$ matrix such that 
 \[
 	\mat{X} = (\mat{I} - \mat{Q})^{-1} \cdot \mat{R}.
 \]
-Then $(\mat{I} - \mat{Q}) \mat{X} = \mat{R}$, which may be rewritten as
-$(\mat{D}_1 - \mat{A}_1) \mat{X} = \mat{D}_1 \cdot \mat{R}$. The latter 
-equation may be written as a set of linear equation systems:
-\begin{equation}\label{eqn:laplacian_linear_eqn}
-	(\mat{D}_1 - \mat{A}_1) \cdot \vect{x}_i = \mat{D}_1 \cdot \vect{r}_i  \quad (\mbox{for } 1 \leq i \leq s),
-\end{equation} 
-where $\vect{x}_i$ and $\vect{r}_i$ are the $i\th$ columns of $\mat{X}$ and $\mat{R}$, respectively. 
-By Proposition~\ref{prop:SDD_systems}, the time taken to solve each of these systems 
-is $O(m \log n)$. Together, they can be solved in time $O(s \cdot m \cdot \log n)$, which
-is what was claimed.  
 
+Fix a community~$l$. Then the affinities of the non-seed nodes 
+for community~$l$ may be written as:
+\begin{align} \label{eqn:affinity}
+	\left ( \begin{array}{c}
+		\alpha (u_1, l) \\
+		\vdots			\\
+		\alpha (u_{n - s}, l)
+	\end{array}	\right ) & = \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{X}_j \nonumber \\ 
+						 & = \sum_{j = 1}^{s} \alpha (x_j, l) \inv{(\mat{I} - \mat{Q})} \cdot \mat{R}_j \nonumber \\ 
+						 & = \inv{(\mat{I} - \mat{Q})} \cdot \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j,
+\end{align}
+where $\mat{X}_j$ and $\mat{R}_j$ denote the $j\th$ columns of $\mat{X}$ and $\mat{R}$, respectively. 
+Using equation~(\ref{eqn:I-Q}), we may rewrite equation~(\ref{eqn:affinity}) as:
+\begin{align}
+	\inv{\mat{D}_1} (\mat{D}_1 - \mat{A}_1) \cdot \left ( \begin{array}{c}
+		\alpha (u_1, l) \\
+		\vdots			\\
+		\alpha (u_{n - s}, l)
+	\end{array}	\right ) & = \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j.
+\end{align}
+Finally, multiplying by $\mat{D}_1$ on both sides, we obtain
+\begin{equation}\label{eqn:final_affinity}
+	(\mat{D}_1 - \mat{A}_1) \cdot \vect{\alpha}_l = \mat{D}_1 \cdot \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j,
+\end{equation}
+where we used $\vect{\alpha}_l$ to denote the vector $\trans{\left ( \alpha (u_1, l), \ldots, \alpha (u_{n-s}, l) \right )}$.
+
+Note that computing $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ takes time $O(m \cdot s)$, where $m$ 
+denotes the number of non-zero entries in $\mat{P}$. Computing the product of 
+$\mat{D}_1$ and $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ takes time $O(n)$ so that 
+the right hand side of equation~\ref{eqn:final_affinity} can be computed in time $O(ms + n)$.
+We now have a symmetric diagonally dominant system of linear equations which by 
+Proposition~\ref{prop:SDD_systems} can be solved in time $O(m \cdot \log n)$. Therefore 
+the time taken to compute the affinity to a fixed community is $O(m \cdot \log n + ms + n)$,
+which is what was claimed. Since $m = O(n)$ and $s = O(\log n)$, the time taken 
+is $O(n \cdot \log n)$ per community.  
+%
+%Then $(\mat{I} - \mat{Q}) \mat{X} = \mat{R}$, which may be rewritten as
+%$(\mat{D}_1 - \mat{A}_1) \mat{X} = \mat{D}_1 \cdot \mat{R}$. The latter 
+%equation may be written as a set of linear equation systems:
+%\begin{equation}\label{eqn:laplacian_linear_eqn}
+%	(\mat{D}_1 - \mat{A}_1) \cdot \vect{x}_i = \mat{D}_1 \cdot \vect{r}_i  \quad (\mbox{for } 1 \leq i \leq s),
+%\end{equation} 
+%where $\vect{x}_i$ and $\vect{r}_i$ are the $i\th$ columns of $\mat{X}$ and $\mat{R}$, respectively. 
+%By Proposition~\ref{prop:SDD_systems}, the time taken to solve each of these systems 
+%is $O(m \log n)$. Together, they can be solved in time $O(s \cdot m \cdot \log n)$, which
+%is what was claimed.  
 \end{proof} 
