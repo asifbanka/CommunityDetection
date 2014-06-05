@@ -1,0 +1,32 @@
+target = main
+
+all: main.pdf 
+
+bib:
+	pdflatex $(target).tex
+	-bibtex --min-crossrefs=99 $(target) # Ignore bibtex errors
+	-bibtex --min-crossrefs=99 short
+	pdflatex $(target).tex
+	@pdflatex $(target).tex
+
+.PHONY: bib clean again
+
+again: 
+	touch main.tex
+	make main.pdf
+	
+%.pdf: %.tex
+	pdflatex $<
+	@pdflatex $< # for references
+
+main.pdf: header.tex the_model.tex 
+
+%.pdf: %.ps
+	ps2pdf $< 2> /dev/null # Warnings are bad for vim
+
+%.dvi: %.tex
+	latex $< 
+	@latex $< # Again for references
+
+clean:
+	rm -f *.aux *.bbl *.log *.dvi 2> /dev/null
