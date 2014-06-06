@@ -341,4 +341,38 @@ is $O(n \cdot \log n)$ per community.
 %By Proposition~\ref{prop:SDD_systems}, the time taken to solve each of these systems 
 %is $O(m \log n)$. Together, they can be solved in time $O(s \cdot m \cdot \log n)$, which
 %is what was claimed.  
-\end{proof} 
+\end{proof}
+
+\subsection{Some More Intuition}
+
+Before we present our experimental results, it might be 
+worthwhile to study how well our algorithm performs 
+at least in special cases.
+
+Suppose that the network in question has a community, which we call $C_1$,
+with $n_1$ nodes and $e_1$ internal edges (edges with both end-points within 
+the community). Community $C_1$ is separated from the ``rest of the network,'' 
+which we call $C_2$. We assume that $C_2$ has $n_2$ vertices and $e_2$ internal 
+edges and that $e_3$ edges connect $C_1$ and $C_2$; that is, the cut $(C_1, C_2)$
+has $e_3$ edges. 
+\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
+                    semithick]
+  \tikzstyle{every state}=[text=black]
+
+  \node[state]         (S1)               {$S_1$};
+  \node[state]         (C1) [below of=S1] {$\bar{C}_1$};
+  \node[state]         (S2) [right of=S1] {$S_2$};
+  \node[state]         (C2) [below of=S2] {$\bar{C}_2$};
+
+  \path (S1) edge [loop above]  node {$1$}                                        (S1)
+        (C1) edge               node {$\frac{s_1}{n_1}$}                          (S1)
+        (C1) edge [bend left]   node (dummy1) [above] {$\frac{e_3}{2e_1 + e_3}$}  (C2)
+             edge [loop left]   node {$\frac{e_3}{2e_1 + e_3} - \frac{s_1}{n_1}$} (C1)
+        (C2) edge [bend left]   node (dummy2) [below] {$\frac{e_3}{2e_2 + e_3}$}  (C1)
+             edge [loop right]  node {$\frac{e_3}{2e_2 + e_3} - \frac{s_2}{n_2}$} (C2)
+        (C2) edge               node {$\frac{s_2}{n_2}$}                          (S2)
+        (S2) edge [loop above]  node {$1$}                                        (S2);
+        
+\end{tikzpicture}
+
+
