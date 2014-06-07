@@ -354,20 +354,20 @@ which has $n_1$ nodes and $e_1$ internal edges (edges with both end-points withi
 the community). Community $C_1$ is separated from the ``rest of the network,'' ($C_2$)
 by $e_3$ edges; that is, the cut $(C_1, C_2)$ has $e_3$ edges. We assume that $C_2$ 
 has $n_2$ vertices and $e_2$ internal edges. Now $C_2$ could be a community in itself 
-or a collection of communities. We are interested in ascertaining the probability 
-with which random walks starting at a randomly chosen node in $C_1$ end up in 
+or a collection of communities. We wish to ascertain the probability 
+with which a random walk starting at a randomly chosen node in $C_1$ ends up in 
 a seed node for $C_1$. Assume that we pick a set $S_1$ of $s_1$ seed nodes from 
-$C_1$ and a set $S_2$ of $s_2$ seed nodes from the rest of the graph, uniformly at random. Now the 
-probability that a randomly picked node~$u$ from $C_1$ transitions to one of 
-the seed nodes in $S_1$ in one step is:
+$C_1$ and a set $S_2$ of $s_2$ seed nodes from the rest of the graph, uniformly 
+at random. Now the probability that a randomly picked node~$u$ from $C_1$ 
+transitions to one of the seed nodes in $S_1$ in \emph{one} step is:
 \begin{align}
     \PR{u \in_{\mathrm{u.a.r}} C_1}{u \to S_1} 
                     & = \frac{1}{d(u)} \sum_{x \in N(u)} \frac{s_1}{n_1} \nonumber \\
                     & = \frac{s_1}{n_1}.
 \end{align}
 This is not entirely correct, since vertex $u$ may have neighbors in $C_2$. However 
-we choose to ignore this inaccuracy because, for one, the probability expressions 
-are much simpler and the real objective here is to gain intuition as to 
+we choose to ignore this here because, for one, the probability expressions 
+are much simpler this way and the real objective here is to gain intuition as to 
 why the algorithm might succeed in uncovering communities. 
 
 The probability with which a randomly chosen node in $C_1$ transitions to a 
@@ -401,10 +401,35 @@ probabilities of randomly picked node from $C_2$ are:
     \mbox{to a node in $C_1$}           & = \frac{e_3}{2e_2 + e_3}.
 \end{align}
 This gives rise to the four-state Markov chain depicted in Figure~\ref{fig:4stateMC}, 
-where we used bars on $C_1$ and $C_2$ to denote the non-seed node counterparts. 
-Note that the sum of the above three probabilities sum up to one as they should.  
+where we used bars on $C_1$ and $C_2$ to denote the fact that these 
+states represent the non-seed node counterparts of the respective node sets.
+Note that the sum of the above three probabilities sum up to one, as they should.
 
-\begin{figure}[ht]
+We can now analyze the transition matrix of this absorbing Markov chain as 
+before:
+\begin{equation}\label{eqn:4-state-matrix}
+    \mat{P} =
+    \bordermatrix{\text{}   & \bar{C}_1 & \bar{C}_2 & S_1 & S_2 \cr
+                  \bar{C}_1 & q_1       &  q_2      & r_1 & 0   \cr
+                  \bar{C}_2 & q_3       &  q_4      &  0  & r_2 \cr
+                        S_1 &  0        &   0       &  1  &  0  \cr
+                        S_2 &  0        &   0       &  0  &  1},
+\end{equation}
+where we used $q_1, q_2, q_3, q_4, r_1, r_2$ to represent the respective 
+probabilities that were calculated before. This matrix is in canonical form 
+(see~\ref{eqn:canonical_form_P}) and the probabilities with which a non-seed 
+node in $C_1$ and $C_2$ is absorbed in a seed node is given by the $2 \times 2$ matrix 
+$\inv{(\mat{I} - \mat{Q})} \cdot \mat{R}$, which is:
+\begin{equation}
+    \inv{(\mat{I} - \mat{Q})} \cdot \mat{R} = \frac{1}{f(q_1, q_2, q_3, q_4)}
+        \cdot \left ( \begin{matrix}
+                            r_1 (1 - q_4) & r_2 q_2         \\  
+                            r_1 q_3       & r_1 (1 - q_1)
+                      \end{matrix} \right ),
+\end{equation}
+where $f(q_1, q_2, q_3, q_4) = (1 - q_1) (1 - q_4) - q_2 q_3$.
+
+\begin{figure}[t]
 \begin{center}
 \begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
                     semithick]
@@ -418,15 +443,32 @@ Note that the sum of the above three probabilities sum up to one as they should.
   \path (S1) edge [loop above]  node {$1$}                                        (S1)
         (C1) edge               node {$\frac{s_1}{n_1}$}                          (S1)
         (C1) edge [bend left]   node (dummy1) [above] {$\frac{e_3}{2e_1 + e_3}$}  (C2)
-             edge [loop left]   node {$\frac{e_3}{2e_1 + e_3} - \frac{s_1}{n_1}$} (C1)
+             edge [loop left]   node {$\frac{2e_1}{2e_1 + e_3} - \frac{s_1}{n_1}$} (C1)
         (C2) edge [bend left]   node (dummy2) [below] {$\frac{e_3}{2e_2 + e_3}$}  (C1)
-             edge [loop right]  node {$\frac{e_3}{2e_2 + e_3} - \frac{s_2}{n_2}$} (C2)
+             edge [loop right]  node {$\frac{2e_2}{2e_2 + e_3} - \frac{s_2}{n_2}$} (C2)
         (C2) edge               node {$\frac{s_2}{n_2}$}                          (S2)
         (S2) edge [loop above]  node {$1$}                                        (S2);
         
 \end{tikzpicture}
 \end{center}
-\caption{The four-state Markov chain representing community information}
+\caption{The four-state Markov chain representing transitions for a random node.}
 \label{fig:4stateMC}
 \end{figure}
 
+The probability that a random non-seed node of $C_1$ is absorbed by a 
+seed node of $C_1$ is proportional to $r_1 (1 - q_4)$ which is 
+\begin{equation}\label{exp:prob_c1-s1}
+    \frac{s_1}{n_1} \left ( \frac{e_3}{2e_2 + e_3} + \frac{s_2}{n_2} \right ).
+\end{equation}
+The probability that a random non-seed node of $C_1$ is absorbed by 
+a seed node of $C_2$ is proportional to $r_2 q_2$ which is 
+\begin{equation}\label{exp:prob_c1-s2}
+    \frac{s_2}{n_2} \cdot \frac{e_3}{2e_1 + e_3}.
+\end{equation}
+After a little manipulation, the ratio of the first expression~(\ref{exp:prob_c1-s1}) 
+to the second~(\ref{exp:prob_c1-s2}) works out to:
+\begin{equation} \label{exp:final_ratio}
+    \frac{s_1}{n_1} \left ( \frac{n_2}{s_2} \cdot 
+            \frac{2e_1 + e_3}{2e_2 + e_3} + 
+            \frac{2e_1 + e_3}{e_3}\right ).
+\end{equation}
