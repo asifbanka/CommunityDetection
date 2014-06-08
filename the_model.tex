@@ -395,15 +395,22 @@ Now we can write down the probability of a randomly picked
 node in $C_1$ transitioning in one step to a seed node in $S_1$
 as:
 \begin{equation}\label{exp:c1-s1}
-    \frac{s_1}{n_1} +  \left ( 1 - \frac{\partial C_1}{n_1} \right ) \cdot \frac{s_1}{n_1} 
-            + \frac{\partial C_1}{n_1} \cdot \frac{2e_1}{2e_1 + e_3} \cdot \frac{s_1}{n_1}.
+    \frac{s_1}{n_1} +  \left ( 1 - \frac{|\partial C_1|}{n_1} \right ) \cdot \frac{s_1}{n_1} 
+            + \frac{|\partial C_1|}{n_1} \cdot \frac{2e_1}{2e_1 + e_3} \cdot \frac{s_1}{n_1}.
 \end{equation}
-The leading term in the above expression is $s_1/ n_1$ and if we assume that 
-$\partial C_1 / n_1$ is small enough, then we can neglect all the other 
-terms of this expression. We therefore assign a probability of $s_1 / n_1$
-to this event.
+With a little algebraic manipulation, the above expression simplifies to: 
+\begin{equation}\label{exp:final_c1-s1}
+    \frac{s_1}{n_1} \cdot \left ( 2 - \frac{|\partial C_1|}{n_1} \cdot \frac{e_3}{2e_1 + e_3} \right ).
+\end{equation}
+Now the fractions $|\partial C_1| / n_1$ and $e_3/ (2e_1 + e_3)$ are each 
+at most one, so that their product is also at most one. Therefore, 
+expression~(\ref{exp:final_c1-s1}) is at least $s_1/ n_1$ and 
+at most $2s_1 / n_1$. We wish to keep things simple here and we 
+choose to assign a probability of $s_1 / n_1$ to the event that 
+a randomly chosen non-seed node in $C_1$ transitions to a seed node
+in $S_1$ in one step.
 
-The probability expression~(\ref{exp:c1-c1}) can be broken down 
+Next note that the probability expression~(\ref{exp:c1-c1}) can be broken down 
 into two events: the probability of transitioning to a seed node 
 in $S_1$ (which is $s_1 / n_1$), and the probability of transitioning 
 to a non-seed node in $C_1$, which then is:
@@ -490,9 +497,10 @@ to the second~(\ref{exp:prob_c1-s2}) works out to:
             \frac{2e_1 + e_3}{2e_2 + e_3}.
 \end{equation}
 
-Up till now, we have made no assumption abut community structure. In particular,
-we did not make the commonly assumed characteristic that communities 
-and more dense inside than outside. We make this 
+Up till now, we have made no assumption about community structure. 
+A commonly assumed structural characteristic is that communities 
+and more dense inside than outside. \texttt{There are quite a few 
+references that we ought to cite here.} We make this 
 assumption now in order to make some sense of expression~(\ref{exp:final_ratio}).
 Let us suppose that $C_1$ is ``clique-like'' so that $e_1 = \Omega(n_1^2)$ and 
 that there are relatively few connections between it and the rest of the 
@@ -506,4 +514,14 @@ is a collection of several communities, we may continue to assume that
 it is sparse and hence $e_2 = O(n_2)$. The second term now is $\Omega(s_1 n_1 / s_2)$,
 which is certainly large. The point is, irrespective of what $C_2$ constitutes, 
 if $C_1$ is a dense-enough community it's non-seed nodes will tend to be absorbed
-in $S_1$ rather than in $S_2$.
+in $S_1$ rather than in $S_2$. We summarize this in the following theorem.
+\begin{theorem}
+    Let $G$ be a network and let $C_1, \ldots, C_k \subseteq G$ be the 
+    communities in the network. For each community~$C_i$, we assume that 
+    $E(C_i) = \Omega (n_i^2)$ and $E(C, G - C) = O(n_i)$, where $n_i := |V(C_i)|$.
+    Further suppose that $s_i$ seed nodes are chosen uniformly at random from each 
+    community $C_i$. Then a non-seed node picked u.a.r from~$C_i$ is absorbed 
+    in a seed node of $C_i$ with a probability that is a factor $\Omega(s_i)$ 
+    larger than the probability with which it is absorbed in the seed nodes 
+    of the remaining communities.
+\end{theorem}
