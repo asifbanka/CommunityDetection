@@ -351,27 +351,27 @@ special cases.
 
 Suppose that one of the communities in the network in question is $C_1$
 which has $n_1$ nodes and $e_1$ internal edges (edges with both end-points within 
-the community). Community $C_1$ is separated from the ``rest of the network,'' ($C_2$)
-by $e_3$ edges; that is, the cut $(C_1, C_2)$ has $e_3$ edges. We assume that $C_2$ 
-has $n_2$ vertices and $e_2$ internal edges. Now $C_2$ could be a community in itself 
-or a collection of communities. We wish to ascertain the probability 
-with which a random walk starting at a randomly chosen node in $C_1$ ends up in 
-a seed node for $C_1$. Assume that we pick a set $S_1$ of $s_1$ seed nodes from 
-$C_1$ and a set $S_2$ of $s_2$ seed nodes from the rest of the graph, uniformly 
-at random. Now the probability that a randomly picked node~$u$ from $C_1$ 
-transitions to one of the seed nodes in $S_1$ in \emph{one} step is:
-\begin{align}
-    \PR{u \in_{\mathrm{u.a.r}} C_1}{u \to S_1} 
-                    & = \frac{1}{d(u)} \sum_{x \in N(u)} \frac{s_1}{n_1} \nonumber \\
-                    & = \frac{s_1}{n_1}.
-\end{align}
-This is not entirely correct, since vertex $u$ may have neighbors in $C_2$. However 
-we choose to ignore this here because, for one, the probability expressions 
-are much simpler this way and the real objective here is to gain intuition as to 
-why the algorithm might succeed in uncovering communities. 
+the community). Community $C_1$ is separated from the ``rest of the network,'' 
+denoted $C_2$, by $e_3$ edges; that is, the cut $(C_1, C_2)$ has $e_3$ edges. 
+We assume that $C_2$ has $n_2$ vertices and $e_2$ internal edges. Now $C_2$ 
+could be a community in itself or a collection of communities. We wish to 
+ascertain the probability with which a random walk starting at a randomly 
+chosen node in $C_1$ ends up in a seed node for $C_1$. Assume that we 
+pick a set $S_1$ of $s_1$ seed nodes from $C_1$ and a set $S_2$ of $s_2$ 
+seed nodes from the rest of the graph, uniformly at random. We first want to 
+estimate the probability that a randomly picked node~$u$ from $C_1$ transitions 
+to one of the seed nodes in $S_1$ in \emph{one} step.
 
-The probability with which a randomly chosen node in $C_1$ transitions to a 
-node in $C_1$ (in one step) is 
+This could happen because~$u$ itself is a seed node, which happens with probability $s_1 / n_1$.
+Next suppose that~$u$ does not have any neighbors in~$C_2$. If we denote the nodes 
+of $C_1$ that do have a neighbor in~$C_2$ by $\partial C_1$, then the probability 
+of a non-seed node in $C_1 - \partial C_1$ to transition in one step to a seed 
+node in $S_1$ is:
+\begin{equation}
+    \frac{1}{d(u)} \cdot \sum_{x \in N(u)} \frac{s_1}{n_1} = \frac{s_1}{n_1}.
+\end{equation}
+Finally consider the case where~$u$ has a neighbor in $C_2$. The probability with 
+which a randomly chosen node in $C_1$ transitions to a node in $C_1$ (in one step) is 
 \[
     \frac{\mbox{average internal degree of a vertex in $C_1$}}
          {\mbox{total average degree of a vertex in $C_1$}},
@@ -385,11 +385,28 @@ one-step transition to $C_2$ is
 \begin{equation}\label{exp:c1-c2}
     \frac{e_3}{2e_1 + e_3}.
 \end{equation}
-The probability expression~(\ref{exp:c1-c1}) 
-can be broken down into two events: the probability 
-of transitioning to a seed node in $S_1$ (which is $s_1 / n_1$), 
-and the probability of transitioning to a non-seed node in $C_1$, 
-which then is:
+Therefore the probability with which a non-seed node in $\partial C_1$ 
+transitions in one step to a seed node in $S_1$ is:
+\begin{equation}
+    \frac{2e_1}{2e_1 + e_3} \cdot \frac{s_1}{n_1}.
+\end{equation}
+
+Now we can write down the probability of a randomly picked 
+node in $C_1$ transitioning in one step to a seed node in $S_1$
+as:
+\begin{equation}\label{exp:c1-s1}
+    \frac{s_1}{n_1} +  \left ( 1 - \frac{\partial C_1}{n_1} \right ) \cdot \frac{s_1}{n_1} 
+            + \frac{\partial C_1}{n_1} \cdot \frac{2e_1}{2e_1 + e_3} \cdot \frac{s_1}{n_1}.
+\end{equation}
+The leading term in the above expression is $s_1/ n_1$ and if we assume that 
+$\partial C_1 / n_1$ is small enough, then we can neglect all the other 
+terms of this expression. We therefore assign a probability of $s_1 / n_1$
+to this event.
+
+The probability expression~(\ref{exp:c1-c1}) can be broken down 
+into two events: the probability of transitioning to a seed node 
+in $S_1$ (which is $s_1 / n_1$), and the probability of transitioning 
+to a non-seed node in $C_1$, which then is:
 \begin{equation}\label{exp:non_seed_c1}
     \frac{2e_1}{2e_1 + e_3} - \frac{s_1}{n_1}.
 \end{equation}
@@ -455,20 +472,38 @@ where $f(q_1, q_2, q_3, q_4) = (1 - q_1) (1 - q_4) - q_2 q_3$.
 \label{fig:4stateMC}
 \end{figure}
 
-The probability that a random non-seed node of $C_1$ is absorbed by a 
-seed node of $C_1$ is proportional to $r_1 (1 - q_4)$ which is 
+The probability of a random non-seed node of $C_1$ being absorbed by a 
+seed node of $C_1$ is proportional to $r_1 (1 - q_4)$, which is: 
 \begin{equation}\label{exp:prob_c1-s1}
     \frac{s_1}{n_1} \left ( \frac{e_3}{2e_2 + e_3} + \frac{s_2}{n_2} \right ).
 \end{equation}
-The probability that a random non-seed node of $C_1$ is absorbed by 
-a seed node of $C_2$ is proportional to $r_2 q_2$ which is 
+The probability of a random non-seed node of $C_1$ being absorbed by 
+a seed node of $C_2$ is proportional to $r_2 q_2$, which is: 
 \begin{equation}\label{exp:prob_c1-s2}
     \frac{s_2}{n_2} \cdot \frac{e_3}{2e_1 + e_3}.
 \end{equation}
 After a little manipulation, the ratio of the first expression~(\ref{exp:prob_c1-s1}) 
 to the second~(\ref{exp:prob_c1-s2}) works out to:
 \begin{equation} \label{exp:final_ratio}
-    \frac{s_1}{n_1} \left ( \frac{n_2}{s_2} \cdot 
-            \frac{2e_1 + e_3}{2e_2 + e_3} + 
-            \frac{2e_1 + e_3}{e_3}\right ).
+    \frac{s_1}{n_1} \cdot \frac{2e_1 + e_3}{e_3} + 
+    \frac{s_1}{n_1} \cdot \frac{n_2}{s_2} \cdot 
+            \frac{2e_1 + e_3}{2e_2 + e_3}.
 \end{equation}
+
+Up till now, we have made no assumption abut community structure. In particular,
+we did not make the commonly assumed characteristic that communities 
+and more dense inside than outside. We make this 
+assumption now in order to make some sense of expression~(\ref{exp:final_ratio}).
+Let us suppose that $C_1$ is ``clique-like'' so that $e_1 = \Omega(n_1^2)$ and 
+that there are relatively few connections between it and the rest of the 
+graph, which amounts to assuming that $e_3 = O(n_1)$. Then the first term 
+of expression~(\ref{exp:final_ratio}) is $\Omega(s_1)$. The second 
+term of this expression is harder to evaluate. If we assume that $C_2$ 
+is also a clique-like community, then $e_2 = \Omega (n_2^2)$, in which 
+case, the second term is $\Omega(s_1 n_1 /s_2 n_2)$ whose value 
+depends on the relative community sizes. If, on the other hand, $C_2$ 
+is a collection of several communities, we may continue to assume that 
+it is sparse and hence $e_2 = O(n_2)$. The second term now is $\Omega(s_1 n_1 / s_2)$,
+which is certainly large. The point is, irrespective of what $C_2$ constitutes, 
+if $C_1$ is a dense-enough community it's non-seed nodes will tend to be absorbed
+in $S_1$ rather than in $S_2$.
