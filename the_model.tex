@@ -388,7 +388,8 @@ one-step transition to $C_2$ is
 Therefore the probability with which a non-seed node in $\partial C_1$ 
 transitions in one step to a seed node in $S_1$ is:
 \begin{equation}
-    \frac{2e_1}{2e_1 + e_3} \cdot \frac{s_1}{n_1}.
+    \frac{2e_1 / n_1 }{2e_1 / n_1 + e_3 / |\partial C_1|} \cdot \frac{s_1}{n_1} 
+        = \frac{2e_1}{2e_1 + e_3 \cdot (n_1 / |\partial C_1|)} \cdot \frac{s_1}{n_1}.
 \end{equation}
 
 Now we can write down the probability of a randomly picked 
@@ -396,14 +397,19 @@ node in $C_1$ transitioning in one step to a seed node in $S_1$
 as:
 \begin{equation}\label{exp:c1-s1}
     \frac{s_1}{n_1} +  \left ( 1 - \frac{|\partial C_1|}{n_1} \right ) \cdot \frac{s_1}{n_1} 
-            + \frac{|\partial C_1|}{n_1} \cdot \frac{2e_1}{2e_1 + e_3} \cdot \frac{s_1}{n_1}.
+            + \frac{|\partial C_1|}{n_1} 
+            \cdot \frac{2e_1}{2e_1 +e_3 \cdot ( n_1 /|\partial C_1 |)} 
+            \cdot \frac{s_1}{n_1}.
 \end{equation}
 With a little algebraic manipulation, the above expression simplifies to: 
 \begin{equation}\label{exp:final_c1-s1}
-    \frac{s_1}{n_1} \cdot \left ( 2 - \frac{|\partial C_1|}{n_1} \cdot \frac{e_3}{2e_1 + e_3} \right ).
+    \frac{s_1}{n_1} \cdot \left ( 2 - \frac{|\partial C_1|}{n_1} 
+        \cdot \frac{e_3 \cdot 
+        \frac{n_1}{|\partial C_1|}}{2e_1 + e_3 \cdot \frac{n_1}{|\partial C_1|}} \right ).
 \end{equation}
-Now the fractions $|\partial C_1| / n_1$ and $e_3/ (2e_1 + e_3)$ are each 
-at most one, so that their product is also at most one. Therefore, 
+Now the fractions $|\partial C_1| / n_1$ and 
+$e_3 \cdot (n_1 / |\partial C_1|)/ (2e_1 + e_3 \cdot (n_1 / |\partial C_1|))$ 
+are each at most one, so that their product is also at most one. Therefore, 
 expression~(\ref{exp:final_c1-s1}) is at least $s_1/ n_1$ and 
 at most $2s_1 / n_1$. We wish to keep things simple here and we 
 choose to assign a probability of $s_1 / n_1$ to the event that 
