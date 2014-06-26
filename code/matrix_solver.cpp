@@ -13,6 +13,21 @@ void initMatrices(std::vector<std::list<int>> adjacencyLists,std::set<int> seedN
     int numberOfseedVertices = seedNodes.size();
     int numberOfNonSeedVertices = numberOfVertices - numberOfseedVertices;
 
+    //for the translation of indices
+    int Q_position = 0;
+    int R_position=0;
+
+
+    /*
+    Regarding the translation of vertex name -> matrix index:
+    The problem is if you find a vertex in the adjaceny list that was not yet processed you have no way of knowing it's future matrix index.
+    So I think there is no way around of parsing the complete list of vertices beforehand to create a translation table
+
+
+
+
+    */
+
     SmatD Q(numberOfNonSeedVertices,numberOfNonSeedVertices);
     SmatD R(numberOfNonSeedVertices, numberOfseedVertices);
 
@@ -34,8 +49,10 @@ void initMatrices(std::vector<std::list<int>> adjacencyLists,std::set<int> seedN
                 if(iterator != adjacencyLists[i].begin()){ //assume the first index of the list is the number of neighbours
                     if(seedNodes.find(*iterator) = seedNodes.end()){           
                         tripletListQ.push_back(T(i,*iterator,1/adjacencyLists[i].front())); //dis is wrong (translation from vertex id to matrix id missing)
+                        ++Q_position;
                     } else {
                         tripletListR.push_back(T(i,*iterator,1)); // dis is also wrong
+                        ++R_position;
                     }
                 }
             }
