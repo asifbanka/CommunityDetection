@@ -23,8 +23,11 @@ void initMatrices(std::vector<std::list<int>> adjacencyLists,std::set<int> seedN
     The problem is if you find a vertex in the adjaceny list that was not yet processed you have no way of knowing it's future matrix index.
     So I think there is no way around of parsing the complete list of vertices beforehand to create a translation table
 
-
-
+    One possibillity would be to implement the following function f(n) = [number of seed nodes < n]
+    Then the index of n for the matrix Q would be n- f(n). 
+    For R then we would have to count the 'gaps' between the seed vertices. not really sure if this overhead is worth it to get around traversing
+    the whole vertex space
+    
 
     */
 
