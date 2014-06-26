@@ -1,0 +1,89 @@
+#include <iostream>
+#include <Eigen/Sparse>
+
+typedef Eigen::SparseMatrix<double> SMatD;  // declares a column-major sparse matrix type of double
+typedef Eigen::Triplet<double> Td;
+
+
+//param: adjacancy lists and set of seed nodes
+//return: matrices Q and R
+void initMatrices(std::vector<std::list<int>> adjacencyLists,std::set<int> seedNodes,SmatD* Q_pointer,SmatD* R_pointer){
+
+    int numberOfVertices = adjacencyLists.size();
+    int numberOfseedVertices = seedNodes.size();
+    int numberOfNonSeedVertices = numberOfVertices - numberOfseedVertices;
+
+    SmatD Q(numberOfNonSeedVertices,numberOfNonSeedVertices);
+    SmatD R(numberOfNonSeedVertices, numberOfseedVertices);
+
+    std::vector<T> tripletListQ,tripletListR;
+    int numberOfNonZeroesQ = CountNonZeroesQ(adjacencyLists, seedNodes);
+    int numberOfNonZeroesR = CountNonZeroesR(adjacencyLists, seedNodes);
+
+    //missing: get number of entries
+    tripletListQ.reserve(numberOfNonZeroesQ);
+    tripletListR.reserve(numberOfNonZeroesR);
+    
+    //filling Q and R
+    for(int i=0;i<numberOfVertices;++i){
+        
+        //if the current vertex is not a seed node
+        if(seedNodes.find(i) = seedNodes.end()){
+        
+            for (std::list<int>::const_iterator iterator = adjacencyLists[i].begin(); iterator != adjacencyLists[i].end;++iterator) {
+                if(iterator != adjacencyLists[i].begin()){ //assume the first index of the list is the number of neighbours
+                    if(seedNodes.find(*iterator) = seedNodes.end()){           
+                        tripletListQ.push_back(T(i,*iterator,1/adjacencyLists[i].front())); //dis is wrong (translation from vertex id to matrix id missing)
+                    } else {
+                        tripletListR.push_back(T(i,*iterator,1)); // dis is also wrong
+                    }
+                }
+            }
+        
+        
+
+        
+        
+        }
+    }
+
+    //building Q and R
+    Q.setFromTriplets(tripletListQ.begin(), tripletListQ.end());
+    R.setFromTriplets(tripletListR.begin(), tripletListR.end());
+
+
+    Q_pointer = &Q;
+    R_pointer = &R;
+
+}
+
+
+int CountNonZeroesR(std::vector<std::list<int>> adjacencyLists,std::set<int> seedNodes){
+    int result = 0;
+    for(std::set<int>::const_iterator seeds=seedNodes.begin();seeds !=seedNodes.end;++seeds){
+        for (std::list<int>::const_iterator iterator = adjacencyLists[*seeds].begin(); iterator != adjacencyLists[*seeds].end;++iterator) {
+                if(seedNodes.find(*iterator) != seedNodes.end()){ 
+                    result++; //count all edges of the form (seed node) -> (non seed node)
+                }
+        }
+    }
+
+    return result;
+}
+
+//probably possible to be more efficient
+int CountNonZeroesQ(std::vector<std::list<int>> adjacencyLists,std::set<int> seedNodes){
+    int result = 0;
+    for(int i=0;i<adjacencyLists.size();++i){
+         //if the current vertex is not a seed node
+        if(seedNodes.find(i) = seedNodes.end()){
+            for (std::list<int>::const_iterator iterator = adjacencyLists[i].begin(); iterator != adjacencyLists[i].end;++iterator) {
+                if(seedNodes.find(*iterator) = seedNodes.end()){ 
+                    result++; //count all edges of the form (non seed node) -> (non seed node)
+                }
+            }    
+        }
+    }
+
+    return result;
+}
