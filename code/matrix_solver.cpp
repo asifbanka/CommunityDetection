@@ -2,10 +2,11 @@
 #include <Eigen/Sparse>
 
 typedef Eigen::SparseMatrix<double> SMatD;  // declares a column-major sparse matrix type of double
-typedef Eigen::Triplet<double> Td;
+typedef Eigen::Triplet<double> Td; // A triplet is a simple object representing a non-zero entry as 
+																	 // the triplet: row index, column index, value.
 
 
-//param: adjacancy lists and set of seed nodes
+//param: adjacency lists and set of seed nodes
 //return: matrices Q and R
 void initMatrices(std::vector<std::list<int>> adjacencyLists,std::set<int> seedNodes,SmatD* Q_pointer,SmatD* R_pointer){
 

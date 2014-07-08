@@ -1,0 +1,43 @@
+\documentclass[12pt]{article}
+
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage{times,fullpage}
+
+\begin{document}
+The program consists of the following files:
+
+\begin{description}
+	\item [\texttt{Graph}] This reads an undirected graph from file 
+		in LEDA format and stores it in an adjacency list (which is 
+		a vector of list of ints). Graph will have the following 
+		interface: 
+		\begin{enumerate}
+			\item \verb|num_vertices();| 
+			\item \verb|num_edges();| 
+			\item \verb|Graph(const string path_to_graph_file, const string path_to_seed_node_file );|
+		\end{enumerate}	
+		The adjacency list also has degree information.
+		\begin{enumerate}
+			\item \verb|int get_degree(int);|
+			\item \verb|std::vector<int> get_neighbors(int);|
+			\item \verb|int get_matrix_id(int);| 
+			\item \verb|display_graph();|
+			\item \verb|seed_nodes(const string path_name);|
+		\end{enumerate}
+		The file containing the seed node information consists of 
+		the seed node ids and the number of communities. The file 
+		then lists the seed nodes and their affinities to the communities.
+		This is stored as a vector of a vector of doubles. 
+		\verb|bool is_seed( int id );|
+		 
+	\item [\texttt{MatrixBuilder}] The Matrix Builder builds the 
+		matrices $A_1$, $D_1$, and $R$.
+
+	\item [\texttt{matrix\_solver}] The input parameters are 
+		the graph, the set of seed nodes, pointers to matrices $A_1$, $D_1$, 
+		$R$, the seed node matrix. It gives back an $n \times k$ matrix of affinities.  
+\end{description}
+
+\end{document}
+
