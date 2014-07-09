@@ -31,10 +31,10 @@ MatrixXd solve (graph* g, seedNode* seed, SMatD& A, SMatD& D, SMatD& R){
         Eigen::VectorXd x = chol.solve(b); // use the factorization to solve for the given right hand side
 
 
-        //write the affinities for community i
+        //write the affinities for community l
 
         for(int i=0; i<numberOfNodes;++i){
-            if(seed->is_seed(j)){
+            if(seed->is_seed(i)){
                 affinities(i,l) = seed->get_affinity(i,l);
             } else {
                 affinities(i,l) = x(seed->get_matrix_id(i));
