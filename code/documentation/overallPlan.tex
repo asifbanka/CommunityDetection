@@ -125,13 +125,13 @@ For community $l$, this system looks like:
 \] 
 Here $\alpha(v, l)$ denotes the affinity of node~$v$ for community~$l$; $R_i$ 
 denotes the $i\th$ column of matrix $R$. The \texttt{matrix$\_$solver} returns 
-an $n \times k$ matrix of affinities in a file (whose format is desribed below).
+an $n \times k$ matrix of affinities in a file (whose format is described below).
 
 \paragraph{The \texttt{CommunityClassifier}.} This reads the affinities 
 from a file whose format is shown in Table~\ref{tab:node_aff}.
 It then places each node into an appropriate number of communities. There 
 may be multiple strategies for doing this and we might want to implement it 
-so that we can call it with the strategy number.  
+so that we can call it with the strategy that we want.  
 
 \begin{table}[ht]
 \centering
