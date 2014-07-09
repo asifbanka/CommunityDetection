@@ -1,4 +1,5 @@
 \documentclass[12pt]{article}
+\usepackage[T1]{fontenc}
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{verbatim}
@@ -38,6 +39,8 @@
 }
 
 \renewcommand{\th}{\ensuremath{^{\mathrm{th}}}}
+
+
 \title{The Overlapping Community Detection Project}
 
 \begin{document}
@@ -75,7 +78,6 @@ The interface for this class consists of the following members:
 	\item \verb|num_edges();| 
 	\item \verb|int get_degree(int);|
 	\item \verb|std::list<int> get_neighbors(int);|
-	\item \verb|int get_matrix_id(int);| 
 	\item \verb|display_graph();|
 	\end{enumerate}
 
@@ -101,6 +103,7 @@ For now, we endow it with the following member functions:
 	\item \verb|seed_nodes(const std::string& path_name);|
 	\item \verb|bool is_seed( int id );|
   \item \verb|int num_seed();|
+	\item \verb|int get_matrix_id(int);| 
 \end{enumerate}
 Later on, we might want to enrich this class by writing down how 
 to generate seed nodes randomly and create their affinity vectors
