@@ -56,17 +56,13 @@ void Graph::read(const char* file_name){
 	
   // finally, read the data into the vector
   while ( graph_data >> dat1 >> dat2 ){
-		std::list< Graph::size_type >::
-					iterator it1 = adjList[dat1].begin(),
-									 it2 = adjList[dat2].begin();																					
-  	
 		// push the next neighbor
 		adjList[dat1].push_back(dat2);
-		++(*it1); // and increment counter
+		++adjList[dat1].front();
 		
 		// do this again for the symmetric case
     adjList[dat2].push_back(dat1);
-		++(*it2);
+		++adjList[dat2].front();
   }
   return;
 }
@@ -78,12 +74,16 @@ void Graph::display_graph(){
     return;
   }
 
-  for ( Graph::size_type i = 0; i != adjList.size(); ++i ){
+	Graph::size_type sz = adjList().size();
+  for ( Graph::size_type i = 0; i != sz; ++i ){
+		std::cout << "vertex " << i << " has degree: " << adjList[i].front() << std::endl;
+
   	std::cout << "vertex " << i << " is adjacent to: " << std::endl;
-    std::list<Graph::size_type>::const_iterator it;
-    for ( it = adjList[i].begin(); it != adjList[i].end(); ++it )
+		// the iterator points beyond the counter!
+    std::list<Graph::size_type>::const_iterator it = adjList[i].begin() + 1;
+    for ( ; it != adjList[i].end(); ++it )
     	std::cout << *it << ", ";
-     	std::cout << std::endl;
+    std::cout << std::endl;
  	}
 }
 
