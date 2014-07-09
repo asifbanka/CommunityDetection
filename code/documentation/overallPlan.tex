@@ -38,8 +38,11 @@
 }
 
 \renewcommand{\th}{\ensuremath{^{\mathrm{th}}}}
+\title{The Overlapping Community Detection Project}
 
 \begin{document}
+\maketitle
+
 \paragraph{Notation.} We use: 
 \begin{enumerate}
 	\item $n$ to denote the number of nodes in the network;
@@ -62,8 +65,8 @@ The adjacency list itself is a \verb|std::vector|
 of \verb|std::list<int>| and this list also has the degree 
 information stored explicitly. One of the constructors of this class looks like:
 \begin{quote}
-\verb|Graph(const std::string& path_to_graph_file,| \\ 
-$~$\hspace{5mm} \verb|const std::string& path_to_seed_node_file );|
+\verb|Graph(const std::string& path_to_graph_file)| 
+%$~$\hspace{5mm} \verb|const std::string& path_to_seed_node_file );|
 \end{quote}
 
 The interface for this class consists of the following members: 
@@ -74,17 +77,41 @@ The interface for this class consists of the following members:
 	\item \verb|std::vector<int> get_neighbors(int);|
 	\item \verb|int get_matrix_id(int);| 
 	\item \verb|display_graph();|
-	\item \verb|seed_nodes(const string path_name);|
+	\end{enumerate}
+
+\paragraph{The \texttt{SeedNode} class.} This is responsible 
+for generating the set of seed nodes and their affinities 
+to the respective communities. At the very least, it would read 
+a file containing the seed node information which might look like 
+as shown in Table~\ref{tab:seed_node}. 
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{llll}
+\emph{num$\_$seed$\_$nodes} & \emph{num$\_$communities} &  & \\
+$x_0$               & $\alpha(0, 1)$ & $\ldots$ & $\alpha(0, k)$ \\
+$\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\
+$x_{s-1}$  & $\alpha(n-1, 1)$ & $\ldots$ & $\alpha(n-1, k)$ 
+\end{tabular}
+\caption{File format for seed node information.} \label{tab:seed_node}
+\end{table}
+
+For now, we endow it with the following member functions:
+\begin{enumerate}
+	\item \verb|seed_nodes(const std::string& path_name);|
+	\item \verb|bool is_seed( int id );|
 \end{enumerate}
-The file containing the seed node information consists of 
-the seed node ids and the number of communities. The file 
-then lists the seed nodes and their affinities to the communities.
-This is stored as a vector of a vector of doubles. 
-\verb|bool is_seed( int id );|
-		 
+Later on, we might want to enrich this class by writing down how 
+to generate seed nodes randomly and create their affinity vectors
+using only the adjacency list and user-specified input (perhaps). 
+	 
 \paragraph{The \texttt{MatrixBuilder}.} The Matrix Builder builds the 
-matrices $A_1$, $D_1$, and $R$ using the adjacency list information 
-supplied by the \verb|Graph| class. 
+matrices $A_1$, $D_1$, and $R$ using the adjacency list and seed node 
+information supplied by the \verb|Graph| class. One of the jobs that 
+is has to do is create two vectors: an $(n - s)$-vector that maps 
+the index of the rows of $R$ to the (non-seed) node that it corresponds to;
+an $s$-vector that maps the column index of $R$ to the seed node that 
+it corresponds to.   
 
 \paragraph{The \texttt{matrix$\_$solver}.} This sets up the system of 
 linear equations and obtains, as solutions, the $n \times k$ matrix 
@@ -97,7 +124,25 @@ For community $l$, this system looks like:
 		= D_1 \sum_{i = 0}^{s - 1} \alpha(x_0, l) R_i. 
 \] 
 Here $\alpha(v, l)$ denotes the affinity of node~$v$ for community~$l$; $R_i$ 
-denotes the $i\th$ column of matrix $R$.
+denotes the $i\th$ column of matrix $R$. The \texttt{matrix$\_$solver} returns 
+an $n \times k$ matrix of affinities in a file (whose format is desribed below).
 
+\paragraph{The \texttt{CommunityClassifier}.} This reads the affinities 
+from a file whose format is shown in Table~\ref{tab:node_aff}.
+It then places each node into an appropriate number of communities. There 
+may be multiple strategies for doing this and we might want to implement it 
+so that we can call it with the strategy number.  
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{llll}
+\emph{num$\_$vertices} & \emph{num$\_$communities} &  & \\
+$v_0$               & $\alpha(0, 1)$ & $\ldots$ & $\alpha(0, k)$ \\
+$\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\
+$v_{n-1}$  & $\alpha(n-1, 1)$ & $\ldots$ & $\alpha(n-1, k)$ 
+\end{tabular}
+\caption{File format for node affinities}\label{tab:node_aff}
+\end{table}
+%
 \end{document}
 
