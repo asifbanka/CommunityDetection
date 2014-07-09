@@ -37,45 +37,67 @@
   title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
 }
 
-
-\newcommand{\program}[1]{\begin{lstlisting} \centering #1 \end{lstlisting}}
-\newcommand{\code}[1]{\bf \small {\verb| #1|}}
-
+\renewcommand{\th}{\ensuremath{^{\mathrm{th}}}}
 
 \begin{document}
-The program consists of the following files:
+\paragraph{Notation.} We use: 
+\begin{enumerate}
+	\item $n$ to denote the number of nodes in the network;
+	\item $m$ to denote the number of edges;
+	\item $s$ to denote number of seed nodes;	
+	\item $k$ to denote the number of communities;
+	\item $A_1$ to denote the adjacency matrix of the induced by non-seed nodes;
+	\item $D_1$ to denote the diagonal matrix of the total degrees of the non-seed nodes;
+	\item $x_0, \ldots, x_{s-1}$ to denote seed nodes and $u_0, \ldots, u_{n - s -1}$ 
+			to denote non-seed nodes. 
+\end{enumerate}
 
-\begin{description}
-	\item [\texttt{Graph}] This reads an undirected graph from file 
-		in LEDA format and stores it in an adjacency list (which is 
-		a vector of list of ints). Graph will have the following 
-		interface: 
-		\begin{enumerate}
-			\item {\small \verb|num_vertices();|}
-			\item \verb|num_edges();| 
-			\item \verb|Graph(const string path_to_graph_file, const string path_to_seed_node_file );|
-		\end{enumerate}	
-		The adjacency list also has degree information.
-		\begin{enumerate}
-			\item \verb|int get_degree(int);|
-			\item \verb|std::vector<int> get_neighbors(int);|
-			\item \verb|int get_matrix_id(int);| 
-			\item \verb|display_graph();|
-			\item \verb|seed_nodes(const string path_name);|
-		\end{enumerate}
-		The file containing the seed node information consists of 
-		the seed node ids and the number of communities. The file 
-		then lists the seed nodes and their affinities to the communities.
-		This is stored as a vector of a vector of doubles. 
-		\verb|bool is_seed( int id );|
+\section{Components of the program}
+
+The program consists of the following classes.
+\paragraph{The \texttt{Graph} class.} The \verb|Graph| class 
+is responsible for reading an undirected graph from file 
+in LEDA format which it stores in an adjacency list. 
+The adjacency list itself is a \verb|std::vector| 
+of \verb|std::list<int>| and this list also has the degree 
+information stored explicitly. One of the constructors of this class looks like:
+\begin{quote}
+\verb|Graph(const std::string& path_to_graph_file,| \\ 
+$~$\hspace{5mm} \verb|const std::string& path_to_seed_node_file );|
+\end{quote}
+
+The interface for this class consists of the following members: 
+\begin{enumerate}
+	\item \verb|num_vertices();|
+	\item \verb|num_edges();| 
+	\item \verb|int get_degree(int);|
+	\item \verb|std::vector<int> get_neighbors(int);|
+	\item \verb|int get_matrix_id(int);| 
+	\item \verb|display_graph();|
+	\item \verb|seed_nodes(const string path_name);|
+\end{enumerate}
+The file containing the seed node information consists of 
+the seed node ids and the number of communities. The file 
+then lists the seed nodes and their affinities to the communities.
+This is stored as a vector of a vector of doubles. 
+\verb|bool is_seed( int id );|
 		 
-	\item [\texttt{MatrixBuilder}] The Matrix Builder builds the 
-		matrices $A_1$, $D_1$, and $R$.
+\paragraph{The \texttt{MatrixBuilder}.} The Matrix Builder builds the 
+matrices $A_1$, $D_1$, and $R$ using the adjacency list information 
+supplied by the \verb|Graph| class. 
 
-	\item [\texttt{matrix\_solver}] The input parameters are 
-		the graph, the set of seed nodes, pointers to matrices $A_1$, $D_1$, 
-		$R$, the seed node matrix. It gives back an $n \times k$ matrix of affinities.  
-\end{description}
+\paragraph{The \texttt{matrix$\_$solver}.} This sets up the system of 
+linear equations and obtains, as solutions, the $n \times k$ matrix 
+of affinities. The input parameters are the graph, the set of seed nodes, 
+pointers to matrices $A_1$, $D_1$, $R$, the seed node matrix. Using these, 
+it creates a system of linear equations for \emph{each} community.   
+For community $l$, this system looks like:
+\[
+	(D_1 -  A_1) \begin{pmatrix} \alpha(u_0, l) \\ \vdots \\ \alpha(u_{n - s -1}, l) \end{pmatrix}	
+		= D_1 \sum_{i = 0}^{s - 1} \alpha(x_0, l) R_i. 
+\] 
+Here $\alpha(v, l)$ denotes the affinity of node~$v$ for community~$l$; $R_i$ 
+denotes the $i\th$ column of matrix $R$.
 
 \end{document}
 
