@@ -105,7 +105,8 @@ For now, we endow it with the following member functions:
   \item \verb|int num_seed();|
 	\item \verb|int get_matrix_id(int id);| 
   \item \verb|int num_communities();| 
-  \item \verb|int get vertex_id(int id);| to get from the matrix id to the vertex id (only needed for seed nodes)
+  \item \verb|int get_affinity(int seedNode,int community);| 
+  \item \verb|int get_vertex_id(int id);| to get from the matrix id to the vertex id (only needed for seed nodes)
 \end{enumerate}
 Later on, we might want to enrich this class by writing down how 
 to generate seed nodes randomly and create their affinity vectors
