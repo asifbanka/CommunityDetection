@@ -50,7 +50,7 @@ void Graph::read(const char* file_name){
   		std::list< Graph::size_type > temp_list;
 		// create the counter to keep track of the degree
 		Graph::size_type counter = 0;
-		temp_list.pushback(counter);
+		temp_list.push_back(counter);
     	adjList.push_back( temp_list );
 	}
 	
@@ -74,24 +74,27 @@ void Graph::display_graph(){
     return;
   }
 
-	Graph::size_type sz = adjList().size();
-  for ( Graph::size_type i = 0; i != sz; ++i ){
-		std::cout << "vertex " << i << " has degree: " << adjList[i].front() << std::endl;
+	Graph::size_type sz = num_vertices();
+  	for ( Graph::size_type i = 0; i != sz; ++i ){
+		std::cout << "vertex " << i << " has degree: " << 
+			adjList[i].front() << std::endl;
 
   	std::cout << "vertex " << i << " is adjacent to: " << std::endl;
-		// the iterator points beyond the counter!
-    std::list<Graph::size_type>::const_iterator it = adjList[i].begin() + 1;
+	typedef std::list<Graph::size_type>::const_iterator iter;
+	// the iterator points beyond the counter!
+    iter it = adjList[i].begin();
+	++it; // the first location of the list contains the degree
     for ( ; it != adjList[i].end(); ++it )
     	std::cout << *it << ", ";
     std::cout << std::endl;
  	}
 }
 
-size_type Graph::get_degree(size_type id){
+Graph::size_type Graph::get_degree(Graph::size_type id){
 	return Graph::adjList[id].front();	
 }
 
-std::list<Graph::size_type> Graph::get_neighbors(size_type vert_id){
+std::list<Graph::size_type> Graph::get_neighbors(Graph::size_type vert_id){
 	std::list<Graph::size_type> neighbors;
   	typedef std::list<Graph::size_type>::const_iterator iter; 
 	for (iter it = adjList[vert_id].begin(); it != adjList[vert_id].end(); ++it)
@@ -102,9 +105,9 @@ std::list<Graph::size_type> Graph::get_neighbors(size_type vert_id){
 
 
 int main(){
-    Graph graph("test.txt");
-    graph.print();
-    std::cout << graph.getNumV() << " " << graph.getNumE() << std::endl;
+    Graph graph("test_for_graph_reader.txt");
+    graph.display_graph();
+    std::cout << graph.num_vertices() << " " << graph.num_edges() << std::endl;
 
     return 0;
 }
