@@ -4,6 +4,7 @@
 #include <fstream>
 
 class Graph{
+	friend class SeedNode;
 	private:
 		int numV;
 		int numE;
@@ -108,17 +109,17 @@ std::list<int> Graph::get_neighbors(int vert_id){
 }
 
 
-int main(){
-    Graph graph("test_for_graph_reader.txt");
-    graph.display_graph();
-	for (int i = 0; i != graph.num_vertices(); ++i){
-		std::list<int> neighbors = graph.get_neighbors(i);
-		std::cout << "The neighbors of vertex " << i << " are: " << std::endl;
-		for (std::list<int>::const_iterator it = neighbors.begin(); 
-				it != neighbors.end(); ++it)
-
-			std::cout << *it << ", "; 
-	}
-
-    return 0;
-}
+//int main(){
+//    Graph graph("test_for_graph_reader.txt");
+//    graph.display_graph();
+//	for (int i = 0; i != graph.num_vertices(); ++i){
+//		std::list<int> neighbors = graph.get_neighbors(i);
+//		std::cout << "The neighbors of vertex " << i << " are: " << std::endl;
+//		for (std::list<int>::const_iterator it = neighbors.begin(); 
+//				it != neighbors.end(); ++it)
+//
+//			std::cout << *it << ", "; 
+//	}
+//
+//    return 0;
+//}
