@@ -63,6 +63,9 @@ void Graph::read(const char* file_name){
     adjList[dat2].push_back(dat1);
 		++adjList[dat2].front();
   }
+
+  graph_data.close();
+  
   return;
 }
 
