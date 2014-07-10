@@ -96,8 +96,10 @@ Graph::size_type Graph::get_degree(Graph::size_type id){
 
 std::list<Graph::size_type> Graph::get_neighbors(Graph::size_type vert_id){
 	std::list<Graph::size_type> neighbors;
-  	typedef std::list<Graph::size_type>::const_iterator iter; 
-	for (iter it = adjList[vert_id].begin(); it != adjList[vert_id].end(); ++it)
+  	typedef std::list<Graph::size_type>::const_iterator iter;
+	iter it = adjList[vert_id].begin(); 
+	++it; // the first location contains the degree info
+	for ( ; it != adjList[vert_id].end(); ++it)
 		neighbors.push_back(*it);
 	
 	return neighbors;
@@ -107,7 +109,14 @@ std::list<Graph::size_type> Graph::get_neighbors(Graph::size_type vert_id){
 int main(){
     Graph graph("test_for_graph_reader.txt");
     graph.display_graph();
-    std::cout << graph.num_vertices() << " " << graph.num_edges() << std::endl;
+	for (int i = 0; i != graph.num_vertices(); ++i){
+		std::list<std::size_t> neighbors = graph.get_neighbors(i);
+		std::cout << "The neighbors of vertex " << i << " are: " << std::endl;
+		for (std::list<Graph::size_type>::const_iterator it = neighbors.begin(); 
+				it != neighbors.end(); ++it)
+
+			std::cout << *it << ", "; 
+	}
 
     return 0;
 }
