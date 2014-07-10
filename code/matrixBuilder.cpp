@@ -24,6 +24,8 @@ void initMatrices(Graph& g, SeedNode& seed, SmatD& D, SmatD& A, SmatD& R){
     const int numberOfNonZeroesD = numberOfNonSeedVertices;
     const int numberOfNonZeroesR = numberOfNonZeroesA;      //maybe get a bestter estimate here
 
+
+    //reserve the memory for the non zero entries
     tripletListA.reserve(numberOfNonZeroesA);
     tripletListD.reserve(numberOfNonZeroesD);
     tripletListR.reserve(numberOfNonZeroesR);
@@ -32,7 +34,6 @@ void initMatrices(Graph& g, SeedNode& seed, SmatD& D, SmatD& A, SmatD& R){
     for(int i=0;i<numberOfVertices;++i){ //going over all vertices
         if(!seed.is_seed(i)){ //if the current vertex is not a seed node
             tripletListD.push_back(T(seed.get_matrix_id(i), seed.get_matrix_id(i),g.get_degree(i))); 
-
             //going over all neighbors of i and adding entries to A and R depending on the neighbor beeing a seed node
             for (std::list<int>::const_iterator neighbor = g.get_neighbors(i).begin(); neighbor != g.get_neighbors(i).end(); ++neighbor) {
                     if(!seed.is_seed(*neighbor)){           
