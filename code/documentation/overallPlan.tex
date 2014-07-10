@@ -46,7 +46,8 @@
 \begin{document}
 \maketitle
 
-\paragraph{Notation.} We use: 
+\section{Notation} 
+We use: 
 \begin{enumerate}
 	\item $n$ to denote the number of nodes in the network;
 	\item $m$ to denote the number of edges;
@@ -68,7 +69,7 @@ The adjacency list itself is a \verb|std::vector|
 of \verb|std::list<int>| and this list also has the degree 
 information stored explicitly. One of the constructors of this class looks like:
 \begin{quote}
-\verb|Graph(const std::string& path_to_graph_file)| 
+\verb|Graph(const char* path_to_graph_file)| 
 %$~$\hspace{5mm} \verb|const std::string& path_to_seed_node_file );|
 \end{quote}
 
@@ -100,7 +101,7 @@ $x_{s-1}$  & $\alpha(n-1, 1)$ & $\ldots$ & $\alpha(n-1, k)$
 
 For now, we endow it with the following member functions:
 \begin{enumerate}
-	\item \verb|seed_nodes(const std::string& path_name);|
+	\item \verb|seed_nodes(const char* path_name);|
 	\item \verb|bool is_seed( int id );|
   \item \verb|int num_seed();|
 	\item \verb|int get_matrix_id(int id);| 
