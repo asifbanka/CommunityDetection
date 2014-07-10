@@ -1,33 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <list>
-#include <fstream>
-
-class Graph{
-	friend class SeedNode;
-	private:
-		int numV;
-		int numE;
-		// note that the first entry of the list is the 
-		// degree of the vertex; the next entries 
-		// are the neighbors.
-		std::vector< std::list<int> > adjList;
-	
-	public:
-		// Constructors: the second constructor 
-   		// creates a graph by reading it from a file
-    	Graph() : numV(0), numE(0) {}
-		Graph(const char* file_name){read(file_name);}
-
-		void read(const char* file_name);
-    	int num_vertices() {return numV;}
-    	int num_edges() {return numE;}
-    	int get_degree(int id);
-    	std::list<int> get_neighbors(int id);
-
-    	// For now, this is a test function
-    	void display_graph();
-};
+#include "graphReader.h"
 
 void Graph::read(const char* file_name){
 	std::ifstream graph_data(file_name);
@@ -93,7 +64,7 @@ void Graph::display_graph(){
  	}
 }
 
-int Graph::get_degree(int id){
+int Graph::get_degree(int id) const{
 	return Graph::adjList[id].front();	
 }
 

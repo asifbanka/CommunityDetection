@@ -2,28 +2,30 @@
 #include <Eigen/Sparse>
 #include <Eigen/Dense>
 #include <vector>
+#include "graphReader.h"
+#include "seedNode.h"
 
-typedef Eigen::SparseMatrix<double> SMatD;  // declares a column-major sparse matrix type of double
+typedef Eigen::SparseMatrix<double> SmatD;  // declares a column-major sparse matrix type of double
 using Eigen::MatrixXd;
 
-MatrixXd solve (graph* g, seedNode* seed, SMatD& A, SMatD& D, SMatD& R){
-    SMatD D_A = D - A;
-    const int numberOfCommunities = seed->num_communities();
-    const int numberOfNonSeedNodes = NON_SEED;
-    const int numberOfSeedNodes = SEED;
-    const int numberOfNodes = NUM_NODES;
+MatrixXd solve(Graph& g, SeedNode& seed, SmatD& A, SmatD& D, SmatD& R){
+    SmatD D_A = D - A;
+    const int numberOfCommunities = seed.num_communities();
+    const int numberOfSeedNodes = seed.num_seed();
+    const int numberOfNodes = g.num_vertices();
+    const int numberOfNonSeedNodes = numberOfNodes - numberOfSeedNodes;
     MatrixXd affinities(numberOfNodes,numberOfCommunities);
-    Eigen::SimplicialCholesky<SpMat> chol(D_A);  // performs a Cholesky factorization of (D-A)
+    Eigen::SimplicialCholesky<SmatD> chol(D_A);  // performs a Cholesky factorization of (D-A)
     
 
 
     //for every community
-    for(int l = 0; l < numberOfCommunities, ++l){
+    for(int l = 0; l < numberOfCommunities; ++l){
         Eigen::VectorXd sum(numberOfNonSeedNodes);
         Eigen::VectorXd b(numberOfNonSeedNodes);
 
         for(int j=0; j<numberOfSeedNodes; ++j){
-            sum+= seed->get_affinity(seed->get_vertexId(j),l)*R.col(l);
+            sum+= seed.get_affinity(seed.get_vertex_id(j),l)*R.col(l);
         }
 
         b = D * sum;
@@ -34,10 +36,10 @@ MatrixXd solve (graph* g, seedNode* seed, SMatD& A, SMatD& D, SMatD& R){
         //write the affinities for community l
 
         for(int i=0; i<numberOfNodes;++i){
-            if(seed->is_seed(i)){
-                affinities(i,l) = seed->get_affinity(i,l);
+            if(seed.is_seed(i)){
+                affinities(i,l) = seed.get_affinity(i,l);
             } else {
-                affinities(i,l) = x(seed->get_matrix_id(i));
+                affinities(i,l) = x(seed.get_matrix_id(i));
             }
         }
     }
