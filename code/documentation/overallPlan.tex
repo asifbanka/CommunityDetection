@@ -1,10 +1,18 @@
 \documentclass[12pt]{article}
-\usepackage[T1]{fontenc}
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{verbatim}
 \usepackage{amsmath}
+
+%% Fonts: Times for body text and txtt for typewriter
 \usepackage{times,fullpage}
+\renewcommand*\ttdefault{txtt}
+\usepackage[T1]{fontenc}
+
+%% Sections headings style: sans serif
+%\usepackage{sectsty}
+%\allsectionsfont{\sffamily}
+
 
 \lstset{language=C++,frame=none,columns=flexible}
 \lstset{identifierstyle=\tt}
