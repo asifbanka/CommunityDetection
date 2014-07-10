@@ -5,7 +5,7 @@
 
 class Graph{
 	private:
-    typedef std::size_t size_type;
+    	typedef std::size_t size_type;
 		size_type numV;
 		size_type numE;
 		// note that the first entry of the list is the 
