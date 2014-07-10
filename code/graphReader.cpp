@@ -15,18 +15,18 @@ class Graph{
 	
 	public:
 		// Constructors: the second constructor 
-   	// creates a graph by reading it from a file
-    Graph() : numV(0), numE(0) {}
+   		// creates a graph by reading it from a file
+    	Graph() : numV(0), numE(0) {}
 		Graph(const char* file_name){read(file_name);}
 
 		void read(const char* file_name);
-    size_type num_vertices() {return numV;}
-    size_type num_edges() {return numE;}
-    size_type get_degree(size_type id);
-    std::list<size_type> get_neighbors(size_type id);
+    	size_type num_vertices() {return numV;}
+    	size_type num_edges() {return numE;}
+    	size_type get_degree(size_type id);
+    	std::list<size_type> get_neighbors(size_type id);
 
-    // For now, this is a test function
-    void display_graph();
+    	// For now, this is a test function
+    	void display_graph();
 };
 
 void Graph::read(const char* file_name){
@@ -36,8 +36,8 @@ void Graph::read(const char* file_name){
 		return;
 	}	
 
-  // first clear old data
-  adjList.clear();
+  	// first clear old data
+  	adjList.clear();
 
 	// then, read numV and numE
 	Graph::size_type dat1, dat2;
@@ -46,12 +46,12 @@ void Graph::read(const char* file_name){
 	numE = dat2;
 
 	// allocate enough space for a vector of size numV
-  for (Graph::size_type i = 0; i != numV; ++i){
-  	std::list< Graph::size_type > temp_list;
+  	for (Graph::size_type i = 0; i != numV; ++i){
+  		std::list< Graph::size_type > temp_list;
 		// create the counter to keep track of the degree
 		Graph::size_type counter = 0;
 		temp_list.pushback(counter);
-    adjList.push_back( temp_list );
+    	adjList.push_back( temp_list );
 	}
 	
   // finally, read the data into the vector
@@ -86,6 +86,20 @@ void Graph::display_graph(){
     std::cout << std::endl;
  	}
 }
+
+size_type Graph::get_degree(size_type id){
+	return Graph::adjList[id].front();	
+}
+
+std::list<Graph::size_type> Graph::get_neighbors(size_type vert_id){
+	std::list<Graph::size_type> neighbors;
+  	typedef std::list<Graph::size_type>::const_iterator iter; 
+	for (iter it = adjList[vert_id].begin(); it != adjList[vert_id].end(); ++it)
+		neighbors.push_back(*it);
+	
+	return neighbors;
+}
+
 
 int main(){
     Graph graph("test.txt");
