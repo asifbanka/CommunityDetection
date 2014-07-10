@@ -13,7 +13,7 @@ class SeedNode{
 		// this matrix has dimension s * (k + 1). The additional 
 		// column is for storing the vertex ids of the respective 
 		// seed nodes.
-		Eigen::Matrix<double, Dynamic, Dynamic, RowMajor> seedNodes;
+		Eigen::MatrixXd seedNodes;
 		
 		// The matrix id of each node, along with the fact whether 
 		// it is a seed node or not is stored in this vector.
@@ -100,13 +100,13 @@ int SeedNode::get_vertex_id(int matrix_id){
 	if ( matrix_id < 0 || matrix_id >= num_seed() )
 		throw std::out_of_range("matrix id does not belong to any seed node");
 	
-	return seedNode(matrix_id, 0); // the first entry on row matrix_id is the node id 
+	return seedNodes(matrix_id, 0); // the first entry on row matrix_id is the node id 
 }
 
 int SeedNode::get_affinity(int seed_node_id, int community){
 	if (seed_node_id < 0 || seed_node_id >= num_seed() || community < 0 || community >= num_communities())
 		throw std::out_of_range("either seed node id or community id is out of range");
 
-	return seedNode(seed_node_id, community + 1); // one has to add a 1, to get to the correct column 
+	return seedNodes(get_matrix_id(seed_node_id), community + 1); // one has to add a 1, to get to the correct column 
 }
 
