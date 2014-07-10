@@ -22,7 +22,7 @@ void initMatrices(Graph& g, SeedNode& seed, SmatD& D, SmatD& A, SmatD& R){
     std::vector<T> tripletListA,tripletListD,tripletListR;
     const int numberOfNonZeroesA = g.num_edges();
     const int numberOfNonZeroesD = numberOfNonSeedVertices;
-    const int numberOfNonZeroesR = numberOfNonZeroesA;      //maybe get a bestter estimate here
+    const int numberOfNonZeroesR = numberOfNonZeroesA;      //maybe get a better estimate here
 
 
     //reserve the memory for the non zero entries

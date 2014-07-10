@@ -45,7 +45,4 @@ MatrixXd solve(Graph& g, SeedNode& seed, SmatD& A, SmatD& D, SmatD& R){
     }
 
     return affinities;
-
-
-
 }
