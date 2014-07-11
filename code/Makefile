@@ -1,6 +1,6 @@
 
 CC=g++
-CFLAGS=-I../../libraries/eigen -lrt
+CFLAGS=-I../../../libraries -lrt
 
 
 my_program: graphReader.h graphReader.cpp matrixBuilder.cpp matrix_solver.cpp seedNode.h seedNode.cpp

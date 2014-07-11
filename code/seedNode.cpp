@@ -3,9 +3,6 @@
 
 
 void SeedNode::read(const char* file_name, Graph& g){
-
-
-
 	std::ifstream seed_data(file_name);
 	if ( !seed_data.is_open() ){
 		std::cout << "Cannot open file" << std::endl;
@@ -72,10 +69,6 @@ int SeedNode::get_vertex_id(int matrix_id){
 int SeedNode::get_affinity(int seed_node_id, int community){
 	if (seed_node_id < 0 || seed_node_id >= num_seed() || community < 0 || community >= num_communities())
 		throw std::out_of_range("either seed node id or community id is out of range");
-
-
-
 	return seedNodes(get_matrix_id(seed_node_id), community + 1); // one has to add a 1, to get to the correct column 
-
 }
 
