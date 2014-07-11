@@ -17,7 +17,7 @@ void SeedNode::read(const char* file_name, Graph& g){
 	
 	// first clear, then allocate memory, and initialize 
 	matrixIds.clear();
-	for (int i = 0; i < g.num_vertices(); ++i)
+	for (int i = 0; i != g.num_vertices(); ++i)
 		matrixIds.push_back(std::make_pair(false, -1));
 		
 	
@@ -46,14 +46,16 @@ void SeedNode::read(const char* file_name, Graph& g){
 }
 
 bool SeedNode::is_seed(int vert_id){
-	if ( num_seed() == 0 || vert_id >= matrixIds.size() )
+	int sz = matrixIds.size();
+	if ( num_seed() == 0 || sz == 0 || vert_id >= sz )
 		throw std::out_of_range ("either no. of seed nodes = 0 or vertex id out of range");
 
 	return matrixIds[vert_id].first;
 }
 
 int SeedNode::get_matrix_id(int vert_id){
-	if ( vert_id < 0 || vert_id >= matrixIds.size() )
+	int sz = matrixIds.size();
+	if ( vert_id < 0 || sz == 0 || vert_id >= sz )
 		throw std::out_of_range("vertex id out of range");
 	
 	return matrixIds[vert_id].second;
@@ -67,8 +69,12 @@ int SeedNode::get_vertex_id(int matrix_id){
 }
 
 int SeedNode::get_affinity(int seed_node_id, int community){
-	if (seed_node_id < 0 || seed_node_id >= num_seed() || community < 0 || community >= num_communities())
+	if ( seed_node_id < 0 			|| 
+		 seed_node_id >= num_seed() || 
+		 community < 0 				|| 
+		 community >= num_communities()	)
 		throw std::out_of_range("either seed node id or community id is out of range");
-	return seedNodes(get_matrix_id(seed_node_id), community + 1); // one has to add a 1, to get to the correct column 
+	return seedNodes(get_matrix_id(seed_node_id), community + 1); 
+	// one has to add a 1, to get to the correct column 
 }
 
