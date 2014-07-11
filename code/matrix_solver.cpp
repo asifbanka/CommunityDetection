@@ -14,7 +14,7 @@ MatrixXd solve(Graph& g, SeedNode& seed, SmatD& A, SmatD& D, SmatD& R){
     const int numberOfSeedNodes = seed.num_seed();
     const int numberOfNodes = g.num_vertices();
     const int numberOfNonSeedNodes = numberOfNodes - numberOfSeedNodes;
-    MatrixXd affinities(numberOfNodes,numberOfCommunities);
+    MatrixXd affinities(numberOfNodes, numberOfCommunities);
     Eigen::SimplicialCholesky<SmatD> chol(D_A);  // performs a Cholesky factorization of (D-A)
     
 
