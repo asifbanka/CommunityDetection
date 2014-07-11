@@ -3,7 +3,7 @@
 
 
 void SeedNode::read(const char* file_name, Graph& g){
-	std::ifstream seed_data(file_name);
+  	std::ifstream seed_data(file_name);
 	if ( !seed_data.is_open() ){
 		std::cout << "Cannot open file" << std::endl;
 		return;
