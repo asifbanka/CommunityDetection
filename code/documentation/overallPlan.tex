@@ -147,13 +147,14 @@ an $n \times k$ matrix of affinities in a file (whose format is described below)
 from a file whose format is shown in Table~\ref{tab:node_aff}.
 It then places each node into an appropriate number of communities. There 
 may be multiple strategies for doing this and we might want to implement it 
-so that we can call it with the strategy that we want.  
+so that we can call it with the strategy that we want. The output of the 
+classifier is written to a file.
 
 \begin{table}[ht]
 \centering
 \begin{tabular}{llll}
 \emph{num$\_$vertices} & \emph{num$\_$communities} &  & \\
-$v_0$               & $\alpha(0, 1)$ & $\ldots$ & $\alpha(0, k)$ \\
+$v_0$ (int)              & $\alpha(0, 1)$ (double) & $\ldots$ & $\alpha(0, k)$ (double) \\
 $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ \\
 $v_{n-1}$  & $\alpha(n-1, 1)$ & $\ldots$ & $\alpha(n-1, k)$ 
 \end{tabular}

@@ -8,9 +8,18 @@
 
 class CommunityClassifier{
 	private:
-		Eigen::MatrixXd nodeAffinities;
-		
-};
+		Eigen::MatrixXd nodeAff;
+		Eigen::MatrixXd groundTruth;
+		int numV;
+		int numC;
+	
+	public:
+		CommunityClassifier() : numV(0), numC(0) {}
+		CommunityClassifier(const char* file_name) { read(file_name); }
 
+		void read(const char* file_name);
+		void classify_simple();
+			
+};
 
 #endif
