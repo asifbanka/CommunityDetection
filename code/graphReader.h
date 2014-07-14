@@ -21,6 +21,25 @@ class Graph{
    		// creates a graph by reading it from a file
     	Graph() : numV(0), numE(0) {}
 		Graph(const char* file_name){read(file_name);}
+	
+		// Copy construtor
+		Graph(const Graph& rhs){
+				numV = rhs.numV;
+				numE = rhs.numE;
+				adjList = rhs.adjList;
+		}
+
+		// Assignment operator
+		Graph& operator= (const Graph& rhs){
+			if ( this == &rhs )
+				return *this;
+				
+			numV = rhs.numV;
+			numE = rhs.numE;
+			adjList = rhs.adjList;
+			
+			return *this;
+		}
 
 		void read(const char* file_name);
     	int num_vertices() const { return numV; }

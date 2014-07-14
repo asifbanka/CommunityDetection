@@ -79,7 +79,6 @@ std::list<int> Graph::get_neighbors(int vert_id){
 	return neighbors;
 }
 
-
 //int main(){
 //    Graph graph("test_for_graph_reader.txt");
 //    graph.display_graph();
