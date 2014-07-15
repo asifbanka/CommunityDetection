@@ -5,8 +5,9 @@
 \usepackage{amsmath}
 
 %% Fonts: Times for body text and txtt for typewriter
-\usepackage{mathptmx,fullpage}
-\renewcommand*\ttdefault{txtt}
+%\usepackage{mathptmx,fullpage}
+\usepackage{lmodern,fullpage}
+%\renewcommand*\ttdefault{txtt}
 \usepackage[T1]{fontenc}
 
 %% Sections headings style: sans serif
@@ -47,7 +48,7 @@
 }
 
 \renewcommand{\th}{\ensuremath{^{\mathrm{th}}}}
-
+\renewcommand{\Pr}[1]{\ensuremath{\mathbf{Pr} \left [ #1 \right]}}
 
 \title{The Overlapping Community Detection Project}
 
@@ -161,5 +162,14 @@ $v_{n-1}$  & $\alpha(n-1, 1)$ & $\ldots$ & $\alpha(n-1, k)$
 \caption{File format for node affinities}\label{tab:node_aff}
 \end{table}
 %
+
+One of the quality measures that are used is the so-called \emph{normalized
+mutual information}. This is defined as follows. Let $X$ be a random variable 
+taking on values $x_1, \ldots, x_r$. Then the entropy of $X$ is $H(X)$ 
+which is defined as:
+\[
+	H(X) = \sum_{i = 1}^r p(x_i) \log_2 \frac{1}{p(x_i)}, 
+\]
+where $p(x_i) = \Pr{X = x_i}$.
 \end{document}
 
