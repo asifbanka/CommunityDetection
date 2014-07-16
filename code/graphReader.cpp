@@ -25,15 +25,18 @@ void Graph::read(const char* file_name){
     	adjList.push_back( temp_list );
 	}
 	
-  // finally, read the data into the vector
+  // Finally, read the data into the vector
+  // For the Fortunato benchmark, the nodes are labelled starting 
+  // from 1; also edges are REPEATED: both source-target and target-source 
+  // appear in the file.
   while ( graph_data >> dat1 >> dat2 ){
 		// push the next neighbor
-		adjList[dat1].push_back(dat2);
-		++adjList[dat1].front();
+		adjList[dat1 - 1].push_back( dat2 - 1 );
+		++adjList[dat1 - 1].front();
 		
-		// do this again for the symmetric case
-    adjList[dat2].push_back(dat1);
-		++adjList[dat2].front();
+		// NOT REQUIRED!! do this again for the symmetric case
+    	//adjList[dat2].push_back(dat1);
+		//++adjList[dat2].front();
   }
 
   graph_data.close();
