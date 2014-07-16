@@ -2,7 +2,7 @@
 
 void CommunityClassifier::read(const char* file_name){
 	std::ifstream aff_data(file_name);
-	if ( !aff_data().is_open() ){
+	if ( !aff_data.is_open() ){
 		std::cout << "Cannot open affinity file" << std::endl;
 		return;
 	}
