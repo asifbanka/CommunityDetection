@@ -27,20 +27,20 @@ bool getCommunityInfo(const char* file_name, SmatI& commMat){
 	
 	// next resize the sparse matrix to store this info
 	commMat.resize(num_v, num_c);
-	std::vector<T> tripletListCM;
+	std::vector<T> tripletListCM; // triplets are used to quickly store values in a sparse matrix
 	const int numberOfNonZeroesCM = num_v * max_overlap; // calculate number of non-zero entries
-	tripletListCM.reserve(numberOfNonZeroesCM);
+	tripletListCM.reserve(numberOfNonZeroesCM); // one has to reserve before-hand the no. of non-zero entries
 
 	while ( std::getline(comm_file, line) ){
     	std::istringstream iss(line);
 		int vert_id = 0;
-		iss >> vert_id; 
+		iss >> vert_id; // note: vert_id starts from 1 
 		
 		int comm_no = 0;
-		while ( iss >> comm_no ) // this is actually the community number
-			tripletListCM.push_back( T(vert_id - 1, comm_no - 1, 1) );		
+		while ( iss >> comm_no ) // note: comm_no, the community number, starts from 1
+			tripletListCM.push_back( T(vert_id - 1, comm_no - 1, 1) ); // subtract 1 to get proper index		
 	}
-	
+	// use triplet info to update the sparse matrix
 	commMat.setFromTriplets(tripletListCM.begin(), tripletListCM.end());
 	return 1;
 }
