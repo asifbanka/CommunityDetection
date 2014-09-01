@@ -125,5 +125,51 @@ which is defined as:
 	H(X) = \sum_{i = 1}^r p(x_i) \log_2 \frac{1}{p(x_i)}, 
 \]
 where $p(x_i) = \Pr{X = x_i}$.
+
+\section{Derivation of Basic Equations}
+
+Since I keep on forgetting how the matrix equations are derived, I am putting 
+them in this section for quick reference. Let the absorbing Markov chain 
+that we are working with be called $P$. This may be written as:
+\[P  = 
+\begin{bmatrix}
+Q & R \\
+0 & I
+\end{bmatrix}
+\]
+Now the stationary state looks like:
+\[P^{\infty}  = 
+\begin{bmatrix}
+0 & (I - Q)^{-1} R \\
+0 & I
+\end{bmatrix}
+\]
+Let $(I - Q)^{-1} R := X$, where $X$ is an $(n - s) \times s$ matrix. The affinity 
+of the non-seed nodes to a particular community, say $c$, is the sum of the columns 
+of $X$ weighted by the affinities of the seed nodes to the community~$c$. Let $\alpha_c(j)$ 
+denote the affinity of seed node $j$ to community~$c$. Then the affinities of the non-seed
+nodes to $c$ is given by the column vector:
+\[
+	Y_c := \sum_{j = 1}^{s} \alpha_c(j) \cdot X_{*j}.
+\]
+Our goal is to compute $Y_c$ for every community. 
+
+To do this, we first write $Y_c$ differently.
+\begin{align*}
+	Y_c := \sum_{j = 1}^{s} \alpha_c(j) \cdot X_{*j} 
+		& = \sum_{j = 1}^{s}\alpha_c(j) \cdot (I - Q)^{-1} R_{*j} \\	
+		& = (I - Q)^{-1} \sum_{j = 1}^{s} \alpha_c(j) \cdot R_{*j}.
+\end{align*}
+We can write the above equation as: $(I - Q)Y_c = \sum_{j = 1}^{s} \alpha_c(j) \cdot R_{*j}$.
+Now $Q = D_1^{-1}A_1$, where $D_1$ is a diagonal matrix of order $n - s$ whose diagonal entries 
+are the degrees of the non-seed vertices (in the whole graph). Matrix $A_1$ is the adjacency
+matrix of the graph \emph{induced} by the non-seed nodes. We can now write:
+\begin{equation}\label{eqn:main_eqn}
+	(D_1 - A_1) Y_c = D_1 \cdot \sum_{j = 1}^{s} \alpha_c(j) \cdot R_{*j}.
+\end{equation}
+Equation~\ref{eqn:main_eqn} defines a symmetrically diagonally dominant system 
+of linear equations, one that can be solved in almost linear time. Note that 
+the right hand side can be computed in $O(n)$ time, because $R$ has only a linear 
+in $n$ number of entries. 
 \end{document}
 
