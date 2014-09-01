@@ -20,8 +20,8 @@ class SeedNode{
 		
 		// The matrix id of each node, along with the fact whether 
 		// it is a seed node or not is stored in this vector.
-		// If the node is a seed node, then the id is an integer
-		// between 0 and s - 1. For non-seed nodes, the id
+		// If the node is a seed node (TRUE), then the id is an integer
+		// between 0 and s - 1. For non-seed nodes (FALSE), the id
 		// is an integer between 0 and n - s - 1.
 		std::vector< std::pair<bool, int> > matrixIds;
 		
