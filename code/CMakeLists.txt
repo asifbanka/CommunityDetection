@@ -3,10 +3,11 @@ project(foo)
 set(CMAKE_CXX_FLAGS "-Wall -std=c++0x ")
 
 #include header-only Eigen library
-include_directories(3rdparty)
+include_directories(3rdparty/eigen)
+include_directories(3rdparty/catch)
 
 #update this list whenever you add/remove/rename a file
-set(SOURCES 
+set(SOURCES_foo 
     src/graph.cpp
     src/graph.hpp
     src/main.cpp
@@ -19,4 +20,12 @@ set(SOURCES
     src/communityProcessor.cpp
 )
 
-add_executable(foo ${SOURCES})
+add_executable(foo ${SOURCES_foo})
+
+#update this list whenever you add/remove/rename a file
+#TODO add other sources
+set(SOURCES_test
+    test/main.cpp
+)
+
+add_executable(test ${SOURCES_test})
