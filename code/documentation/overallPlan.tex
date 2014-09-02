@@ -100,10 +100,19 @@ an $n \times k$ matrix of affinities in a file (see Table~\ref{tab:node_aff}).
 
 \paragraph{The \texttt{CommunityClassifier}.} This reads the affinities 
 from a file whose format is shown in Table~\ref{tab:node_aff}.
-It then places each node into an appropriate number of communities. There 
-may be multiple strategies for doing this and we might want to implement it 
-so that we can call it with the strategy that we want. The output of the 
-classifier is written to a file.
+It then places each node into an appropriate number of communities. 
+The strategy that we adopt at the moment is as follows: let 
+the largest component of the affinity vector for vertex~$v$ (which 
+we want to assign to communities) be $\alpha_{\max}(v)$ and the smallest 
+$\alpha_{\min}(v)$. Assign $v$ to community~$c$ iff 
+$\alpha_c(v) \geq \frac{1}{2}(\alpha_{\max}(v) + \alpha_{\min}(v))$.
+We do not take the mean affinity value since we expect a vertex 
+to be in only a small number of communities (say, at most five), whereas
+the actual number of communitites may be large with the result that 
+the affinities for most communities will be small. This large number 
+of small affinity values will tend to lower the mean with the effect that
+we would place the vertex in more communities than it would actually be.
+The output of the classifier is written to a file.
 
 \begin{table}[ht]
 \centering
