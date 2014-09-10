@@ -26,13 +26,12 @@ void Graph::read(const char* file_name){
 	}
 	
   // Finally, read the data into the vector
-  // For the Fortunato benchmark, the nodes are labelled starting 
-  // from 1; also edges are REPEATED: both source-target and target-source 
-  // appear in the file.
+  // Note that (dat1, dat2) and (dat2, dat1)
+  // are in the file
   while ( graph_data >> dat1 >> dat2 ){
 		// push the next neighbor
-		adjList[dat1 - 1].push_back( dat2 - 1 );
-		++adjList[dat1 - 1].front();
+		adjList[dat1].push_back(dat2);
+		++adjList[dat1].front();
 		
 		// NOT REQUIRED!! do this again for the symmetric case
     	//adjList[dat2].push_back(dat1);
@@ -81,18 +80,19 @@ std::list<int> Graph::get_neighbors(int vert_id){
 	
 	return neighbors;
 }
+/*  
+int main(){
+    Graph graph("test_for_graph_reader.txt");
+    graph.display_graph();
+	for (int i = 0; i != graph.num_vertices(); ++i){
+	std::list<int> neighbors = graph.get_neighbors(i);
+		std::cout << "The neighbors of vertex " << i << " are: " << std::endl;
+		for (std::list<int>::const_iterator it = neighbors.begin(); 
+		it != neighbors.end(); ++it)
 
-//int main(){
-//    Graph graph("test_for_graph_reader.txt");
-//    graph.display_graph();
-//	for (int i = 0; i != graph.num_vertices(); ++i){
-//		std::list<int> neighbors = graph.get_neighbors(i);
-//		std::cout << "The neighbors of vertex " << i << " are: " << std::endl;
-//		for (std::list<int>::const_iterator it = neighbors.begin(); 
-//				it != neighbors.end(); ++it)
-//
-//			std::cout << *it << ", "; 
-//	}
-//
-//    return 0;
-//}
+			std::cout << *it << ", "; 
+	}
+
+    return 0;
+}
+*/
