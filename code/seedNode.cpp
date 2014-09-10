@@ -8,12 +8,12 @@ void SeedNode::read(const char* file_name, Graph& g){
 		std::cout << "Cannot open file" << std::endl;
 		return;
 	}
-
+	
 	// read numSeed, numCommunities
 	seed_data >> numSeed >> numCommunities;
 
 	// allocate enough memory
-	seedNodes(numSeed, numCommunities + 1);
+	seedNodes.resize(numSeed, numCommunities + 1);
 	
 	// first clear, then allocate memory, and initialize 
 	matrixIds.clear();
@@ -23,14 +23,18 @@ void SeedNode::read(const char* file_name, Graph& g){
 	
 	// read the data into the matrices seedNode 
 	// and matrixIds
+	int id = -1;
 	for (int num_s = 0; num_s != numSeed; ++num_s){
-		int num_c = 0; 
-		seed_data >> seedNodes(num_s, num_c); // this is node_id
+		int num_c = 0;
+		seed_data >> id;
+		seedNodes(num_s, num_c) = id; // this is node_id
 		int node_id = (int) seedNodes(num_s, num_c);
 		matrixIds[node_id].first = true; 	// node_id is a seed node
 		matrixIds[node_id].second = num_s; 	// node_id has num_s as matrix id
-		for ( ; num_c != numCommunities + 1; ++num_c)
-			seed_data >> seedNodes(num_s, num_c);
+		for ( ; num_c != numCommunities + 1; ++num_c){
+			seed_data >> id;
+			seedNodes(num_s, num_c) = id;
+		}
 	}
 	
 	// assign values to the non-seed node entries of matrixIds
