@@ -2,7 +2,7 @@
 CC=g++
 CFLAGS=-I../../../libraries -lrt
 
-my_program: graphReader.h graphReader.cpp matrixBuilder.cpp matrix_solver.cpp seedNode.h seedNode.cpp
+my_program: graphReader.h graphReader.cpp matrixBuilder.cpp matrix_solver.cpp seedNode.h seedNode.cpp algorithm.cpp
 	$(CC) -o $@ $^ $(CFLAGS)
 
 

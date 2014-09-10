@@ -18,7 +18,7 @@ int main(int argc, char* argv[]){
     //std::cout << graph_file << std::endl;
 
     Graph g(graph_file);
-    //SeedNode seed(seedNode_file,g);
+    SeedNode seed(seedNode_file,g);
     g.display_graph();
    // std::cout << "num seed: " << seed.num_seed() << " num communities: " << seed.num_communities() << std::endl;
 
