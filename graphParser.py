@@ -71,7 +71,7 @@ def read_community(file):
 
 # check connectivity
 def dfs(graph, start, max_vertex):
-    visited = set() 
+    visited = set()
     queue = deque([start])
     while queue:
         vertex = queue.popleft()
@@ -155,7 +155,7 @@ if setup_commandline():
         community_vertices = reverse_dictionary(vertex_communities)
         write_communites(community_vertices)
         # calculate and write seed file
-        seed_communities, total_seeds = generate_seeds(community_vertices, 
+        seed_communities, total_seeds = generate_seeds(community_vertices,
             max_community, options.seed_perc)
         write_seed_nodes(seed_communities, total_seeds, max_community)
     # end of if
