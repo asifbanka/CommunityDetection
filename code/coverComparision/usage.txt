@@ -1,0 +1,20 @@
+./mutual file1 file2
+
+File format:
+
+vertex labels of one cover in a single line seperated by a space
+
+if you have community one with vertices 1, 2, 5, 6 
+and community two with vertices 2, 3, 4, 7
+the file would look like below:
+
+1 2 5 6
+2 3 4 7
+
+
+
+
+
+
+
+Example files ao2.txt and gt2.txt are provided
