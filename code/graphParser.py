@@ -112,24 +112,24 @@ def write_graph(graph, max_vertex, max_edge):
         file.write("{} {}".format(max_vertex + 1, max_edge + 1))
         for v, neighbours in graph.iteritems():
             for n in neighbours:
-                file.write("\n{} {}".format(v, n))
+                file.write("\n{0} {1}".format(v, n))
 
 #write output community file
 def write_communites(community_vertices):
     with open ("vertex_communities", "w") as file:
         for c, vertices in community_vertices.iteritems():
-            file.write("{}".format(c))
+            file.write("{0}".format(c))
             for v in vertices:
-                file.write(" {}".format(v))
+                file.write(" {0}".format(v))
             file.write("\n")
 
 #write output seed_nodes
 def write_seed_nodes(seed_communities, total_seeds, max_community):
     with open ("seed_nodes", "w") as file:
         # number of seed nodes, number of communities
-        file.write("{} {}".format(total_seeds, max_community + 1))
+        file.write("{0} {1}".format(total_seeds, max_community + 1))
         for s, communities in seed_communities.iteritems():
-            file.write("\n{}".format(s))
+            file.write("\n{0}".format(s))
             i = 0
             for c in sorted(communities):
                 while (i < c):
