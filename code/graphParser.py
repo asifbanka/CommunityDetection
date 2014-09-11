@@ -109,7 +109,7 @@ def generate_seeds(community_vertices, max_community, seed_perc):
 def write_graph(graph, max_vertex, max_edge):
     with open ("graph", "w") as file:
         # number of vertices, numberOfEdges
-        file.write("{} {}".format(max_vertex + 1, max_edge + 1))
+        file.write("{0} {1}".format(max_vertex + 1, max_edge + 1))
         for v, neighbours in graph.iteritems():
             for n in neighbours:
                 file.write("\n{0} {1}".format(v, n))
