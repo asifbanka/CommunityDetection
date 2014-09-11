@@ -13,7 +13,7 @@ def setup_commandline():
     global options, args
     (options, args) = parser.parse_args()
 
-    if (len(args) != 1):
+    if (len(args) != 0):
         parser.error("Incorrect number of arguments")
         parser.print_help()
         return True
@@ -22,7 +22,7 @@ def setup_commandline():
         parser.error("Affinity file not given")
         parser.print_help()
         return False
-    
+
     return True
 
 # read LFR network file
@@ -31,7 +31,7 @@ def read_affinity(file):
         affinities = defaultdict(list)
         number = re.compile(r'([\d.]*\d+)')
         # store affinities
-        next(f) 
+        next(f)
         for i, line in enumerate(f):
             max_affinity = 0
             min_affinity = 1
@@ -75,7 +75,7 @@ def write_communites(community_vertices):
 
 # main program
 options, args = 0, 0
-#if setup_commandline():
-affinities = read_affinity(sys.argv[1])
-community_vertices = classify_communities(affinities)
-write_communites(community_vertices)
+if setup_commandline():
+    affinities = read_affinity(options.affinity_file)
+    community_vertices = classify_communities(affinities)
+    write_communites(community_vertices)
