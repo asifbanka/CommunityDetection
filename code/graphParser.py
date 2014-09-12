@@ -118,8 +118,8 @@ def write_graph(graph, max_vertex, max_edge):
 def write_communites(community_vertices):
     with open (options.community_file, "w") as file:
         for c, vertices in community_vertices.iteritems():
-            file.write("{0}".format(c))
-            for v in vertices:
+            file.write("{0}".format(vertices[0]))
+            for v in vertices[1:]:
                 file.write(" {0}".format(v))
             file.write("\n")
 

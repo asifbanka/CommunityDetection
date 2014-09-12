@@ -13,7 +13,7 @@ def setup_commandline():
     global options, args
     (options, args) = parser.parse_args()
 
-    if (len(args) != 0):
+    if (len(args) == 0):
         parser.error("Incorrect number of arguments")
         parser.print_help()
         return True
@@ -75,7 +75,7 @@ def write_communites(community_vertices):
 
 # main program
 options, args = 0, 0
-if setup_commandline():
-    affinities = read_affinity(options.affinity_file)
-    community_vertices = classify_communities(affinities)
-    write_communites(community_vertices)
+#if setup_commandline():
+affinities = read_affinity(sys.argv[1])
+community_vertices = classify_communities(affinities)
+write_communites(community_vertices)
