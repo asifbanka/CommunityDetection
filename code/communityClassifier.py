@@ -45,7 +45,6 @@ def read_affinity(file):
                     min_affinity = float(m)
             affinities[int(match[0])].append(float(min_affinity))
             affinities[int(match[0])].append(float(max_affinity))
-    print affinities
     return affinities
 
 # evaluate communities
@@ -53,24 +52,24 @@ def classify_communities(affinities):
     community_vertices = defaultdict(list)
     for vertex in affinities:
         # check max affinity for classification
-        if affinities[vertex][-1] < 0.5:
-            threshold = (affinities[vertex][-1] + affinities[vertex][-2]) /2
-        else:
-            threshold = 0.5
-        affinities[vertex].append(threshold)
-        for index, affinity in enumerate(affinities[vertex][:-3]):
-            if affinity >= affinities[vertex][-1]:
+        # if affinities[vertex][-1] < 0.5:
+        #    threshold = (affinities[vertex][-1])# + affinities[vertex][-2]) /2
+        #else:
+        #threshold = 0.5
+        #affinities[vertex].append(threshold)
+        for index, affinity in enumerate(affinities[vertex][:-2]):
+            if affinity == affinities[vertex][-1]:
                 community_vertices[index].append(vertex)
-    print community_vertices
     return community_vertices
 
 #write output community file
 def write_communites(community_vertices):
     with open ("classified_communities", "w") as file:
-        for vertices in community_vertices:
-            file.write("{0}".format(community_vertices[vertices][0]))
-            for v in community_vertices[vertices][1:]:
-               file.write(" {0}".format(v))
+        for community in community_vertices:
+            file.write("{0}".format(community_vertices[community][0]))
+            
+            for v in community_vertices[community][1:]:
+                file.write(" {0}".format(v))
             file.write("\n")
 
 # main program
