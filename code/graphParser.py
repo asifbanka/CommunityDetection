@@ -7,24 +7,21 @@ from math import ceil
 import re
 
 # interface
-def setup_commandline():
+def commandline_interface():
     usage = "usage: %prog"
     parser = OptionParser()
+   
     parser.add_option("-g", dest="graph_file", type="string",
         help="LFR benchmark graph file")
     parser.add_option("-c", dest="community_file", type="string",
         help="LFR benchmark community network")
     parser.add_option("-n", dest="seed_perc", type="int", default=5,
         help="percentage of seed nodes")
+   
     global options, args
     (options, args) = parser.parse_args()
 
-    if (len(args) < 3 and len(args) > 4):
-        parser.error("Incorrect number of arguments")
-        parser.print_help()
-        return False
-
-    elif not options.graph_file:
+    if not options.graph_file:
         parser.error("Graph file not given")
         parser.print_help()
         return False
@@ -143,7 +140,7 @@ def write_seed_nodes(seed_communities, total_seeds, max_community):
 
 # main program
 options, args = 0, 0
-if setup_commandline():
+if commandline_interface():
     # read graph
     number = re.compile(r'[0-9]+')
     graph, max_vertex, max_edge = read_graph(options.graph_file)
