@@ -1,0 +1,5 @@
+This directory contains all programs we did not write ourselves.
+Build them by running ./build.sh
+
+binary_networks     The lfr benchmark as found on this site: https://sites.google.com/site/andrealancichinetti/files
+NMI                 I have got no clue where this came from. Please add this information and the source-code.

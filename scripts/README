@@ -1,1 +1,12 @@
-TODO: write me
+This folder contsins scripts to modify and parse the input and output of various programs, so that they seamlessly work together.
+
+communityClassifier.py
+    TODO
+
+graphParser.py
+    TODO
+
+getNMI.sh
+    Takes a graph and a seed file and runs the algorithm on it.
+    Then the communities of the algorithm are compared with
+    the actual communities by calculating the NMI value.
