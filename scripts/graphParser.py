@@ -11,23 +11,51 @@ def commandline_interface():
     usage = "usage: %prog"
     parser = OptionParser()
    
-    parser.add_option("-g", dest="graph_file", type="string",
-        help="LFR benchmark graph file")
-    parser.add_option("-c", dest="community_file", type="string",
-        help="LFR benchmark community network")
-    parser.add_option("-n", dest="seed_perc", type="int", default=5,
-        help="percentage of seed nodes")
+    parser.add_option("-g", dest="graph_file_input", type="string",
+            help="Input: LFR benchmark graph file")
+    parser.add_option("-c", dest="community_file_input", type="string",
+            help="Input: LFR benchmark community network")
+
+    parser.add_option("-G", dest="graph_file_output", type="string",
+            help="Output: custom graph file")
+    parser.add_option("-C", dest="community_file_output", type="string",
+            help="Output: custom community file")
+
+    parser.add_option("-s", dest="seed_nodes", type="string",
+            help="Output: custom seed-node file")
+    parser.add_option("-n", dest="seed_perc", type="int",
+            help="percentage of seed nodes (in range 0 to 100)")
    
     global options, args
     (options, args) = parser.parse_args()
 
-    if not options.graph_file:
-        parser.error("Graph file not given")
+    if not options.graph_file_input:
+        parser.error("input graph file not given")
         parser.print_help()
         return False
 
-    elif not options.community_file:
-        parser.error("Community file not given")
+    elif not options.community_file_input:
+        parser.error("input community file not given")
+        parser.print_help()
+        return False
+
+    elif not options.graph_file_output:
+        parser.error("output graph file not given")
+        parser.print_help()
+        return False
+
+    elif not options.community_file_output:
+        parser.error("output community file not given")
+        parser.print_help()
+        return False
+
+    elif not options.seed_nodes:
+        parser.error("output seed-node file not given")
+        parser.print_help()
+        return False
+
+    elif not options.seed_perc:
+        parser.error("seed-node percentage not given")
         parser.print_help()
         return False
 
@@ -53,7 +81,7 @@ def read_graph(file):
 
 # read LFR community file
 def read_community(file):
-    with open (options.community_file, "r") as f:
+    with open (file, "r") as f:
         vertex_communities = defaultdict(list)
         max_community = 0
         #genrate community adjacency list
@@ -103,8 +131,8 @@ def generate_seeds(community_vertices, max_community, seed_perc):
     return seed_communities, total_seeds
 
 #write output graph
-def write_graph(graph, max_vertex, max_edge):
-    with open (options.graph_file, "w") as file:
+def write_graph(file, graph, max_vertex, max_edge):
+    with open (file, "w") as file:
         # number of vertices, numberOfEdges
         file.write("{0} {1}".format(max_vertex + 1, max_edge + 1))
         for v, neighbours in graph.iteritems():
@@ -112,8 +140,8 @@ def write_graph(graph, max_vertex, max_edge):
                 file.write("\n{0} {1}".format(v, n))
 
 #write output community file
-def write_communites(community_vertices):
-    with open (options.community_file, "w") as file:
+def write_communites(file, community_vertices):
+    with open (file, "w") as file:
         for c, vertices in community_vertices.iteritems():
             file.write("{0}".format(vertices[0]))
             for v in vertices[1:]:
@@ -121,8 +149,8 @@ def write_communites(community_vertices):
             file.write("\n")
 
 #write output seed_nodes
-def write_seed_nodes(seed_communities, total_seeds, max_community):
-    with open ("seed_nodes", "w") as file:
+def write_seed_nodes(file, seed_communities, total_seeds, max_community):
+    with open (file, "w") as file:
         # number of seed nodes, number of communities
         file.write("{0} {1}".format(total_seeds, max_community + 1))
         for s, communities in seed_communities.iteritems():
@@ -143,17 +171,17 @@ options, args = 0, 0
 if commandline_interface():
     # read graph
     number = re.compile(r'[0-9]+')
-    graph, max_vertex, max_edge = read_graph(options.graph_file)
+    graph, max_vertex, max_edge = read_graph(options.graph_file_input)
     # proceed if the graph is connected
     if dfs(graph, 0, max_vertex):
-        write_graph(graph, max_vertex, max_edge)
+        write_graph(options.graph_file_output, graph, max_vertex, max_edge)
         # read, process, and write community file
-        vertex_communities, max_community = read_community(options.community_file)
+        vertex_communities, max_community = read_community(options.community_file_input)
         community_vertices = reverse_dictionary(vertex_communities)
-        write_communites(community_vertices)
+        write_communites(options.community_file_output, community_vertices)
         # calculate and write seed file
         seed_communities, total_seeds = generate_seeds(community_vertices, 
             max_community, options.seed_perc)
-        write_seed_nodes(seed_communities, total_seeds, max_community)
+        write_seed_nodes(options.seed_nodes, seed_communities, total_seeds, max_community)
     # end of if
     else: print "Error: Graph file ist not one connected component!"

@@ -6,7 +6,6 @@ communityClassifier.py
 graphParser.py
     TODO
 
-getNMI.sh
-    Takes a graph and a seed file and runs the algorithm on it.
-    Then the communities of the algorithm are compared with
-    the actual communities by calculating the NMI value.
+LFRtoNMI.sh
+    takes graph and communities in the LFR benchmark file format and a seed-node percentage and returns NMI.
+    
