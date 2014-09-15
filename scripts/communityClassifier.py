@@ -12,6 +12,9 @@ def commandline_interface():
     # command line options
     parser.add_option("-a", dest="affinity_file", type="string",
         help="belonging vector output of the markov chain algorithm")
+
+    parser.add_option("-c", dest="classified_communities", type="string",
+        help="classified communities, the output of this script")
     
     parser.add_option("-o", dest="overlapping", type="int", default=0,
         help="if communities are overlapping set to 1, otherwise to 0 (default)")
@@ -26,6 +29,11 @@ def commandline_interface():
 
     elif options.overlapping != 1 and options.overlapping != 0:
         parser.error("Invalid overlap parameter")
+        parser.print_help()
+        return False
+
+    elif not options.classified_communities:
+        parser.error("Output file not given")
         parser.print_help()
         return False
 
@@ -83,7 +91,7 @@ def classify_communities(affinities):
 
 #write output community file
 def write_communites(community_vertices):
-    with open ("classified_communities", "w") as file:
+    with open (options.classified_communities, "w") as file:
         for community in community_vertices:
             file.write("{0}".format(community_vertices[community][0]))
             
