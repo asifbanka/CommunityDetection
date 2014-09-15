@@ -1,0 +1,5 @@
+build the community-detection algorithm by executing "build.sh"
+it creates a subdirectoy "build" which contains two executables:
+
+community_detection is the main program
+community_detection_test is the testsuite for the program
