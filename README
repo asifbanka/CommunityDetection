@@ -1,0 +1,13 @@
+This repository contains everything which is relevant to our community-detection method.
+Each module shall be in its own subfolder together with a README which describes
+the module and how to use it.
+
+The subfolders include:
+
+paper       the paper we later want to publish
+algorithm   a C++ implementation of the community-detection algorithm
+data        test-data or scripts which generate test-data
+scripts     scripts to modify and parse the input and output of various programs, 
+            so that they seamlessly work together
+code        a folder which still needs to be cleaned up
+
