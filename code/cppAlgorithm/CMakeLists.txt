@@ -5,10 +5,10 @@ project(community_detection)
 set(CMAKE_CXX_FLAGS "-Wall -std=c++0x ")
 
 # default set build type
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
-    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
-endif(NOT CMAKE_BUILD_TYPE)
+#if(NOT CMAKE_BUILD_TYPE)
+    #set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
+    #set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
+#endif(NOT CMAKE_BUILD_TYPE)
 
 #include header-only Eigen and Catch libraries
 include_directories(
