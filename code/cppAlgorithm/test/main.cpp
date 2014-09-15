@@ -13,8 +13,7 @@
 using namespace std;
 using namespace Eigen;
 
-Graph createTestGraph() {
-
+Graph createTestGraph1() {
     stringstream ssGraph;
     ssGraph << "5 8" << endl;
     ssGraph << "0 1" << endl;
@@ -28,8 +27,8 @@ Graph createTestGraph() {
 
     stringstream ssSeed;
     ssSeed << "2 2" << endl;
-    ssSeed << "0 1 0" << endl;
-    ssSeed << "4 0 1" << endl;
+    ssSeed << "0 1.0 0.0" << endl;
+    ssSeed << "4 0.0 1.0" << endl;
 
     Graph g; 
     g.readGraph(ssGraph, ssSeed);
@@ -39,7 +38,7 @@ Graph createTestGraph() {
 
 TEST_CASE( "test basic graph functionality" ) {
 
-    Graph g = createTestGraph();
+    Graph g = createTestGraph1();
 
     REQUIRE(g.numEdges() == 8);
     REQUIRE(g.numVertices() == 5);
@@ -88,7 +87,7 @@ TEST_CASE( "test basic graph functionality" ) {
 
 TEST_CASE( "test the matrix creation" ) {
 
-    Graph g = createTestGraph();
+    Graph g = createTestGraph1();
 
     Eigen::SparseMatrix<double> D;
     Eigen::SparseMatrix<double> A;
@@ -144,7 +143,7 @@ TEST_CASE( "test the matrix creation" ) {
 
 TEST_CASE( "test the solver" ) {
 
-    Graph g = createTestGraph();
+    Graph g = createTestGraph1();
 
     Eigen::SparseMatrix<double> D;
     Eigen::SparseMatrix<double> A;
@@ -168,3 +167,66 @@ TEST_CASE( "test the solver" ) {
     REQUIRE(g.getAffinities(4).at(0) == Approx(0.0));
     REQUIRE(g.getAffinities(4).at(1) == Approx(1.0));
 }
+
+//-------------------------------------------------------
+
+// create a graph consistiting of numberOfNodes nodes, where node 0 and 1 are
+// seed nodes of community 0 and 1 respectively and all other nodes belong to
+// both communities equally.
+Graph createTestGraph2(int numberOfNodes) {
+
+    // nodes 0 and 1 are seed nodes
+    stringstream ssSeed;
+    ssSeed << "2 2" << endl;
+    ssSeed << "0 1.0 0.0" << endl;
+    ssSeed << "1 0.0 1.0" << endl;
+
+    stringstream ssGraph;
+    ssGraph << numberOfNodes << " " << (6 * (numberOfNodes - 2)) << endl;
+
+    // connect all non-seed nodes to both seed nodes
+    for(int i = 2; i < numberOfNodes; i++) {
+        ssGraph << "0 " << i << endl;
+        ssGraph << "1 " << i << endl;
+        ssGraph << i << " 0" << endl;
+        ssGraph << i << " 1" << endl;
+    }
+
+    // add some random edges between non-seed nodes
+    for(int i = 2; i < numberOfNodes; i++) {
+        int j = ((i + 13374242) % (numberOfNodes - 2)) + 2;
+        ssGraph << i << " " << j << endl;
+        ssGraph << j << " " << i << endl;
+    }
+
+    Graph g; 
+    g.readGraph(ssGraph, ssSeed);
+    return g;
+}
+
+TEST_CASE( "test the solver on a bigger, more complex graph" ) {
+
+    int numberOfNodes = 1234;
+
+    Graph g = createTestGraph2(numberOfNodes);
+
+    Eigen::SparseMatrix<double> D;
+    Eigen::SparseMatrix<double> A;
+    Eigen::SparseMatrix<double> R;
+
+    buildMatrices(g, D, A, R);
+    solveMatrices(g, D, A, R);
+
+    REQUIRE(g.getAffinities(0).at(0) == Approx(1.0));
+    REQUIRE(g.getAffinities(0).at(1) == Approx(0.0));
+
+    REQUIRE(g.getAffinities(1).at(0) == Approx(0.0));
+    REQUIRE(g.getAffinities(1).at(1) == Approx(1.0));
+
+    for(int i = 2; i < numberOfNodes; i++) {
+        REQUIRE(g.getAffinities(i).at(0) == Approx(0.5));
+        REQUIRE(g.getAffinities(i).at(1) == Approx(0.5));
+    }
+}
+
+

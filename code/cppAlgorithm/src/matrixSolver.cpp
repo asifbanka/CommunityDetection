@@ -27,13 +27,15 @@ void solveMatrices(Graph &g, SMatD &D, SMatD &A, SMatD &R) {
     const int numberOfNonSeedNodes = numberOfNodes - numberOfSeedNodes;
 
     //for every community
-    for(int l = 0; l < numberOfCommunities; ++l){
-        VectorXd b(numberOfNonSeedNodes);
+    for (int l = 0; l < numberOfCommunities; ++l) {
 
-        for(int j=0; j<numberOfSeedNodes; ++j){
-            b += g.getAffinities(g.getVertexId(j)).at(l)*R.col(l);
+        // fill vector
+        VectorXd b = VectorXd::Zero(numberOfNonSeedNodes);
+        for (int s = 0; s < numberOfSeedNodes; ++s) {
+            double affinity = g.getAffinities(g.getVertexId(s)).at(l);
+            b += affinity * R.col(l);
         }
-
+        
         // use the factorization to solve for the given right hand side
         VectorXd x = chol.solve(b);
 
