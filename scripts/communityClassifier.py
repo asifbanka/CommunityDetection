@@ -49,8 +49,10 @@ def read_affinity(file):
             max_affinity = 0
             min_affinity = 1
             numbers = line.strip()
+            print numbers
             # iterate over affinity values of vertex
             for n in numbers[1:]:
+                print n
                 affinities[int(numbers[0])].append(float(n))
 
                 # derive maximum and minimum for later classification
