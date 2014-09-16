@@ -54,8 +54,8 @@ def createGraphs(n):
                                 print "\033[A                             \033[A" #delete last line of output
                                 print "graph " + str(i+1) + "/" + str(repetitions)
                                 #call graph generator and calculate nmi
-                                #subprocess.call([pathLFRtoNMI,str(seed),"-k",str(k), "-maxk",str(maxk),"-t1",str(t1),"-t2",str(t2),
-                                #"-minc",str(minc),"-maxc",str(maxc),"-mu",str(mu),"-N",str(n),"-on", str(on), "-om", str(om)])
+                                subprocess.call([pathLFRtoNMI,str(seed),"-k",str(k), "-maxk",str(maxk),"-t1",str(t1),"-t2",str(t2),
+                                "-minc",str(minc),"-maxc",str(maxc),"-mu",str(mu),"-N",str(n),"-on", str(on), "-om", str(om)])
                                 nmiValue = 0
                                 file.write(str(nmiValue)+"\n")
                         file.close()        
