@@ -17,7 +17,7 @@ _size = ""
 on = 0
 om = 0
 
-pathLFRtoNMI = "./LFRtoNMI"
+pathLFRtoNMI = "./LFRtoNMI.sh"
 
 
 
