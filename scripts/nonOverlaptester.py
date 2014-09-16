@@ -8,7 +8,7 @@ maxk = 50
 t1 = 2
 t2 = 1
 repetitions = 100 #how many graphs with the same parameters
-outputFolder = "./values/"
+outputFolder = "./values/nonOverlapping/"
 
 minc = 0
 maxc = 0
@@ -17,7 +17,7 @@ _size = ""
 on = 0
 om = 0
 
-pathLFRtoNMI = "./LFRtoNMI.sh"
+pathLFRtoNMI = "./LFRtoNMI_alg.sh"
 
 
 
@@ -45,11 +45,11 @@ def setCommunitySize(size):
                 print "Error: set correct community size"
 
 def createGraphs(n):
-        for j in range(1,96):
+        for j in range(5,96):
                 mu = j * 0.01
                 print "mu = " + str(mu)
                 print ""
-                for seed in xrange(5,30,5):
+                for seed in xrange(5,31,5):
                         print "seed nodes: " + str(seed) + " %"
                         print ""
                         if not os.path.exists(outputFolder):
@@ -64,13 +64,13 @@ def createGraphs(n):
                                 
                              
                                 
-                                remove("output.dat")
+                                remove("output.dat") #remove file from previous executions
                                 #call graph generator and calculate nmi
                                 subprocess.call([pathLFRtoNMI,str(seed),"-k",str(k), "-maxk",str(maxk),"-t1",str(t1),"-t2",str(t2),
                                         "-minc",str(minc),"-maxc",str(maxc),"-mu",str(mu),"-N",str(n),
                                         "-on", str(on), "-om", str(om)])
                                 
-				if os.path.isfile("output.dat"):        
+				if os.path.isfile("output.dat"):        #the file does not exists if above script yields error
 					outputFile = open("output.dat","r")
 					outputText = outputFile.readline()
 					nmiValue = 0
@@ -84,7 +84,7 @@ def createGraphs(n):
 					
 		                        #print str(nmiValue)
 		                        file.write(str(nmiValue)+"\n")
-					i = i + 1
+					i = i + 1 #only increase if file was created
 					
                         file.close()        
                         

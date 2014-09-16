@@ -1,5 +1,7 @@
 #!/bin/sh
 
+
+#script for the algorithm supresses all console output
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ROOT=$DIR/..
@@ -32,7 +34,7 @@ detectedCommunities="tmp_detectedCommunities"
 # fail fast
 set -e
 
-echo "=> delete old files"
+#echo "=> delete old files"
 rm -f $graphLFR
 rm -f $communitiesLFR
 rm -f $graph
@@ -42,17 +44,17 @@ rm -f $affinities
 rm -f $detectedCommunities
 rm -f output.dat
 
-echo "=> run LFR"
-$LFR "${@:2}"
+#echo "=> run LFR"
+$LFR "${@:2}" > /dev/null 
 
-echo "=> convert the LFR files to our file format and get the seed nodes"
-$graphParser -g $graphLFR -G $graph -c $communitiesLFR -C $communities -s $seedNodes -n $percentage
+#echo "=> convert the LFR files to our file format and get the seed nodes"
+$graphParser -g $graphLFR -G $graph -c $communitiesLFR -C $communities -s $seedNodes -n $percentage > /dev/null 
 
-echo "=> perform community detection"
-$communityDetection $graph $seedNodes $affinities
+#echo "=> perform community detection"
+$communityDetection $graph $seedNodes $affinities > /dev/null 
 
-echo "=> classify communities"
-$communityClassifier -a $affinities -o 0 -c $detectedCommunities
+#echo "=> classify communities"
+$communityClassifier -a $affinities -o 0 -c $detectedCommunities > /dev/null 
 
-echo "=> calculate NMI"
-$NMI $communities $detectedCommunities
+#echo "=> calculate NMI"
+$NMI $communities $detectedCommunities > output.dat 
