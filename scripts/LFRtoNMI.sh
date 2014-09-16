@@ -4,11 +4,12 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ROOT=$DIR/..
 
+
 LFR=$ROOT/external/binary_networks/benchmark
 communityDetection=$ROOT/algorithm/build/community_detection
 communityClassifier=$ROOT/scripts/communityClassifier.py
 graphParser=$ROOT/scripts/graphParser.py
-NMI=$ROOT/code/coverComparision/mutual
+NMI=$ROOT/external/NMI/mutual
 
 # the percentage of seed nodes
 percentage=$1
@@ -41,16 +42,16 @@ rm -f $affinities
 rm -f $detectedCommunities
 
 echo "=> run LFR"
-$LFR "${@:2}"
+$LFR "${@:2}" > /dev/null
 
 echo "=> convert the LFR files to our file format and get the seed nodes"
-$graphParser -g $graphLFR -G $graph -c $communitiesLFR -C $communities -s $seedNodes -n $percentage
+$graphParser -g $graphLFR -G $graph -c $communitiesLFR -C $communities -s $seedNodes -n $percentage > /dev/null
 
 echo "=> perform community detection"
-$communityDetection $graph $seedNodes $affinities
+$communityDetection $graph $seedNodes $affinities > /dev/null
 
 echo "=> classify communities"
-$communityClassifier -a $affinities -o 0 -c $detectedCommunities
+$communityClassifier -a $affinities -o 0 -c $detectedCommunities > /dev/null
 
 echo "=> calculate NMI"
-$NMI $communities $detectedCommunities
+$NMI $communities $detectedCommunities > output.dat

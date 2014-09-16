@@ -50,22 +50,38 @@ def createGraphs(n):
 
                         filename = str(n)+"N_"+_size+"C_"+str(mu)+"mu_"+str(on)+"on_"+str(om)+"om"+str(seed)+"p_seed"+".dat"
                         file = open(outputFolder+filename, 'w')
-                        for i in range(0,repetitions):
+			i = 0
+			while i < repetitions:
                                 print "\033[A                             \033[A" #delete last line of output
                                 print "graph " + str(i+1) + "/" + str(repetitions)
                                 
                              
-                                #while loop to check for error
-                                while True:
-                                        #call graph generator and calculate nmi
-                                        process = subprocess.Popen([pathLFRtoNMI,str(seed),"-k",str(k), "-maxk",str(maxk),"-t1",str(t1),"-t2",str(t2),
+                                
+                                
+                                #call graph generator and calculate nmi
+                                subprocess.call([pathLFRtoNMI,str(seed),"-k",str(k), "-maxk",str(maxk),"-t1",str(t1),"-t2",str(t2),
                                         "-minc",str(minc),"-maxc",str(maxc),"-mu",str(mu),"-N",str(n),
-                                        "-on", str(on), "-om", str(om)],stdout=subprocess.PIPE)
-                                        if process.returncode() == 0:
-                                                break #success
-
-                                nmiValue = process.communicate()
-                                file.write(str(nmiValue))
+                                        "-on", str(on), "-om", str(om)])
+                                
+				if os.path.isfile("output.dat"):        
+					outputFile = open("output.dat","r")
+					outputText = outputFile.readline()
+					nmiValue = 0
+					for t in outputText.split():
+	    					try:
+	       						nmiValue = float(t)
+	    					except ValueError:
+							pass
+		                        
+					outputFile.close()
+					try:
+	    					os.remove("output.dat")
+					except OSError:
+	    					pass
+		                        #print str(nmiValue)
+		                        file.write(str(nmiValue)+"\n")
+					i = i + 1
+					
                         file.close()        
                         
 
