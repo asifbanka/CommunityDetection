@@ -43,25 +43,24 @@ def commandline_interface():
 def read_affinity(file):
     with open (file, "r") as f:
         affinities = defaultdict(list)
-        number = re.compile(r'([\d.]*\d+)')
         next(f) # overread first line 
-        for i, line in enumerate(f):
+        for line in f:
             # affinity value range is [0, 1]
             max_affinity = 0
             min_affinity = 1
-            match = number.findall(line.strip())
+            numbers = findall(line.strip())
             # iterate over affinity values of vertex
-            for m in match[1:]:
-                affinities[int(match[0])].append(float(m))
+            for n in numbers[1:]:
+                affinities[int(numbers[0])].append(float(n))
 
                 # derive maximum and minimum for later classification
-                if float(m) > max_affinity:
-                    max_affinity = float(m)
-                elif float(m) < min_affinity:
-                    min_affinity = float(m)
+                if float(n) > max_affinity:
+                    max_affinity = float(n)
+                elif float(n) < min_affinity:
+                    min_affinity = float(n)
             # append max and min at the end for easy access later on
-            affinities[int(match[0])].append(float(min_affinity))
-            affinities[int(match[0])].append(float(max_affinity))
+            affinities[int(numbers[0])].append(float(min_affinity))
+            affinities[int(numbers[0])].append(float(max_affinity))
     return affinities
 
 # evaluate communities
@@ -106,4 +105,3 @@ if commandline_interface():
     affinities = read_affinity(options.affinity_file)
     community_vertices = classify_communities(affinities)
     write_communites(community_vertices)
-else: print args

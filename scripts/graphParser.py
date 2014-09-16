@@ -130,6 +130,10 @@ def generate_seeds(community_vertices, max_community, seed_perc):
             seed_communities[s].append(c)
     return seed_communities, total_seeds
 
+#def geenerate_seeds_globally(community_vertices, max_community, seed_perc):
+#    seed_communities = defauldict(list)
+
+
 #write output graph
 def write_graph(file, graph, max_vertex, max_edge):
     with open (file, "w") as file:
