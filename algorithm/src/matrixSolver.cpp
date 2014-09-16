@@ -33,9 +33,9 @@ void solveMatrices(Graph &g, SMatD &D, SMatD &A, SMatD &R) {
         VectorXd b = VectorXd::Zero(numberOfNonSeedNodes);
         for (int s = 0; s < numberOfSeedNodes; ++s) {
             double affinity = g.getAffinities(g.getVertexId(s)).at(l);
-            b += affinity * R.col(l);
+            b += affinity * R.col(s);
         }
-        
+
         // use the factorization to solve for the given right hand side
         VectorXd x = chol.solve(b);
 
@@ -46,4 +46,12 @@ void solveMatrices(Graph &g, SMatD &D, SMatD &A, SMatD &R) {
             } 
         }
     }
+
+    //for (int i = 0; i < numberOfNodes ; i++) {
+        //double tmp = 0;
+        //for(int j = 0; j < numberOfCommunities; j++) {
+            //tmp += g.getAffinities(i).at(j);
+        //}
+        //cout << tmp << " ";
+    //}
 }
