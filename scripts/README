@@ -7,5 +7,6 @@ graphParser.py
     TODO
 
 LFRtoNMI.sh
-    takes graph and communities in the LFR benchmark file format and a seed-node percentage and returns NMI.
+    first parameter: percentage
+    all other parameters are passed to the LFR
     
