@@ -41,7 +41,7 @@ rm -f $affinities
 rm -f $detectedCommunities
 
 echo "=> run LFR"
-$LFR echo "${@:2}"
+$LFR "${@:2}"
 
 echo "=> convert the LFR files to our file format and get the seed nodes"
 $graphParser -g $graphLFR -G $graph -c $communitiesLFR -C $communities -s $seedNodes -n $percentage
