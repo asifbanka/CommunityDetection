@@ -48,7 +48,7 @@ def read_affinity(file):
             # affinity value range is [0, 1]
             max_affinity = 0
             min_affinity = 1
-            numbers = findall(line.strip())
+            numbers = line.strip()
             # iterate over affinity values of vertex
             for n in numbers[1:]:
                 affinities[int(numbers[0])].append(float(n))
