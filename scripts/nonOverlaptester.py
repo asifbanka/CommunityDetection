@@ -21,6 +21,13 @@ pathLFRtoNMI = "./LFRtoNMI.sh"
 
 
 
+def remove(file):
+	try:
+		os.remove(file)
+	except OSError:
+	    	pass
+
+
 def setCommunitySize(size):
         global minc
         global maxc
@@ -57,7 +64,7 @@ def createGraphs(n):
                                 
                              
                                 
-                                
+                                remove("output.dat")
                                 #call graph generator and calculate nmi
                                 subprocess.call([pathLFRtoNMI,str(seed),"-k",str(k), "-maxk",str(maxk),"-t1",str(t1),"-t2",str(t2),
                                         "-minc",str(minc),"-maxc",str(maxc),"-mu",str(mu),"-N",str(n),
@@ -74,10 +81,7 @@ def createGraphs(n):
 							pass
 		                        
 					outputFile.close()
-					try:
-	    					os.remove("output.dat")
-					except OSError:
-	    					pass
+					
 		                        #print str(nmiValue)
 		                        file.write(str(nmiValue)+"\n")
 					i = i + 1
