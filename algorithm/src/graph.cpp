@@ -45,6 +45,9 @@ void Graph::readGraph(std::istream &isGraph, std::istream &isSeed) {
     // Fill seed nodes
     // ---------------
     
+    //use this:
+    //http://stackoverflow.com/questions/236129/how-to-split-a-string-in-c
+    
 	isSeed >> mNumSeed >> mNumCommunities;
 
     for (int matrixId = 0; matrixId < mNumSeed; matrixId++) {
