@@ -10,18 +10,26 @@
 ### Request the time you need for execution in minutes
 ### The format for the parameter is: [hour:]minute,
 ### that means for 80 minutes you could also use this: 1:20
-### BSUB -W 1:23
+#BSUB -W 24:00
 
 ### Request memory you need for your job in TOTAL in MB
-### BSUB -M 1024
+#BSUB -M 2024
+
+#BSUB -B
+
+#BSUB -u jan.dreier@rwth-aachen.de
 
 ###################################################
 
 # fail fast
 set -e
 
+echo "start benchmark"
+
 # Execute the application
 ./calculateNMI_nonOverlapping.py
 ./calculateMean.py
+
+echo "benchmark done"
 
 
