@@ -21,14 +21,13 @@ _size = ""
 on = 0
 om = 0
 
-#path to the script folder 
-SCRIPTFOLDER = os.path.dirname(os.path.realpath(__file__))
+#path to the repositories root
+ROOT = os.path.dirname(os.path.realpath(__file__)) + "/.."
 
 #for logging purposes
 LOGFILE = open("logfile", 'w')
 DEVNULL = open(os.devnull, 'w')
-
-outputFolder = "./values/nonOverlapping/"
+OUTPUTFOLDER = "./values/nonOverlapping/"
 
 def setCommunitySize(size):
         global minc
@@ -51,11 +50,19 @@ def createGraphs(n):
                 for seed in xrange(5,31,5):
                         print "seed nodes: " + str(seed) + " %"
                         print ""
-                        if not os.path.exists(outputFolder):
-                                os.makedirs(outputFolder)
+                        if not os.path.exists(OUTPUTFOLDER):
+                                os.makedirs(OUTPUTFOLDER)
 
-                        filename = str(n)+"N_"+_size+"C_"+str(mu)+"mu_"+str(on)+"on_"+str(om)+"om"+str(seed)+"p_seed"+".dat"
-                        nmiValues = open(outputFolder+filename, 'w')
+                        filename = ( str(n) + "N"
+                                   + "_" + _size + "C"
+                                   + "_" + str(on) + "on"
+                                   + "_" + str(om) + "om"
+                                   + "_" + str(seed) + "pSeed"
+                                   + "_" + str(mu) + "mu"
+                                   + ".dat" 
+                                   )
+                        nmiValues = open(OUTPUTFOLDER+filename, 'w')
+
 			i = 0
 			while i < repetitions:
                                 #delete last line of output
@@ -63,16 +70,19 @@ def createGraphs(n):
                                 print "graph " + str(i+1) + "/" + str(repetitions)
                                 
                                 #call graph generator and calculate nmi
-                                call = [ SCRIPTFOLDER + "/LFRtoNMI.sh"
+                                lfrtonmi = ROOT + "/scripts/LFRtoNMI.sh"
+                                if not os.path.isfile(lfrtonmi):
+                                        raise Exception("path to LFRtoNMI.sh is wrong")
+                                call = [ lfrtonmi
                                        , str(seed)
-                                       , "-k",str(k)
+                                       , "-k", str(k)
                                        , "-maxk" ,str(maxk)
-                                       , "-t1",str(t1)
-                                       , "-t2",str(t2)
+                                       , "-t1", str(t1)
+                                       , "-t2", str(t2)
                                        , "-minc",str(minc)
-                                       , "-maxc",str(maxc)
-                                       , "-mu",str(mu)
-                                       , "-N",str(n)
+                                       , "-maxc", str(maxc)
+                                       , "-mu", str(mu)
+                                       , "-N", str(n)
                                        , "-on", str(on)
                                        , "-om", str(om)
                                        ]
@@ -87,7 +97,6 @@ def createGraphs(n):
 					
                         nmiValues.close()        
                         
-
 print "Beginning test:"
 print "N = " + str(smallN)
 
