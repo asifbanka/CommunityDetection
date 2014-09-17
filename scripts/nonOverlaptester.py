@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 import subprocess,os
 #this script will create the graphs for the non overlapping test
 

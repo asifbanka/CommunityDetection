@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
+
 from optparse import OptionParser
 from collections import defaultdict
 from collections import deque
