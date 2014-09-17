@@ -1,5 +1,7 @@
 #!/usr/bin/env python2
 
+import sys
+import datetime
 from optparse import OptionParser
 from collections import defaultdict
 from collections import deque
@@ -177,8 +179,9 @@ if commandline_interface():
     # read graph
     number = re.compile(r'[0-9]+')
     graph, max_vertex, max_edge = read_graph(options.graph_file_input)
-    # proceed if the graph is connected
+
     if dfs(graph, 0, max_vertex):
+        # proceed if the graph is connected
         write_graph(options.graph_file_output, graph, max_vertex, max_edge)
         # read, process, and write community file
         vertex_communities, max_community = read_community(options.community_file_input)
@@ -188,5 +191,8 @@ if commandline_interface():
         seed_communities, total_seeds = generate_seeds(community_vertices, 
             max_community, options.seed_perc)
         write_seed_nodes(options.seed_nodes, seed_communities, total_seeds, max_community)
-    # end of if
-    else: print "Error: Graph file ist not one connected component!"
+
+    else:
+        #fail if graph is not connected
+        sys.stderr.write(str(datetime.datetime.now()) + " - Error: Graph file is not one connected component!\n")
+        sys.exit(1)

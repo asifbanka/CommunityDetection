@@ -1,6 +1,9 @@
 #!/usr/bin/env python2
 
-import subprocess,os
+import os
+import numpy as np
+import subprocess as sp
+
 #this script will create the graphs for the non overlapping test
 
 smallN = 1000
@@ -10,7 +13,6 @@ maxk = 50
 t1 = 2
 t2 = 1
 repetitions = 100 #how many graphs with the same parameters
-outputFolder = "./values/nonOverlapping/"
 
 minc = 0
 maxc = 0
@@ -19,16 +21,14 @@ _size = ""
 on = 0
 om = 0
 
-pathLFRtoNMI = "./LFRtoNMI_alg.sh"
+#path to the script folder 
+SCRIPTFOLDER = os.path.dirname(os.path.realpath(__file__))
 
+#for logging purposes
+LOGFILE = open("logfile", 'w')
+DEVNULL = open(os.devnull, 'w')
 
-
-def remove(file):
-	try:
-		os.remove(file)
-	except OSError:
-	    	pass
-
+outputFolder = "./values/nonOverlapping/"
 
 def setCommunitySize(size):
         global minc
@@ -42,13 +42,10 @@ def setCommunitySize(size):
                 minc = 20
                 maxc = 100
         else:
-                minc = 0
-                maxc = 0
-                print "Error: set correct community size"
+                raise Exception("set correct community size")
 
 def createGraphs(n):
-        for j in range(5,96):
-                mu = j * 0.01
+        for mu in np.arange(0.05, 0.96, 0.01):
                 print "mu = " + str(mu)
                 print ""
                 for seed in xrange(5,31,5):
@@ -58,40 +55,38 @@ def createGraphs(n):
                                 os.makedirs(outputFolder)
 
                         filename = str(n)+"N_"+_size+"C_"+str(mu)+"mu_"+str(on)+"on_"+str(om)+"om"+str(seed)+"p_seed"+".dat"
-                        file = open(outputFolder+filename, 'w')
+                        nmiValues = open(outputFolder+filename, 'w')
 			i = 0
 			while i < repetitions:
-                                print "\033[A                             \033[A" #delete last line of output
+                                #delete last line of output
+                                print "\033[A                             \033[A"
                                 print "graph " + str(i+1) + "/" + str(repetitions)
                                 
-                             
-                                
-                                remove("output.dat") #remove file from previous executions
                                 #call graph generator and calculate nmi
-                                subprocess.call([pathLFRtoNMI,str(seed),"-k",str(k), "-maxk",str(maxk),"-t1",str(t1),"-t2",str(t2),
-                                        "-minc",str(minc),"-maxc",str(maxc),"-mu",str(mu),"-N",str(n),
-                                        "-on", str(on), "-om", str(om)])
-                                
-				if os.path.isfile("output.dat"):        #the file does not exists if above script yields error
-					outputFile = open("output.dat","r")
-					outputText = outputFile.readline()
-					nmiValue = 0
-					for t in outputText.split():
-	    					try:
-	       						nmiValue = float(t)
-	    					except ValueError:
-							pass
-		                        
-					outputFile.close()
-					
-		                        #print str(nmiValue)
-		                        file.write(str(nmiValue)+"\n")
+                                call = [ SCRIPTFOLDER + "/LFRtoNMI.sh"
+                                       , str(seed)
+                                       , "-k",str(k)
+                                       , "-maxk" ,str(maxk)
+                                       , "-t1",str(t1)
+                                       , "-t2",str(t2)
+                                       , "-minc",str(minc)
+                                       , "-maxc",str(maxc)
+                                       , "-mu",str(mu)
+                                       , "-N",str(n)
+                                       , "-on", str(on)
+                                       , "-om", str(om)
+                                       ]
+                                returnValue = sp.call(call, stdin=None , stderr=LOGFILE, stdout=DEVNULL, shell=False)
+
+                                if returnValue == 0:
+                                        #if no error occured
+                                        tmp = open("tmp_nmivalue", "r")
+		                        nmiValues.write(str(float(tmp.read()))+"\n")
+                                        tmp.close()
 					i = i + 1 #only increase if file was created
 					
-                        file.close()        
+                        nmiValues.close()        
                         
-
-
 
 print "Beginning test:"
 print "N = " + str(smallN)
