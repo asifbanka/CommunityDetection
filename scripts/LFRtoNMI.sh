@@ -1,9 +1,7 @@
 #!/bin/sh
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 ROOT=$DIR/..
-
 
 LFR=$ROOT/external/binary_networks/benchmark
 communityDetection=$ROOT/algorithm/build/community_detection
@@ -28,6 +26,8 @@ seedNodes="tmp_seedNodes"
 affinities="tmp_affinies"
 # the output from the community classifier
 detectedCommunities="tmp_detectedCommunities"
+# write the nmi value to this file
+nmiValue="tmp_nmivalue"
 
 # fail fast
 set -e
@@ -40,7 +40,7 @@ rm -f $communities
 rm -f $seedNodes
 rm -f $affinities
 rm -f $detectedCommunities
-rm -f output.dat
+rm -f $nmiValue
 
 echo "=> run LFR"
 $LFR "${@:2}"
@@ -55,4 +55,5 @@ echo "=> classify communities"
 $communityClassifier -a $affinities -o 0 -c $detectedCommunities
 
 echo "=> calculate NMI"
-$NMI $communities $detectedCommunities
+$NMI $communities $detectedCommunities | awk '{print $2}' > $nmiValue
+echo "NMI:" $(cat $nmiValue)

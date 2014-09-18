@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
+
 import sys
 from optparse import OptionParser
 from collections import defaultdict
@@ -27,8 +28,8 @@ def commandline_interface():
         parser.print_help()
         return False
 
-    elif options.overlapping != 1 and options.overlapping != 0:
-        parser.error("Invalid overlap parameter")
+    elif options.overlapping != 0:
+        parser.error("only nonoverlapping is implemented!")
         parser.print_help()
         return False
 
@@ -45,46 +46,24 @@ def read_affinity(file):
         affinities = defaultdict(list)
         next(f) # overread first line 
         for i, line in enumerate(f):
-            # affinity value range is [0, 1]
-            max_affinity = 0
-            min_affinity = 1
             numbers = line.split()
             # iterate over affinity values of vertex
+            index = int(numbers[0])
             for m in numbers[1:]:
-                affinities[int(numbers[0])].append(float(m))
+                affinities[index].append(float(m))
+            
+            s = sum(affinities[index])
+            if not ( 0.99 < s and s < 1.01):
+                raise Exception("rows dont sum up to 1!")
 
-                # derive maximum and minimum for later classification
-                if float(m) > max_affinity:
-                    max_affinity = float(m)
-                elif float(m) < min_affinity:
-                    min_affinity = float(m)
-            # append max and min at the end for easy access later on
-            affinities[int(numbers[0])].append(float(min_affinity))
-            affinities[int(numbers[0])].append(float(max_affinity))
     return affinities
 
-# evaluate communities
+# simply assign the vertex the the community with the maximum value
 def classify_communities(affinities):
     community_vertices = defaultdict(list)
     for vertex in affinities:
-        # determine classification threshold
-        max_affinity = affinities[vertex][-1]
-        min_affinity = affinities[vertex][-2]
-        # if non overlapping just set threshold as maximum affinity
-        if options.overlapping == 0:
-            threshold = max_affinity 
-        # overlapping
-        else: 
-            # if the max affinity is smaller 0.5 pick the mid range value 
-            if affinities[vertex][-1] < 0.5:
-                threshold = (max_affinity  + min_affinity) / 2
-            else:
-                threshold = 0.5
-
-        # construct communities
-        for index, affinity in enumerate(affinities[vertex][:-2]):
-            if affinity >= threshold:
-                community_vertices[index].append(vertex)
+        maxIndex = max( (v, i) for i, v in enumerate(affinities[vertex]) )[1]
+        community_vertices[maxIndex].append(vertex)
 
     return community_vertices
 
