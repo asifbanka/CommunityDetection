@@ -1,4 +1,4 @@
-This folder contsins scripts to modify and parse the input and output of various programs, so that they seamlessly work together.
+This folder contains scripts to modify and parse the input and output of various programs, so that they seamlessly work together.
 
 communityClassifier.py
     TODO
