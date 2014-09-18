@@ -44,16 +44,15 @@ void Graph::readGraph(std::istream &isGraph, std::istream &isSeed) {
 
     // Fill seed nodes
     // ---------------
-    
-    //use this:
-    //http://stackoverflow.com/questions/236129/how-to-split-a-string-in-c
-    
-	isSeed >> mNumSeed >> mNumCommunities;
+
+    // use this:
+    // http://stackoverflow.com/questions/236129/how-to-split-a-string-in-c
+
+    isSeed >> mNumSeed >> mNumCommunities;
 
     for (int matrixId = 0; matrixId < mNumSeed; matrixId++) {
         int nodeId;
         isSeed >> nodeId;
-        mSeedNodes.push_back(nodeId);
         mNodeAttributes.at(nodeId).isSeed = true;
         for(int j = 0; j < mNumCommunities; j++) {
             double tmp;
@@ -63,11 +62,15 @@ void Graph::readGraph(std::istream &isGraph, std::istream &isSeed) {
     }
     int matrixIndexSeed = 0;
     int matrixIndexNonSeed = 0;
-    for(auto node = mNodeAttributes.begin(); node != mNodeAttributes.end(); node++) {
-        if(node->isSeed)
-            node->matrixIndex = matrixIndexSeed++;
-        else
-            node->matrixIndex = matrixIndexNonSeed++;
+    for(int nodeId = 0; nodeId < mNumVertices; nodeId++) {
+        auto &node = mNodeAttributes.at(nodeId);
+        if(node.isSeed) {
+            node.matrixIndex = matrixIndexSeed++;
+            mSeedNodes.push_back(nodeId);
+        }
+        else {
+            node.matrixIndex = matrixIndexNonSeed++;
+        }
     }
 }
 

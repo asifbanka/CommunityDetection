@@ -26,16 +26,24 @@ void buildMatrices(const Graph& g, SMatD& D, SMatD& A, SMatD& R){
     R.resize(numberOfNonSeedVertices, numberOfseedVertices);
 
     std::vector<TripletD> tripletListA,tripletListD,tripletListR;
-    
-    //filling A, D and R
-    for (int i = 0; i < numberOfVertices; ++i) { // going over all vertices
-        if(!g.isSeed(i)){ //if the current vertex is not a seed node
+
+    // fill A, D and R
+    for (int i = 0; i < numberOfVertices; ++i)
+    {
+        // going over all vertices
+        if(!g.isSeed(i)) 
+        { 
+            //if the current vertex is not a seed node
             tripletListD.push_back(TripletD(g.getMatrixIndex(i), g.getMatrixIndex(i),g.getDegree(i))); 
+           
             //going over all neighbors of i and adding entries to A and R depending on the neighbor beeing a seed node
-            for(auto neighbor = g.getNeighbors(i).begin(); neighbor != g.getNeighbors(i).end(); neighbor++) {
-                if(g.isSeed(*neighbor)){           
+            for (auto neighbor = g.getNeighbors(i).begin(); neighbor != g.getNeighbors(i).end(); neighbor++)
+            {
+                if(g.isSeed(*neighbor))
+                {           
                     tripletListR.push_back(TripletD(g.getMatrixIndex(i),g.getMatrixIndex(*neighbor), 1)); 
-                } else {
+                } else 
+                {
                     tripletListA.push_back(TripletD(g.getMatrixIndex(i),g.getMatrixIndex(*neighbor), 1)); 
                 }
             }
