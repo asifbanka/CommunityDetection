@@ -27,8 +27,8 @@ Graph createTestGraph1() {
 
     stringstream ssSeed;
     ssSeed << "2 2" << endl;
-    ssSeed << "0 1.0 0.0" << endl;
     ssSeed << "4 0.0 1.0" << endl;
+    ssSeed << "0 1.0 0.0" << endl;
 
     Graph g; 
     g.readGraph(ssGraph, ssSeed);
@@ -238,16 +238,14 @@ void addEdge(stringstream &ss, int a, int b) {
 
 Graph createTestGraph3(int N) {
 
-    // seed nodes (0,1,2) and (3,4,5)
     stringstream ssSeed;
     ssSeed << "6 6" << endl;
 
-    ssSeed << (0) << " 1 0 0 0 0 0" << endl;
-    ssSeed << (1) << " 0 1 0 0 0 0" << endl;
-    ssSeed << (2) << " 0 0 1 0 0 0" << endl;
-
-    ssSeed << (N+3) << " 0 0 0 1 0 0" << endl;
     ssSeed << (N+4) << " 0 0 0 0 1 0" << endl;
+    ssSeed << (  0) << " 1 0 0 0 0 0" << endl;
+    ssSeed << (  1) << " 0 1 0 0 0 0" << endl;
+    ssSeed << (N+3) << " 0 0 0 1 0 0" << endl;
+    ssSeed << (  2) << " 0 0 1 0 0 0" << endl;
     ssSeed << (N+5) << " 0 0 0 0 0 1" << endl;
 
     //------------------------

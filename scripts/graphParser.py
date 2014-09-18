@@ -65,15 +65,18 @@ def commandline_interface():
     return True
 
 # read LFR network file
+# returns (graph, max_vertex, max_edge)
 def read_graph(file):
     with open (file, "r") as f:
         graph = defaultdict(list)
         max_vertex = 0
         # store edges
         for i, line in enumerate(f):
-            match = number.findall(line.strip())
-            vertex = int(match[0]) - 1
-            neighbour = int(match[1]) - 1
+            splitLine = line.split()
+            if len(splitLine) != 2:
+                raise Exception("line should have exactly two entries")
+            vertex = int(splitLine[0]) - 1
+            neighbour = int(splitLine[1]) - 1
             # update number of vertices
             m = max(vertex, neighbour)
             if m > max_vertex:
@@ -89,12 +92,24 @@ def read_community(file):
         max_community = 0
         #genrate community adjacency list
         for line in f:
-            match = number.findall(line.strip())
-            for m in match[1:]:
-                vertex_communities[int(match[0]) - 1].append(int(m) - 1)
-                # update number of communities (needed later on)
-                if int(m) - 1 > max_community:
-                    max_community = int(m) - 1
+            splitLine = line.split()
+            if len(splitLine) != 2:
+                raise Exception("line should have exactly two entries")
+
+            vertex = int(splitLine[0]) - 1
+            community = int(splitLine[1]) - 1
+            vertex_communities[vertex].append(community)
+
+            if community > max_community:
+                max_community = community
+
+            #match = number.findall(line.strip())
+            #for m in match[1:]:
+                #vertex_communities[int(match[0]) - 1].append(int(m) - 1)
+                ## update number of communities (needed later on)
+                #if int(m) - 1 > max_community:
+                    #max_community = int(m) - 1
+
     return vertex_communities, max_community
 
 # check connectivity
@@ -120,21 +135,12 @@ def reverse_dictionary(key_valuelist):
     return reversed_dict
 
 # generate seed nodes
-def generate_seeds(community_vertices, max_community, seed_perc):
+# returns a dictionary which maps seed nodes to their communities
+def generate_seeds(vertex_communities, max_vertex, seed_perc):
     seed_communities = defaultdict(list)
-    total_seeds = 0
-    for c in community_vertices:
-        # find unique seed nodes of community
-        member_count = len(community_vertices[c])
-        seed_count = int(ceil((seed_perc * member_count) / 100))
-        seed_nodes = sample(community_vertices[c], seed_count)
-        total_seeds += len(seed_nodes)
-        for s in sorted(seed_nodes):
-            seed_communities[s].append(c)
-    return seed_communities, total_seeds
-
-#def geenerate_seeds_globally(community_vertices, max_community, seed_perc):
-#    seed_communities = defauldict(list)
+    total_seeds = int(ceil((seed_perc * (max_vertex + 1)) / 100))
+    seed_communities = dict(sample(vertex_communities.items(), total_seeds))
+    return seed_communities
 
 
 #write output graph
@@ -146,6 +152,7 @@ def write_graph(file, graph, max_vertex, max_edge):
             for n in neighbours:
                 file.write("\n{0} {1}".format(v, n))
 
+
 #write output community file
 def write_communites(file, community_vertices):
     with open (file, "w") as file:
@@ -156,10 +163,11 @@ def write_communites(file, community_vertices):
             file.write("\n")
 
 #write output seed_nodes
-def write_seed_nodes(file, seed_communities, total_seeds, max_community):
+def write_seed_nodes(file, seed_communities, max_community):
     with open (file, "w") as file:
         # number of seed nodes, number of communities
-        file.write("{0} {1}".format(total_seeds, max_community + 1))
+        file.write("{0} {1}".format(len(seed_communities), max_community + 1))
+
         for s, communities in seed_communities.iteritems():
             file.write("\n{0}".format(s))
             i = 0
@@ -188,9 +196,8 @@ if commandline_interface():
         community_vertices = reverse_dictionary(vertex_communities)
         write_communites(options.community_file_output, community_vertices)
         # calculate and write seed file
-        seed_communities, total_seeds = generate_seeds(community_vertices, 
-            max_community, options.seed_perc)
-        write_seed_nodes(options.seed_nodes, seed_communities, total_seeds, max_community)
+        seed_communities = generate_seeds(vertex_communities, max_vertex, options.seed_perc)
+        write_seed_nodes(options.seed_nodes, seed_communities, max_community)
 
     else:
         #fail if graph is not connected

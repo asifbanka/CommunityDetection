@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 1.6)
 
 project(community_detection)
 
-set(CMAKE_CXX_FLAGS "-Wall -std=c++0x -O2")
+set(CMAKE_CXX_FLAGS "-Wall -std=c++0x -O3")
 
 # default set build type
 #if(NOT CMAKE_BUILD_TYPE)
