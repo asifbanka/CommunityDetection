@@ -46,9 +46,6 @@ def read_affinity(file):
         affinities = defaultdict(list)
         next(f) # overread first line 
         for i, line in enumerate(f):
-            # affinity value range is [0, 1]
-            max_affinity = 0
-            min_affinity = 1
             numbers = line.split()
             # iterate over affinity values of vertex
             index = int(numbers[0])
@@ -61,7 +58,7 @@ def read_affinity(file):
 
     return affinities
 
-# evaluate communities
+# simply assign the vertex the the community with the maximum value
 def classify_communities(affinities):
     community_vertices = defaultdict(list)
     for vertex in affinities:

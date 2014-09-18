@@ -27,7 +27,7 @@ ROOT = os.path.dirname(os.path.realpath(__file__)) + "/.."
 #for logging purposes
 LOGFILE = open("logfile", 'w')
 DEVNULL = open(os.devnull, 'w')
-OUTPUTFOLDER = "./values/nonOverlapping/"
+OUTPUTFOLDER = "./nmi_values/non_overlapping/"
 
 def setCommunitySize(size):
         global minc
@@ -41,14 +41,14 @@ def setCommunitySize(size):
                 minc = 20
                 maxc = 100
         else:
-                raise Exception("set correct community size")
+                raise Exception("wrong parameter in setCommunitySize")
 
 def createGraphs(n):
-        for mu in np.arange(0.05, 0.96, 0.01):
-                print "mu = " + str(mu)
+        for seed in xrange(5,31,5):
+                print "seed nodes: " + str(seed) + "%"
                 print ""
-                for seed in xrange(5,31,5):
-                        print "seed nodes: " + str(seed) + " %"
+                for mu in np.arange(0.05, 0.96, 0.02):
+                        print "mu = " + str(mu)
                         print ""
                         if not os.path.exists(OUTPUTFOLDER):
                                 os.makedirs(OUTPUTFOLDER)
@@ -66,7 +66,6 @@ def createGraphs(n):
 			i = 0
 			while i < repetitions:
                                 #delete last line of output
-                                print "\033[A                             \033[A"
                                 print "graph " + str(i+1) + "/" + str(repetitions)
                                 
                                 #call graph generator and calculate nmi
@@ -97,25 +96,22 @@ def createGraphs(n):
 					
                         nmiValues.close()        
                         
-print "Beginning test:"
 print "N = " + str(smallN)
-
 print "community size = small"
 setCommunitySize("small")
 createGraphs(smallN)
 
-print "community size = big"
-setCommunitySize("big")
-createGraphs(smallN)
+#print "N = " + str(smallN)
+#print "community size = big"
+#setCommunitySize("big")
+#createGraphs(smallN)
 
+#print "N = " + str(bigN)
+#print "community size = small"
+#setCommunitySize("small")
+#createGraphs(bigN)
 
-print "N = " + str(bigN)
-print "community size = small"
-setCommunitySize("small")
-createGraphs(bigN)
-
-print "community size = big"
-setCommunitySize("big")
-createGraphs(bigN)
-
-print "testing finished"
+#print "N = " + str(bigN)
+#print "community size = big"
+#setCommunitySize("big")
+#createGraphs(bigN)
