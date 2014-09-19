@@ -4,7 +4,7 @@ import os
 import numpy as np
 import subprocess as sp
 
-OUTPUTFOLDER = "./values/nonOverlapping/"
+OUTPUTFOLDER = "./nmi_values/non_overlapping/"
 
 meanFile = open("mean", 'w')
 
@@ -14,7 +14,6 @@ for root, dirs, files in os.walk(OUTPUTFOLDER):
         print path
         with open(path, "r") as handle:
             values = [float(x) for x in handle]
-            print values
             line = ( path 
                    + "\t" 
                    + str(len(values)) + "_entries" 
