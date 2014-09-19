@@ -1,8 +1,10 @@
 #!/usr/bin/env python2
 
+import sys
 import os
 import numpy as np
 import subprocess as sp
+from optparse import OptionParser
 
 #this script will create the graphs for the non overlapping test
 
@@ -12,7 +14,8 @@ k = 20
 maxk = 50
 t1 = 2
 t2 = 1
-repetitions = 100 #how many graphs with the same parameters
+#how many graphs with the same parameters#how many graphs with the same parameters
+repetitions = 100 
 
 minc = 0
 maxc = 0
@@ -41,13 +44,18 @@ def setCommunitySize(size):
                 minc = 20
                 maxc = 100
         else:
-                raise Exception("wrong parameter in setCommunitySize")
+                raise Exception("wrong parameter in setCommunitySize. it must either be small or big")
 
-def createGraphs(n):
-        for seed in xrange(5,31,5):
+def runBenchmark(n, size):
+
+        print "N = " + str(n)
+        print "community size = " + size
+        setCommunitySize(size)
+
+        for seed in xrange(5,21,5):
                 print "seed nodes: " + str(seed) + "%"
                 print ""
-                for mu in np.arange(0.05, 0.96, 0.02):
+                for mu in np.arange(0.04, 0.96, 0.02):
                         print "mu = " + str(mu)
                         print ""
                         if not os.path.exists(OUTPUTFOLDER):
@@ -95,23 +103,33 @@ def createGraphs(n):
 					i = i + 1 #only increase if file was created
 					
                         nmiValues.close()        
-                        
-print "N = " + str(smallN)
-print "community size = small"
-setCommunitySize("small")
-createGraphs(smallN)
 
-#print "N = " + str(smallN)
-#print "community size = big"
-#setCommunitySize("big")
-#createGraphs(smallN)
 
-#print "N = " + str(bigN)
-#print "community size = small"
-#setCommunitySize("small")
-#createGraphs(bigN)
+# interface
+def commandline_interface():
+    usage = "usage: %prog"
+    parser = OptionParser()
+    
+    # command line options
+    parser.add_option("-n", dest="numberOfNodes", type="int",
+        help="number of nodes for the graph")
 
-#print "N = " + str(bigN)
-#print "community size = big"
-#setCommunitySize("big")
-#createGraphs(bigN)
+    parser.add_option("-s", dest="communitySize", type="string",
+        help="community size, either small or big")
+    
+    global options, args
+    (options, args) = parser.parse_args()
+
+    if not options.numberOfNodes:
+        parser.error("number of nodes not given")
+        parser.print_help()
+        return False
+    elif not options.communitySize:
+        parser.error("community size not given")
+        parser.print_help()
+        return False
+    return True
+
+options, args = 0, 0
+if commandline_interface():
+    runBenchmark(options.numberOfNodes, options.communitySize)
