@@ -19,7 +19,7 @@ ROOT = os.path.dirname(os.path.realpath(__file__)) + "/.."
 LOGERROR = open("LOGERROR", 'w')
 DEVNULL = open(os.devnull, 'w')
 
-OUTPUTFOLDER = "./nmi_values_" + str(datetime.datetime.now()) + "/"
+OUTPUTFOLDER = "./nmi_values_" + str(datetime.datetime.now()).replace(" ", "_") + "/"
 
 ################################
 
@@ -59,9 +59,9 @@ class Benchmark:
         self.seedPercentage = _seedPercentage
 
         #a list of nmi-values for each mixing parameter
-        self.nmiValues = defaultdict(list)
+        self.nmiValues = []
         #the mean nmi-value for each mixing parameter
-        self.nmiValuesMean = defaultdict()
+        self.nmiValuesMean = []
 
         #the filename under which this object gets stored
         self.filename = ( str(self.N) + "N"
@@ -95,6 +95,8 @@ class Benchmark:
         print "iterations =", self.iterations
         print "mixingRange =", self.mixingRange
 
+        nmiValues = []
+
         for mu in self.mixingRange:
             print ""
             print "mu = " + str(mu)
@@ -103,6 +105,7 @@ class Benchmark:
             successful = 0
             errorsInARow = 0
 
+            nmis = []
             while successful < self.iterations:
                 #delete last line of output
                 
@@ -131,15 +134,23 @@ class Benchmark:
                     errorsInARow = 0
                     with open ("tmp_nmivalue", "r") as f:
                         nmi = float(f.read())
-                        self.nmiValues[mu].append(nmi)
+                        #self.nmiValues[mu].append(nmi)
+                        nmis.append(nmi)
                         print "(" + str(successful) + "/" + str(self.iterations) + "): " + str(nmi)
                 else:
                     errorsInARow = errorsInARow + 1
                     if errorsInARow > 100:
                         raise Exception("LFRtoNMI crashes a lot for these parameters")
 
+            tmp = defaultdict()
+            tmp["mu"] = mu
+            tmp["value"] = nmis
+            tmpMean = defaultdict()
+            tmpMean["mu"] = mu
+            tmpMean["value"] = np.mean(nmis)
+            self.nmiValues.append(tmp)
+            self.nmiValuesMean.append(tmpMean)
 
-            self.nmiValuesMean[mu] = np.mean(self.nmiValues[mu])
 
 
 
