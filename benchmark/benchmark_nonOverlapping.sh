@@ -22,16 +22,7 @@
 ##############################################
 
 # fail fast
-set -e
 
 echo "begin benchmark"
-
-echo "=> calculate NMI"
-./calculateNMI_nonOverlapping.py -n 1000 -s small
-./calculateNMI_nonOverlapping.py -n 1000 -s big
-./calculateNMI_nonOverlapping.py -n 5000 -s small
-./calculateNMI_nonOverlapping.py -n 5000 -s big
-echo "=> calculate mean"
-./calculateMean.py
-
+./benchmark_nonOverlapping.py -n "1000" -c "small big" -s "5 10 15 20" -i 100 -m "4 96 2"
 echo "end benchmark"
