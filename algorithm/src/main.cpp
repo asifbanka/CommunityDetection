@@ -30,10 +30,7 @@ int main( int argc, const char* argv[] )
     Eigen::SparseMatrix<double> R;
     buildMatrices(g, D, A, R); 
 
-    //cout << "D" << endl << D << endl;
-    //cout << "A" << endl << A << endl;
-    //cout << "R" << endl << R << endl;
-
+    cout << "perform community detection" << endl;
     solveMatrices(g, D, A, R);
 
     g.writeCommunities(filenameCommunities);

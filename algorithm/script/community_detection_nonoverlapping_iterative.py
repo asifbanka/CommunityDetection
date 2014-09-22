@@ -3,6 +3,7 @@
 import os
 import shutil
 import operator
+import math
 import numpy as np
 import subprocess as sp
 from collections import defaultdict
@@ -61,35 +62,60 @@ def writeSeedFile(seeds, filename):
     numberOfCommunities = len(seeds.itervalues().next())
     outfile.write(str(numberOfNodes) + " " + str(numberOfCommunities) + "\n")
 
-    for nodeId, affinities in seeds.iteritems():
+    for nodeId, affinities in sorted(seeds.iteritems()):
+    #for nodeId, affinities in seeds.iteritems():
         outfile.write(str(nodeId) + " " + " ".join([str(x) for x in affinities]) + "\n")
 
 # takes keeps only those seed entries which have a maximum value of at least $threshold
 # the maximum values are set to 1, all other values are set to 0
 def updateSeeds(seeds, threshold):
+
+    numberOfSeedNodes = sum(1 for x in seeds.values() if max(x) == 1)
+    numberOfNewSeedNodes = int(math.ceil(numberOfSeedNodes * 1.1))
+    #numberOfNewSeedNodes = numberOfSeedNodes + 1
+
+    sortedItems = sorted(seeds.items(), key=lambda tup: max(tup[1]))
+
+
     newSeeds = defaultdict(list)
-    for nodeId, affinities in seeds.iteritems():
+    for (nodeId, affinities) in sortedItems[-numberOfNewSeedNodes:]:
         maxIndex = np.argmax(affinities)
-        if(affinities[maxIndex]) >= threshold:
-            # if we strongly believe that a certain node belongs to a community
-            newAffinities = ([0.0] * len(affinities))
-            newAffinities[maxIndex] = 1.0
-            newSeeds[nodeId] = newAffinities
+        newAffinities = ([0.0] * len(affinities))
+        newAffinities[maxIndex] = 1.0
+        newSeeds[nodeId] = newAffinities
+
+        if affinities[maxIndex] != 1: 
+            print "add seed with affinity", affinities[maxIndex]
     return newSeeds
 
 
+    #for nodeId, affinities in seeds.iteritems():
+        #maxIndex = np.argmax(affinities)
+        #if(affinities[maxIndex]) >= threshold:
+            #print affinities[maxIndex]
+            ## if we strongly believe that a certain node belongs to a community
+            #newAffinities = ([0] * len(affinities))
+            ##newAffinities[0] = 1
+            #newAffinities[maxIndex] = 1
+            #newSeeds[nodeId] = newAffinities
+    #return newSeeds
+
+
+########################################################
 
 # the name of the temporary seed file for the ith iteration
 def seedFileNo(i):
     return options.seed + "_" + str(i)
 
-# the name of the temporary affinity file for the ith iteration
+# the name of the affinity file for the ith iteration
 def affinityFileNo(i):
     return options.affinities + "_" + str(i)
 
 
 print "copy", options.seed, "to", seedFileNo(0)
-shutil.copy2(options.seed, seedFileNo(0))
+#shutil.copy2(options.seed, seedFileNo(0))
+seeds = readSeedFile(options.seed)
+writeSeedFile(seeds, seedFileNo(0))
 
 for i in range(options.iterations):
 
@@ -100,10 +126,10 @@ for i in range(options.iterations):
         print "error in subprocess"
         exit(1)
 
-    print "write seed nodes from", affinityFileNo(i), "to", seedFileNo(i+1)
+    print "read seed nodes from", affinityFileNo(i), ", modify them, and write them to", seedFileNo(i+1)
     seeds = readSeedFile(affinityFileNo(i))
-    newSeeds = updateSeeds(seeds, 0.5)
+    newSeeds = updateSeeds(seeds, 0.2)
+    print "number of seeds ", len(newSeeds)
     writeSeedFile(newSeeds, seedFileNo(i+1))
 
-shutil.copy2(affinityFileNo(options.iterations-1), options.affinities)
-
+#shutil.copy2(affinityFileNo(options.iterations-1), options.affinities)
