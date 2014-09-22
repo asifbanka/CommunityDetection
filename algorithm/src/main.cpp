@@ -13,8 +13,8 @@ using namespace std;
 int main( int argc, const char* argv[] )
 {
     if(argc < 3) {
-        cout << "usage: " << argv[0] << " $graph $seed $communities" << endl;
-        cout << "where $graph and $seed are the input files and $communities is the output file." << endl;
+        cout << "usage: " << argv[0] << " $graph $seed $affinities" << endl;
+        cout << "where $graph and $seed are the input files and $affinities is the output file." << endl;
         return 1;
     }
 
