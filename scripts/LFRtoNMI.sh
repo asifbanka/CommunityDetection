@@ -43,7 +43,7 @@ echo "=> convert the LFR files to our file format and get the seed nodes"
 $graphParser -g $graphLFR -G $graph -c $communitiesLFR -C $communities -s $seedNodes -n $percentage
 
 echo "=> perform community detection"
-$communityDetection -g $graph -s $seedNodes -a $affinities -i $iterations
+$communityDetection -g $graph -s $seedNodes -a $affinities -i $iterations -f 1.05
 
 rm -f $nmiValue
 echo "=> classify communities and calculate NMI"

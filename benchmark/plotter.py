@@ -1,5 +1,8 @@
 #!/usr/bin/env python2
 
+import matplotlib
+matplotlib.use("pdf")
+
 import matplotlib.pyplot as plt
 import numpy as np
 import json
@@ -30,6 +33,9 @@ def commandline_interface():
     parser.add_option("-f", dest="files", type="string",
         help="Whitespace-separated list json-files. This program plots NMI (y-axis) agains the mixing parameter (x-axis). Each json-file represents one plot-line.")
 
+    parser.add_option("-o", dest="output", type="string",
+        help="pdf output file")
+
     global options, args
     (options, args) = parser.parse_args()
 
@@ -55,5 +61,7 @@ if commandline_interface():
     plt.axis([0,1,0,1])
     plt.xlabel("mixing parameter")
     plt.ylabel("nmi")
-    plt.show()
+
+    plt.savefig(options.output)
+    #plt.show()
 
