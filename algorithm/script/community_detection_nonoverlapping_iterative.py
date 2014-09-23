@@ -48,38 +48,31 @@ def writeSeedFile(seeds, filename):
     #for nodeId, affinities in seeds.iteritems():
         outfile.write(str(nodeId) + " " + " ".join([str(x) for x in affinities]) + "\n")
 
-# takes only those seed entries which have a maximum value of at least "threshold"
-# the maximum values are set to 1, all other values are set to 0
-def addSeedsByThreshold(seeds, threshold):
-    newSeeds = defaultdict(list)
+# for each community increase the number of seed nodes by a factor of "factor"
+# the nodes with the greatest affinity value for each community are added to the seed nodes
+def updateSeeds(seeds, factor):
+    numberOfCommunities = len(seeds.itervalues().next())
+    seedsOfCommunity = [defaultdict(list) for i in range(numberOfCommunities)]
+
     for nodeId, affinities in seeds.iteritems():
         maxIndex = np.argmax(affinities)
-        if(affinities[maxIndex]) >= threshold:
-            newAffinities = ([0.0] * len(affinities))
-            newAffinities[maxIndex] = 1.0
-            newSeeds[nodeId] = newAffinities
-
-            if affinities[maxIndex] != 1: 
-                print "add seed with affinity", affinities[maxIndex]
-
-    return newSeeds
-
-# increase the number of seed nodes by a factor "factor". Add the nodes with the greatest max-affinity value
-# the maximum values are set to 1, all other values are set to 0
-def addSeedsByFactor(seeds, factor):
-    numberOfSeedNodes = sum(1 for x in seeds.values() if max(x) == 1)
-    numberOfNewSeedNodes = int(math.ceil(numberOfSeedNodes * factor))
-    sortedItems = sorted(seeds.items(), key=lambda tup: max(tup[1]))
+        seedsOfCommunity[maxIndex][nodeId] = affinities
 
     newSeeds = defaultdict(list)
-    for (nodeId, affinities) in sortedItems[-numberOfNewSeedNodes:]:
-        maxIndex = np.argmax(affinities)
-        newAffinities = ([0.0] * len(affinities))
-        newAffinities[maxIndex] = 1.0
-        newSeeds[nodeId] = newAffinities
+    for i in range(numberOfCommunities):
+        numberOfSeedNodes = sum(1 for x in seedsOfCommunity[i].values() if max(x) == 1)
+        numberOfNewSeedNodes = int(math.ceil(numberOfSeedNodes * factor))
 
-        if affinities[maxIndex] != 1: 
-            print "add seed with affinity", affinities[maxIndex]
+
+        sortedItems = sorted(seedsOfCommunity[i].items(), key=lambda tup: max(tup[1]))
+
+        for (nodeId, affinities) in sortedItems[-numberOfNewSeedNodes:]:
+            newAffinities = ([0.0] * len(affinities))
+            newAffinities[i] = 1.0
+            newSeeds[nodeId] = newAffinities
+
+            #if affinities[i] != 1: 
+                #print "add seed with affinity", affinities[i], "to community", i
 
     return newSeeds
 
@@ -92,21 +85,17 @@ parser.add_option("-g", "--graph", dest="graph")
 parser.add_option("-s", "--seed", dest="seed", help="")
 parser.add_option("-a", "--affinities", dest="affinities")
 parser.add_option("-i", "--iterations", dest="iterations", type="int")
-parser.add_option("-t", "--iterations_threshold", dest="iterations_threshold", type="float" )
-parser.add_option("-f", "--iterations_factor", dest="iterations_factor", type="float" )
+parser.add_option("-f", "--factor", dest="factor", type="float" )
 (options, args) = parser.parse_args()
 
 valid = True
 if not (options.graph and 
         options.seed and 
         options.affinities and 
-        options.iterations):
+        options.iterations and
+        options.factor):
     print "ERROR: wrong parameters"
-    print "usage: -g graph -s seed -a affinities -i iterations"
-    valid = False
-
-if (options.iterations_factor == None) == (options.iterations_threshold == None):
-    print "the -t and the -f flag are mutually exclusive"
+    print "usage: -g graph -s seed -a affinities -i iterations -f factor"
     valid = False
 
 if valid == False:
@@ -139,6 +128,7 @@ def affinityFileNo(i):
 print "copy", options.seed, "to", seedFileNo(0)
 #shutil.copy2(options.seed, seedFileNo(0))
 seeds = readSeedFile(options.seed)
+print "initial number of seed nodes:", len(seeds)
 writeSeedFile(seeds, seedFileNo(0))
 
 for i in range(options.iterations):
@@ -152,17 +142,10 @@ for i in range(options.iterations):
 
     print "read seed nodes from", affinityFileNo(i), ", modify them, and write them to", seedFileNo(i+1)
     seeds = readSeedFile(affinityFileNo(i))
-
-    newSeeds = 0
-    if(options.iterations_factor):
-        print "add seeds by factor"
-        newSeeds = addSeedsByFactor(seeds, options.iterations_factor)
-    else:
-        print "add seeds by threshold"
-        newSeeds = addSeedsByThreshold(seeds, options.iterations_threshold)
+    newSeeds = updateSeeds(seeds, options.factor)
 
     if len(newSeeds) == 0:
-        raise Exception("got no new seeds for the next round. this is probably due to bad parameters for -t and -f")
+        raise Exception("got no new seeds for the next round. this is probably due to a bad parameter for -f")
 
     print "number of seeds ", len(newSeeds)
     writeSeedFile(newSeeds, seedFileNo(i+1))

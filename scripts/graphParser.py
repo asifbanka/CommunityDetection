@@ -26,7 +26,7 @@ def commandline_interface():
 
     parser.add_option("-s", dest="seed_nodes", type="string",
             help="Output: custom seed-node file")
-    parser.add_option("-n", dest="seed_perc", type="int",
+    parser.add_option("-n", dest="seed_frac", type="float",
             help="percentage of seed nodes (in range 0 to 100)")
    
     global options, args
@@ -57,8 +57,8 @@ def commandline_interface():
         parser.print_help()
         return False
 
-    elif not options.seed_perc:
-        parser.error("seed-node percentage not given")
+    elif not hasattr(options, "seed_frac"):
+        parser.error("seed-node fraction not given")
         parser.print_help()
         return False
 
@@ -120,21 +120,20 @@ def reverse_dictionary(key_valuelist):
     return reversed_dict
 
 # generate seed nodes
-def generate_seeds(community_vertices, max_community, seed_perc):
+def generate_seeds(community_vertices, max_community, seed_frac):
     seed_communities = defaultdict(list)
     total_seeds = 0
     for c in community_vertices:
         # find unique seed nodes of community
         member_count = len(community_vertices[c])
-        seed_count = int(ceil((seed_perc * member_count) / 100))
+        seed_count = 1
+        if seed_frac != 0:
+            seed_count = int(ceil(seed_frac * member_count))
         seed_nodes = sample(community_vertices[c], seed_count)
         total_seeds += len(seed_nodes)
         for s in sorted(seed_nodes):
             seed_communities[s].append(c)
     return seed_communities, total_seeds
-
-#def geenerate_seeds_globally(community_vertices, max_community, seed_perc):
-#    seed_communities = defauldict(list)
 
 
 #write output graph
@@ -188,7 +187,7 @@ if commandline_interface():
         write_communites(options.community_file_output, community_vertices)
         # calculate and write seed file
         seed_communities, total_seeds = generate_seeds(community_vertices, 
-            max_community, options.seed_perc)
+            max_community, options.seed_frac)
         write_seed_nodes(options.seed_nodes, seed_communities, total_seeds, max_community)
     # end of if
     else:

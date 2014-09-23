@@ -24,5 +24,5 @@
 # fail fast
 
 echo "begin benchmark"
-./benchmark_nonOverlapping.py -n "1000" -c "small big" -s "5 10 15 20" -i 100 -m "4 96 2"
+./benchmark_nonOverlapping.py -n "1000" -c "small big" -s "0.05 0.10 0.15 0.20" -i 100 -m "4 96 2"
 echo "end benchmark"

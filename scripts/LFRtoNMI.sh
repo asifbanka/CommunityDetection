@@ -31,7 +31,9 @@ detectedCommunities="tmp_detectedCommunities"
 nmiValue="tmp_nmivalue"
 
 # the number of iterations for the iterative method
-iterations=1
+iterations=20
+# the multiplication factor for the iterative method
+factor=1.1
 
 # fail fast
 set -e
@@ -43,12 +45,12 @@ echo "=> convert the LFR files to our file format and get the seed nodes"
 $graphParser -g $graphLFR -G $graph -c $communitiesLFR -C $communities -s $seedNodes -n $percentage
 
 echo "=> perform community detection"
-$communityDetection -g $graph -s $seedNodes -a $affinities -i $iterations -f 1.05
+$communityDetection -g $graph -s $seedNodes -a $affinities -i $iterations -f $factor
 
 rm -f $nmiValue
 echo "=> classify communities and calculate NMI"
 for i in $(seq 0 $(($iterations-1))); do 
-    echo "($(($i+1))/$iterations)"
+    #echo "($(($i+1))/$iterations)"
     $communityClassifier -a ${affinities}_$i -o 0 -c ${detectedCommunities}_$i
     $NMI $communities ${detectedCommunities}_$i | awk '{print $2 }' >> $nmiValue
 done
