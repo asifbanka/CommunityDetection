@@ -10,8 +10,14 @@ communityClassifier=$ROOT/scripts/communityClassifier.py
 graphParser=$ROOT/scripts/graphParser.py
 NMI=$ROOT/external/NMI/mutual
 
+# write the nmi value to this file
+nmiValue=$1
 # the percentage of seed nodes
-percentage=$1
+percentage=$2
+# the number of rounds for the iterative method
+rounds=$3
+# the other parameters are passed to the LFR benchmark
+LFRParameters="${@:4}"
 
 # the graph output of the lfr
 graphLFR="network.dat"
@@ -27,11 +33,7 @@ seedNodes="tmp_seedNodes"
 affinities="tmp_affinies"
 # the output from the community classifier
 detectedCommunities="tmp_detectedCommunities"
-# write the nmi value to this file
-nmiValue="tmp_nmivalue"
 
-# the number of iterations for the iterative method
-iterations=20
 # the multiplication factor for the iterative method
 factor=1.1
 
@@ -39,18 +41,18 @@ factor=1.1
 set -e
 
 echo "=> run LFR"
-$LFR "${@:2}"
+$LFR $LFRParameters
 
 echo "=> convert the LFR files to our file format and get the seed nodes"
 $graphParser -g $graphLFR -G $graph -c $communitiesLFR -C $communities -s $seedNodes -n $percentage
 
 echo "=> perform community detection"
-$communityDetection -g $graph -s $seedNodes -a $affinities -i $iterations -f $factor
+$communityDetection -g $graph -s $seedNodes -a $affinities -r $rounds -f $factor
 
 rm -f $nmiValue
 echo "=> classify communities and calculate NMI"
-for i in $(seq 0 $(($iterations-1))); do 
-    #echo "($(($i+1))/$iterations)"
+for i in $(seq 0 $(($rounds-1))); do 
+    #echo "($(($i+1))/$rounds)"
     $communityClassifier -a ${affinities}_$i -o 0 -c ${detectedCommunities}_$i
     $NMI $communities ${detectedCommunities}_$i | awk '{print $2 }' >> $nmiValue
 done
@@ -61,8 +63,8 @@ rm $communitiesLFR
 rm $graph
 rm $communities
 rm $seedNodes
-rm ${seedNodes}_$iterations
-for i in $(seq 0 $(($iterations-1))); do 
+rm ${seedNodes}_$rounds
+for i in $(seq 0 $(($rounds-1))); do 
     rm ${seedNodes}_$i
     rm ${affinities}_$i
     rm ${detectedCommunities}_$i

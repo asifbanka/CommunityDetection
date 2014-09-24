@@ -84,7 +84,7 @@ parser = OptionParser()
 parser.add_option("-g", "--graph", dest="graph")
 parser.add_option("-s", "--seed", dest="seed", help="")
 parser.add_option("-a", "--affinities", dest="affinities")
-parser.add_option("-i", "--iterations", dest="iterations", type="int")
+parser.add_option("-r", "--rounds", dest="rounds", type="int")
 parser.add_option("-f", "--factor", dest="factor", type="float" )
 (options, args) = parser.parse_args()
 
@@ -92,10 +92,10 @@ valid = True
 if not (options.graph and 
         options.seed and 
         options.affinities and 
-        options.iterations and
+        options.rounds and
         options.factor):
     print "ERROR: wrong parameters"
-    print "usage: -g graph -s seed -a affinities -i iterations -f factor"
+    print "usage: -g graph -s seed -a affinities -r rounds -f factor"
     valid = False
 
 if valid == False:
@@ -131,7 +131,7 @@ seeds = readSeedFile(options.seed)
 print "initial number of seed nodes:", len(seeds)
 writeSeedFile(seeds, seedFileNo(0))
 
-for i in range(options.iterations):
+for i in range(options.rounds):
 
     print "------------"
 
@@ -150,4 +150,4 @@ for i in range(options.iterations):
     print "number of seeds ", len(newSeeds)
     writeSeedFile(newSeeds, seedFileNo(i+1))
 
-#shutil.copy2(affinityFileNo(options.iterations-1), options.affinities)
+#shutil.copy2(affinityFileNo(options.rounds-1), options.affinities)
