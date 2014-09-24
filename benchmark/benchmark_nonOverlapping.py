@@ -47,6 +47,9 @@ class Benchmark:
         elif communitySize == "big":
             self.minc = 20 
             self.maxc = 100 
+        elif communitySize == "100-200":
+            self.minc = 100
+            self.maxc = 200 
         else:
             raise Exception("wrong parameter for communitySize. it must either be small or big")
 
@@ -253,23 +256,15 @@ if commandline_interface():
     seedFractions   = [float(s) for s in options.seedFractions.split()]
     iterations      = options.iterations
 
-    tmp = [float(x) for x in options.mixingRange.split()]
-    print tmp
+    tmp             = [float(x) for x in options.mixingRange.split()]
     mixingRange     = [x for x in np.arange(tmp[0], tmp[1], tmp[2])]
-    print mixingRange
 
 
-    for c in communitySizes:
-        if c != "big" and c != "small":
-            raise Exception("wrong parameter for communitySize. it must either be small or big")
-
-
-    print "will run the following benchmarks:"
-
-    print "outputfolder =", options.outputfolder
+    print "outputfolder:", options.outputfolder
     if not os.path.exists(options.outputfolder):
         os.makedirs(options.outputfolder)
 
+    print "will run the following benchmarks:"
     benchmarks = []
     for N in numberOfNodes:
         for size in communitySizes:
@@ -277,6 +272,7 @@ if commandline_interface():
                 print "> create Benchmark(", N, size, seed, iterations, mixingRange, options.rounds, ")"
                 benchmarks.append(Benchmark(N, size, seed, iterations, mixingRange, options.rounds))
 
+    print "start benchmarks"
     for benchmark in benchmarks:
         benchmark.run()
         benchmark.dump()
