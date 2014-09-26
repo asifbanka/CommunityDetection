@@ -40,17 +40,16 @@ def commandline_interface():
 
     return True
 
-# read LFR network file
 def read_affinity(file):
     with open (file, "r") as f:
         affinities = defaultdict(list)
-        next(f) # overread first line 
-        for i, line in enumerate(f):
-            numbers = line.split()
-            # iterate over affinity values of vertex
-            index = int(numbers[0])
-            for m in numbers[1:]:
-                affinities[index].append(float(m))
+
+        #split all lines except for the first one into lists of strings
+        affinitySplits = [line.split() for line in f.readlines()[1:]]
+
+        for split in affinitySplits:
+            index = int(split[0])
+            affinities[index] = [float(a) for a in split[1:]]
             
             s = sum(affinities[index])
             if not ( 0.99 < s and s < 1.01):

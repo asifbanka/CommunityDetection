@@ -7,27 +7,157 @@ from collections import defaultdict
 from collections import deque
 from random import sample
 from math import ceil
-import re
 
-# interface
+##########################################
+#
+# GRAPH
+#
+# Internally, the graph is represented as a dictionary. 
+# This dictionary maps the ids of each node (starting at 0) to its neighbours
+
+
+# Read LFR network file.
+# In the LFR file the ids start at one. we subtract 1 to let the ids start at 0.
+def readGraph(filename):
+    with open (filename, "r") as f:
+
+        # split strings into ints on whitespaces and subtract 1 from each value
+        edges = [[(int(vertex)-1) for vertex in line.split()] for line in f.readlines()]
+
+        graph = defaultdict(list)
+        for edge in edges:
+            if len(edge) != 2:
+                raise Exception("there must be exactly two entries in each line of the input graph")
+            graph[edge[0]].append(edge[1])
+    return graph
+
+
+# Write output graph in our custom format
+# The number and nodes and edges are written in the first line, then a list of edges follow.
+def writeGraph(graph, filename):
+    numVertices = len(graph)
+    numEdges = 0
+    for neighbours in graph.values():
+        numEdges += len(neighbours)
+    with open (filename, "w") as f:
+        f.write("{0} {1}".format(numVertices, numEdges))
+        for v, neighbours in graph.iteritems():
+            for n in neighbours:
+                f.write("\n{0} {1}".format(v, n))
+
+
+# Check connectivity by performing a dfs search.
+def isConnected(graph):
+    visited = set() 
+    # start at node 0
+    queue = deque([0])
+    while queue:
+        vertex = queue.popleft()
+        if vertex not in visited:
+            visited.add(vertex)
+            for neighbour in graph[vertex]:
+                if neighbour not in visited:
+                    queue.append(neighbour)
+    return len(visited) == len(graph)
+
+
+##########################################
+#
+# COMMUNIY INFORMATION
+#
+# Community information is stored internally in two different ways:
+# 
+# The first is a map which maps each vertex to the communities it belongs to.
+# This structure will be called "vertexToCommunities"
+# 
+# The second one maps each community to the vertices which are part of it
+# this structure is called "communityToVertices".
+
+
+# Read LFR community file.
+# The input is a file which where each line consists 
+# of a nodeid and then a list of communities this node belongs to
+# Ids of nodes and communities in the LFR file start at 1, we subtract 1 to let those ids start at 0.
+# Returns vertexToCommunities and communityToVertices, as decribed above.
+def readCommunities(filename):
+    vertexToCommunities = defaultdict(list)
+    with open (filename, "r") as f:
+        belongings = [[(int(x) - 1) for x in line.split()] for line in f.readlines()]
+        for belonging in belongings:
+            vertexToCommunities[belonging[0]] = belonging[1:]
+
+    # remap value list as keys, keys as values
+    communityToVertices = defaultdict(list)
+    for vertex, communities in vertexToCommunities.iteritems():
+        for c in communities:
+            communityToVertices[c].append(vertex)
+
+    return vertexToCommunities, communityToVertices
+
+# Write output community file.
+# Each line represents one community and lists all the vertices in this community.
+def writeCommunites(communityToVertices, filename):
+    with open (filename, "w") as f:
+        for vertices in communityToVertices.values():
+            f.write(" ".join([str(x) for x in vertices]) + "\n")
+
+
+##########################################
+#
+# SEEDS
+#
+# seeds are stored in a set
+
+
+# Generate seed nodes.
+# Pick a fraction of "seedFraction" nodes from each community.
+# The number of seeds per community is at least 1 and rounded to the next bigger integer
+def generateSeeds(communityToVertices, seedFraction):
+    seeds = set()
+    for c in communityToVertices:
+        if seedFraction == 0:
+            seedCount = 1
+        else:
+            seedCount = int(ceil(seedFraction * len(communityToVertices[c])))
+        seeds = seeds.union(sample(communityToVertices[c], seedCount))
+    return seeds
+
+
+# Write seed-information to file.
+def writeSeeds(seeds, communityToVertices, vertexToCommunities, filename):
+    with open (filename, "w") as f:
+        numberOfCommunities = len(communityToVertices)
+        f.write("{0} {1}".format(len(seeds), numberOfCommunities))
+        for seed in seeds:
+            tmp = [0] * numberOfCommunities
+            for community in vertexToCommunities[seed]:
+                tmp[community] = 1
+            f.write("\n" + str(seed) + " " + " ".join([str(x) for x in tmp]))
+
+
+##########################################
+#
+# COMMAND LINE INTERFACE
+
+
 def commandline_interface():
     usage = "usage: %prog"
     parser = OptionParser()
    
     parser.add_option("-g", dest="graph_file_input", type="string",
             help="Input: LFR benchmark graph file")
-    parser.add_option("-c", dest="community_file_input", type="string",
-            help="Input: LFR benchmark community network")
-
     parser.add_option("-G", dest="graph_file_output", type="string",
             help="Output: custom graph file")
+
+    parser.add_option("-c", dest="community_file_input", type="string",
+            help="Input: LFR benchmark community network")
     parser.add_option("-C", dest="community_file_output", type="string",
             help="Output: custom community file")
 
     parser.add_option("-s", dest="seed_nodes", type="string",
             help="Output: custom seed-node file")
     parser.add_option("-n", dest="seed_frac", type="float",
-            help="percentage of seed nodes (in range 0 to 100)")
+            help="fraction of seed nodes (in range 0.0 to 1.0)")
    
     global options, args
     (options, args) = parser.parse_args()
@@ -37,13 +167,13 @@ def commandline_interface():
         parser.print_help()
         return False
 
-    elif not options.community_file_input:
-        parser.error("input community file not given")
+    elif not options.graph_file_output:
+        parser.error("output graph file not given")
         parser.print_help()
         return False
 
-    elif not options.graph_file_output:
-        parser.error("output graph file not given")
+    elif not options.community_file_input:
+        parser.error("input community file not given")
         parser.print_help()
         return False
 
@@ -64,132 +194,30 @@ def commandline_interface():
 
     return True
 
-# read LFR network file
-def read_graph(file):
-    with open (file, "r") as f:
-        graph = defaultdict(list)
-        max_vertex = 0
-        # store edges
-        for i, line in enumerate(f):
-            match = number.findall(line.strip())
-            vertex = int(match[0]) - 1
-            neighbour = int(match[1]) - 1
-            # update number of vertices
-            m = max(vertex, neighbour)
-            if m > max_vertex:
-                max_vertex = m
-            # update adjaceny list
-            graph[vertex].append(neighbour)
-    return graph, max_vertex, i
 
-# read LFR community file
-def read_community(file):
-    with open (file, "r") as f:
-        vertex_communities = defaultdict(list)
-        max_community = 0
-        #genrate community adjacency list
-        for line in f:
-            match = number.findall(line.strip())
-            for m in match[1:]:
-                vertex_communities[int(match[0]) - 1].append(int(m) - 1)
-                # update number of communities (needed later on)
-                if int(m) - 1 > max_community:
-                    max_community = int(m) - 1
-    return vertex_communities, max_community
+##########################################
+#
+# MAIN PROGRAM
 
-# check connectivity
-def dfs(graph, start, max_vertex):
-    visited = set() 
-    queue = deque([start])
-    while queue:
-        vertex = queue.popleft()
-        if vertex not in visited:
-            visited.add(vertex)
-            for neighbour in graph[vertex]:
-                if neighbour not in visited:
-                    queue.append(neighbour)
-    # get length of connected component
-    return len(visited) - max_vertex == 1
-
-# remap value list as keys, keys as values
-def reverse_dictionary(key_valuelist):
-    reversed_dict = defaultdict(list)
-    for k in key_valuelist:
-        for v in key_valuelist[k]:
-            reversed_dict[v].append(k)
-    return reversed_dict
-
-# generate seed nodes
-def generate_seeds(community_vertices, max_community, seed_frac):
-    seed_communities = defaultdict(list)
-    total_seeds = 0
-    for c in community_vertices:
-        # find unique seed nodes of community
-        member_count = len(community_vertices[c])
-        seed_count = 1
-        if seed_frac != 0:
-            seed_count = int(ceil(seed_frac * member_count))
-        seed_nodes = sample(community_vertices[c], seed_count)
-        total_seeds += len(seed_nodes)
-        for s in sorted(seed_nodes):
-            seed_communities[s].append(c)
-    return seed_communities, total_seeds
-
-
-#write output graph
-def write_graph(file, graph, max_vertex, max_edge):
-    with open (file, "w") as file:
-        # number of vertices, numberOfEdges
-        file.write("{0} {1}".format(max_vertex + 1, max_edge + 1))
-        for v, neighbours in graph.iteritems():
-            for n in neighbours:
-                file.write("\n{0} {1}".format(v, n))
-
-#write output community file
-def write_communites(file, community_vertices):
-    with open (file, "w") as file:
-        for c, vertices in community_vertices.iteritems():
-            file.write("{0}".format(vertices[0]))
-            for v in vertices[1:]:
-                file.write(" {0}".format(v))
-            file.write("\n")
-
-#write output seed_nodes
-def write_seed_nodes(file, seed_communities, total_seeds, max_community):
-    with open (file, "w") as file:
-        # number of seed nodes, number of communities
-        file.write("{0} {1}".format(total_seeds, max_community + 1))
-        for s, communities in seed_communities.iteritems():
-            file.write("\n{0}".format(s))
-            i = 0
-            for c in sorted(communities):
-                while (i < c):
-                    file.write(" 0")
-                    i += 1
-                file.write(" 1")
-                j = c
-                while (j < max_community):
-                    file.write(" 0")
-                    j += 1
-
-# main program
 options, args = 0, 0
 if commandline_interface():
-    # read graph
-    number = re.compile(r'[0-9]+')
-    graph, max_vertex, max_edge = read_graph(options.graph_file_input)
-    # proceed if the graph is connected
-    if dfs(graph, 0, max_vertex):
-        write_graph(options.graph_file_output, graph, max_vertex, max_edge)
-        # read, process, and write community file
-        vertex_communities, max_community = read_community(options.community_file_input)
-        community_vertices = reverse_dictionary(vertex_communities)
-        write_communites(options.community_file_output, community_vertices)
-        # calculate and write seed file
-        seed_communities, total_seeds = generate_seeds(community_vertices, 
-            max_community, options.seed_frac)
-        write_seed_nodes(options.seed_nodes, seed_communities, total_seeds, max_community)
-    # end of if
-    else:
-        sys.stderr.write(datetime.datetime.now() + " - Error: Graph file is not one connected component!\n")
+
+    graph = readGraph(options.graph_file_input)
+
+    if not isConnected(graph):
+        # fail if graph is not connected
+        sys.stderr.write(datetime.datetime.now() + " - ERROR: Graph file is not one connected component.\n")
         sys.exit(1)
+    else:
+        # proceed if graph is connected
+
+        #write the graph to file in our custom format
+        writeGraph(graph, options.graph_file_output)
+
+        # read, process, and write community file
+        vertexToCommunities, communityToVertices = readCommunities(options.community_file_input)
+        writeCommunites(communityToVertices, options.community_file_output)
+
+        # pick seeds and write seed file
+        seeds = generateSeeds(communityToVertices, options.seed_frac)
+        writeSeeds(seeds, communityToVertices, vertexToCommunities, options.seed_nodes)

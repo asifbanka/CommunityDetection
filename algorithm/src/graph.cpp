@@ -35,7 +35,6 @@ void Graph::readGraph(std::istream &isGraph, std::istream &isSeed) {
     }
 
     int tmp = 0;
-    //for(auto && i : mNodeAttributes) {
     for(auto node = mNodeAttributes.begin(); node != mNodeAttributes.end(); node++) {
         tmp += node->neighbors.size();
     }
