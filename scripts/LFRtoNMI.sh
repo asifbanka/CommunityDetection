@@ -53,7 +53,7 @@ rm -f $nmiValue
 echo "=> classify communities and calculate NMI"
 for i in $(seq 0 $(($rounds-1))); do 
     #echo "($(($i+1))/$rounds)"
-    $communityClassifier -a ${affinities}_$i -o 0 -c ${detectedCommunities}_$i
+    $communityClassifier -a ${affinities}_$i -c ${detectedCommunities}_$i
     $NMI $communities ${detectedCommunities}_$i | awk '{print $2 }' >> $nmiValue
 done
 
