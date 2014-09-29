@@ -2,15 +2,15 @@
 
 import sys
 import datetime
-from graph import Graph
-from communities import Communities
 from optparse import OptionParser
+from graph import Graph
+
+from communityutils import *
 
 
 ##########################################
 #
 # COMMAND LINE INTERFACE
-
 
 def commandline_interface():
     parser = OptionParser()
@@ -66,9 +66,6 @@ def commandline_interface():
     return True
 
 
-
-
-
 ##########################################
 #
 # MAIN PROGRAM
@@ -77,7 +74,7 @@ options, args = 0, 0
 if commandline_interface():
 
     graph = Graph()
-    graph.readGraph(options.graph_file_input)
+    graph.readGraphLFR(options.graph_file_input)
 
     if not graph.isConnected():
         # fail if graph is not connected
@@ -87,13 +84,14 @@ if commandline_interface():
         # proceed if graph is connected
 
         #write the graph to file in our custom format
-        graph.writeGraph(options.graph_file_output)
+        graph.writeGraphCustom(options.graph_file_output)
 
         # read, process, and write community file
-        communitites = Communities()
-        communitites.readCommunities(options.community_file_input)
-        communitites.writeCommunites(options.community_file_output)
+        communities = Communities()
+        communities.readCommunitiesLFR(options.community_file_input)
+        communities.writeCommunitesCustom(options.community_file_output)
 
         # pick seeds and write seed file
-        communitites.generateSeeds(options.seed_frac)
-        communitites.writeSeeds(options.seed_nodes)
+        seeds = Seeds(communities)
+        seeds.generateSeeds(options.seed_frac)
+        seeds.writeSeedsCustom(options.seed_nodes)
