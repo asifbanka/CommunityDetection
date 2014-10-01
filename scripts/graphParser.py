@@ -92,6 +92,5 @@ if commandline_interface():
         communities.writeCommunitesCustom(options.community_file_output)
 
         # pick seeds and write seed file
-        seeds = Seeds(communities)
-        seeds.generateSeeds(options.seed_frac)
-        seeds.writeSeedsCustom(options.seed_nodes)
+        seeds = communities.generateSeeds(options.seed_frac)
+        communities.writeSeedsCustom(seeds, options.seed_nodes)

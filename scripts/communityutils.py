@@ -204,12 +204,13 @@ class Communities(object):
     # The number of seeds per community is at least 1 and rounded to the next bigger integer
     def generateSeeds(self, seedFraction):
         seeds = set()
-        for c in self.communities.communityToVertices:
+        for c in self.communityToVertices:
             if seedFraction == 0:
                 seedCount = 1
             else:
-                seedCount = int(ceil(seedFraction * len(self.communities.communityToVertices[c])))
-            seeds = seeds.union(sample(self.communities.communityToVertices[c], seedCount))
+                seedCount = int(ceil(seedFraction * len(self.communityToVertices[c])))
+            seeds = seeds.union(sample(self.communityToVertices[c], seedCount))
+        return seeds
 
         return seeds
 
@@ -222,9 +223,9 @@ class Communities(object):
             raise Exception("seeds need to be generated first")
         with open (filename, "w") as f:
             
-            f.write("{0} {1}".format(len(seeds), self.communities.numberOfCommunities))
+            f.write("{0} {1}".format(len(seeds), self.numberOfCommunities))
             for seed in seeds:
-                tmp = [0] * self.communities.numberOfCommunities
-                for community in self.communities.vertexToCommunities[seed]:
+                tmp = [0] * self.numberOfCommunities
+                for community in self.vertexToCommunities[seed]:
                     tmp[community] = 1
                 f.write("\n" + str(seed) + " " + " ".join([str(x) for x in tmp]))
