@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 
+import numpy.random as npr
 from collections import defaultdict
 from collections import deque
 from random import sample
@@ -199,6 +200,7 @@ class Communities(object):
 
         self._reverseMapping()
 
+
     # Generate seed nodes from a community object.
     # Pick a fraction of "seedFraction" nodes from each community.
     # The number of seeds per community is at least 1 and rounded to the next bigger integer
@@ -212,10 +214,28 @@ class Communities(object):
             seeds = seeds.union(sample(self.communityToVertices[c], seedCount))
         return seeds
 
-        return seeds
 
-    def generateHighestDegreeSeeds(self, seedFraction):
+    def generateHighestDegreeSeeds(self, graph, seedFraction):
         seeds = set()
+
+        for c, vertices in self.communityToVertices.iteritems():
+            communityDegree = 0
+
+            probabilities = list()
+            for vertex in vertices:
+                communityDegree += len(graph.vertexToNeighbours[vertex])
+
+            for vertex in vertices:
+                probabilities.append(len(graph.vertexToNeighbours[vertex]) / float(communityDegree))
+
+            if seedFraction == 0:
+                seedCount = 1
+            else:
+                seedCount = int(ceil(seedFraction * len(self.communityToVertices[c])))
+
+            tmp = npr.choice(vertices, seedCount, replace=False, p=probabilities)
+            seeds = seeds.union(tmp)
+        return seeds
 
     # Write seed-information to file in affinity-fileformat.
     def writeSeedsCustom(self, seeds, filename):

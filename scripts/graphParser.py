@@ -3,7 +3,6 @@
 import sys
 import datetime
 from optparse import OptionParser
-from graph import Graph
 
 from communityutils import *
 
@@ -92,5 +91,5 @@ if commandline_interface():
         communities.writeCommunitesCustom(options.community_file_output)
 
         # pick seeds and write seed file
-        seeds = communities.generateSeeds(options.seed_frac)
+        seeds = communities.generateHighestDegreeSeeds(graph, options.seed_frac)
         communities.writeSeedsCustom(seeds, options.seed_nodes)
