@@ -199,7 +199,7 @@ class Communities(object):
 
         self._reverseMapping()
 
-        # Generate seed nodes from a community object.
+    # Generate seed nodes from a community object.
     # Pick a fraction of "seedFraction" nodes from each community.
     # The number of seeds per community is at least 1 and rounded to the next bigger integer
     def generateSeeds(self, seedFraction):
