@@ -129,7 +129,6 @@ class Communities(object):
         self.communityToVertices = None
         self.numberOfCommunities = None
 
-
     # A helper function which calculates "communityToVerties" and 
     # "numberOfCommunities" from "vertexToCommunities".
     def _reverseMapping(self):
@@ -200,39 +199,31 @@ class Communities(object):
 
         self._reverseMapping()
 
-
-##########################################
-#
-# SEEDS
-#
-# Seeds are picked from the communities-object and stored as a set of vertex ids
-
-class Seeds(object):
-    def __init__(self, communities):
-        self.seeds = None
-        self.communities = communities
-
-    # Generate seed nodes from a community object.
+        # Generate seed nodes from a community object.
     # Pick a fraction of "seedFraction" nodes from each community.
     # The number of seeds per community is at least 1 and rounded to the next bigger integer
     def generateSeeds(self, seedFraction):
-        self.seeds = set()
+        seeds = set()
         for c in self.communities.communityToVertices:
             if seedFraction == 0:
                 seedCount = 1
             else:
                 seedCount = int(ceil(seedFraction * len(self.communities.communityToVertices[c])))
-            self.seeds = self.seeds.union(sample(self.communities.communityToVertices[c], seedCount))
-        
+            seeds = seeds.union(sample(self.communities.communityToVertices[c], seedCount))
+
+        return seeds
+
+    def generateHighestDegreeSeeds(self, seedFraction):
+        seeds = set()
 
     # Write seed-information to file in affinity-fileformat.
-    def writeSeedsCustom(self, filename):
-        if self.seeds is None:
+    def writeSeedsCustom(self, seeds, filename):
+        if seeds is None:
             raise Exception("seeds need to be generated first")
         with open (filename, "w") as f:
             
-            f.write("{0} {1}".format(len(self.seeds), self.communities.numberOfCommunities))
-            for seed in self.seeds:
+            f.write("{0} {1}".format(len(seeds), self.communities.numberOfCommunities))
+            for seed in seeds:
                 tmp = [0] * self.communities.numberOfCommunities
                 for community in self.communities.vertexToCommunities[seed]:
                     tmp[community] = 1
