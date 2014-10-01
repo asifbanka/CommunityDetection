@@ -18,7 +18,10 @@ def commandline_interface():
     parser.add_option("-a", dest="affinity_file", type="string",
         help="Input: affinity vectors, as given by the c++ algorithm")
 
-    parser.add_option("-c", dest="classified_communities_file", type="string",
+    parser.add_option("-c", dest="actual_communities_file", type="string",
+            help="Output: classified communities")
+
+    parser.add_option("-C", dest="classified_communities_file", type="string",
             help="Output: classified communities")
     
     #parser.add_option("-o", dest="overlapping", type="int",
@@ -55,6 +58,10 @@ if commandline_interface():
     affinities = Affinities()
     affinities.readAffinitiesCustom(options.affinity_file)
 
+    actualCommunities = Communities()
+    actualCommunities.readCommunitiesLFR(options.actual_communities_file)
+
     communities = Communities()
-    communities.classifyCommunities(affinities)
+    #communities.classifyCommunities(affinities)
+    communities.classifyCommunitiesOverlapping(affinities, actualCommunities)
     communities.writeCommunitesCustom(options.classified_communities_file)

@@ -25,7 +25,7 @@ def commandline_interface():
     parser.add_option("-C", dest="community_file_output", type="string",
             help="Output: custom community file")
 
-    parser.add_option("-s", dest="seed_nodes", type="string",
+    parser.add_option("-S", dest="seed_nodes", type="string",
             help="Output: custom seed-node file")
     parser.add_option("-n", dest="seed_frac", type="float",
             help="fraction of seed nodes (in range 0.0 to 1.0)")

@@ -155,28 +155,50 @@ class Communities(object):
         self._reverseMapping()
 
 
-    # Classify communities from the affinity output of the c++ algorithm.
-    # Simply assign the vertex the the community with the maximum affinity-value.
-    def classifyCommunities(self, affinities):
-        communitiesPerVertex = 1
-        self.vertexToCommunities = defaultdict(list)
-        for vertex, affinities in affinities.vertexToAffinities.iteritems():
-            # Put affinities with their index (the corresponding community) in tuple 
-            # and sort them by first entry (affinity). 
-            # Then extract the second entry (the community) from each tuple.
-            sortedTuples = sorted([(v,i) for i,v in enumerate(affinities)])
-            # The list was sorted ascending, so take communities from the end.
-            communities = [i for (v,i) in sortedTuples][-communitiesPerVertex:]
-            self.vertexToCommunities[vertex] = communities
-        self._reverseMapping()
-
-
     # Write output community file.
     # Each line represents one community and lists all the vertices in this community.
     def writeCommunitesCustom(self, filename):
         with open (filename, "w") as f:
             for vertices in self.communityToVertices.values():
                 f.write(" ".join([str(x) for x in vertices]) + "\n")
+
+
+    # Classify communities from the affinity output of the c++ algorithm.
+    # Simply assign the vertex the the community with the maximum affinity-value.
+    def classifyCommunities(self, affinities):
+        communitiesPerVertex = 1
+        self.vertexToCommunities = defaultdict(list)
+        for vertex, affinities in affinities.vertexToAffinities.iteritems():
+            maxIndex = max([(v,i) for i,v in enumerate(affinities)])[1]
+            self.vertexToCommunities[vertex] = [maxIndex]
+        self._reverseMapping()
+
+    # Classify communities from the affinity output of the c++ algorithm.
+    # Simply assign the vertex the the community with the maximum affinity-value.
+    def classifyCommunitiesOverlapping(self, affinities, actualCommunities):
+        self.vertexToCommunities = defaultdict(list)
+        for vertex, affinities in affinities.vertexToAffinities.iteritems():
+            # Put affinities with their index (the corresponding community) in tuple 
+            # and sort them by first entry (affinity). 
+            # Then extract the second entry (the community) from each tuple.
+            sortedTuples = sorted([(v,i) for i,v in enumerate(affinities)])
+            sortedTuples.reverse()
+
+            foo = actualCommunities.vertexToCommunities[vertex]
+            numberOfCommunities = len(foo)
+
+            communities = [i for (v,i) in sortedTuples][:numberOfCommunities]
+            self.vertexToCommunities[vertex] = communities
+
+            #s = sum(affinities)
+            #s = sortedTuples[0][0] - sortedTuples[1][0]
+            #if numberOfCommunities == 1:
+                #print "aaa", s
+            #if numberOfCommunities == 2:
+                #print "bbb", s
+            #print "ccc", s
+
+        self._reverseMapping()
 
 
 ##########################################

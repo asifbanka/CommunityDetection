@@ -4,8 +4,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOT=$DIR/..
 
 LFR=$ROOT/external/binary_networks/benchmark
-#communityDetection=$ROOT/algorithm/build/community_detection
-communityDetection=$ROOT/algorithm/script/community_detection_nonoverlapping_iterative.py
+communityDetection=$ROOT/scripts/communityDetectionIterative.py
 communityClassifier=$ROOT/scripts/communityClassifier.py
 graphParser=$ROOT/scripts/graphParser.py
 NMI=$ROOT/external/NMI/mutual
@@ -44,16 +43,16 @@ echo "=> run LFR"
 $LFR $LFRParameters
 
 echo "=> convert the LFR files to our file format and get the seed nodes"
-$graphParser -g $graphLFR -G $graph -c $communitiesLFR -C $communities -s $seedNodes -n $percentage
+$graphParser -g $graphLFR -G $graph -c $communitiesLFR -C $communities -S $seedNodes -n $percentage
 
 echo "=> perform community detection"
-$communityDetection -g $graph -s $seedNodes -a $affinities -r $rounds -f $factor
+$communityDetection -g $graph -s $seedNodes -A $affinities -r $rounds -f $factor
 
 rm -f $nmiValue
 echo "=> classify communities and calculate NMI"
 for i in $(seq 0 $(($rounds-1))); do 
     #echo "($(($i+1))/$rounds)"
-    $communityClassifier -a ${affinities}_$i -c ${detectedCommunities}_$i
+    $communityClassifier -a ${affinities}_$i -c $communitiesLFR -C ${detectedCommunities}_$i
     $NMI $communities ${detectedCommunities}_$i | awk '{print $2 }' >> $nmiValue
 done
 
