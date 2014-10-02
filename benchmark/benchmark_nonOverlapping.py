@@ -129,6 +129,7 @@ class Benchmark:
                        , nmiFileName
                        , str(self.seedFraction)
                        , str(self.rounds)
+                       , "degree"
                        , "-k", str(self.k)
                        , "-maxk" ,str(self.maxk)
                        , "-t1", str(self.t1)
