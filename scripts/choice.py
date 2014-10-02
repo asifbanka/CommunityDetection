@@ -28,13 +28,3 @@ def choice(a, size=1, replace=True, p=None):
                         output.append(a[index])
                         picked = picked + 1
         return output
-
-
-
-
-
-a = [1,2,3,4,5,6,7,8,9]
-p = [0.0,0.5,0.1,0.1,0.2,0.0,0.0,0.1,0.0]
-
-samples = choice (a,20,True,p)
-print samples
