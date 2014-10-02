@@ -28,6 +28,9 @@ def commandline_interface():
             help="Output: custom seed-node file")
     parser.add_option("-n", dest="seed_frac", type="float",
             help="fraction of seed nodes (in range 0.0 to 1.0)")
+
+    parser.add_option("-s", dest="seed_strategy", type="string",default="uniform",
+            help="strategy for picking seed nodes (uniform,degree)")
    
     global options, args
     (options, args) = parser.parse_args()
@@ -91,5 +94,11 @@ if commandline_interface():
         communities.writeCommunitesCustom(options.community_file_output)
 
         # pick seeds and write seed file
-        seeds = communities.generateHighestDegreeSeeds(graph, options.seed_frac)
+        if options.seed_strategy == "uniform":
+            seeds = communities.generateSeeds(options.seed_frac)
+        elif options.seed_strategy == "degree":
+            seeds = communities.generateHighestDegreeSeeds(graph, options.seed_frac)
+        else:
+            raise Exception("unknown parameter {0} for strategy".format(options.seed_strategy))
+        
         communities.writeSeedsCustom(seeds, options.seed_nodes)

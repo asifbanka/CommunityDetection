@@ -15,8 +15,13 @@ nmiValue=$1
 percentage=$2
 # the number of rounds for the iterative method
 rounds=$3
+
+#strategy for picking seed nodes
+seed_strategy=$4
+
 # the other parameters are passed to the LFR benchmark
-LFRParameters="${@:4}"
+LFRParameters="${@:5}"
+
 
 # the graph output of the lfr
 graphLFR="network.dat"
@@ -43,7 +48,7 @@ echo "=> run LFR"
 $LFR $LFRParameters
 
 echo "=> convert the LFR files to our file format and get the seed nodes"
-$graphParser -g $graphLFR -G $graph -c $communitiesLFR -C $communities -S $seedNodes -n $percentage
+$graphParser -g $graphLFR -G $graph -c $communitiesLFR -C $communities -S $seedNodes -n $percentage -s $seed_strategy
 
 echo "=> perform community detection"
 $communityDetection -g $graph -s $seedNodes -A $affinities -r $rounds -f $factor
