@@ -5,6 +5,7 @@ from collections import defaultdict
 from collections import deque
 from random import sample
 from math import ceil
+import choice
 
 ##########################################
 #
@@ -233,7 +234,7 @@ class Communities(object):
             else:
                 seedCount = int(ceil(seedFraction * len(self.communityToVertices[c])))
 
-            tmp = npr.choice(vertices, seedCount, replace=False, p=probabilities)
+            tmp = choice.choice(vertices, seedCount, replace=False, p=probabilities)
             seeds = seeds.union(tmp)
         return seeds
 
@@ -249,3 +250,8 @@ class Communities(object):
                 for community in self.vertexToCommunities[seed]:
                     tmp[community] = 1
                 f.write("\n" + str(seed) + " " + " ".join([str(x) for x in tmp]))
+
+    
+
+
+
