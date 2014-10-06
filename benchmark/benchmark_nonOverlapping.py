@@ -119,27 +119,27 @@ class Benchmark:
                 #call graph generator and calculate nmi
 
                 # this scripts generates a graph, runs the algorithm and calculates the nmi
-                scriptName = ROOT + "/scripts/LFRtoNMI.sh"
+                scriptName = ROOT + "/scripts/LFRtoNMI.py"
                 # the file the script stores the nmi values in
                 nmiFileName = "tmp_nmivalues"
 
                 if not os.path.isfile(scriptName):
-                        raise Exception("path to LFRtoNMI.sh is wrong")
+                        raise Exception("path to LFRtoNMI.py is wrong")
                 call = [ scriptName
-                       , nmiFileName
-                       , str(self.seedFraction)
-                       , str(self.rounds)
-                       , "degree"
-                       , "-k", str(self.k)
-                       , "-maxk" ,str(self.maxk)
-                       , "-t1", str(self.t1)
-                       , "-t2", str(self.t2)
-                       , "-minc",str(self.minc)
-                       , "-maxc", str(self.maxc)
-                       , "-mu", str(mu)
-                       , "-N", str(self.N)
-                       , "-on", str(self.on)
-                       , "-om", str(self.om)
+                       , "-o", nmiFileName
+                       , "-s", str(self.seedFraction)
+                       , "-r", str(self.rounds)
+                       , "--seed_strategy", "degree"
+                       , "--k", str(self.k)
+                       , "--maxk" ,str(self.maxk)
+                       , "--t1", str(self.t1)
+                       , "--t2", str(self.t2)
+                       , "--minc",str(self.minc)
+                       , "--maxc", str(self.maxc)
+                       , "--mu", str(mu)
+                       , "--N", str(self.N)
+                       , "--on", str(self.on)
+                       , "--om", str(self.om)
                        ]
                 returnValue = sp.call(call, stdin=None , stderr=LOGERROR, stdout=DEVNULL, shell=False)
 
