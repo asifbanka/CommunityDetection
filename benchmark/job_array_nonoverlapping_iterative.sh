@@ -1,7 +1,7 @@
-#!/usr/bin/env sh
+#!/usr/bin/env zsh
 
 ### Job name
-#BSUB -J NONOVERLAPPING_ITERATIVE[1-5]
+#BSUB -J NONOVERLAPPING_ITERATIVE[1-8]
 
 ### File / path where STDOUT & STDERR will be written
 ###    %J is the job ID, %I is the array ID
@@ -30,7 +30,14 @@ tmpdir=tmpdir_$LSB_JOBINDEX
 rm -rf $tmpdir
 mkdir $tmpdir
 cd $tmpdir
-../benchmark_nonOverlapping.py -n 1000 -c 100-200 -s 0.0$LSB_JOBINDEX -o ../nmivalues -i 20 -m "0.08 0.61 0.04" -r 48
+if [ $LSB_JOBINDEX -gt 4 ] ; then
+    percentage=$((0.05 * ($LSB_JOBINDEX - 4)))
+    size=small
+else
+    percentage=$((0.05 * ($LSB_JOBINDEX - 0)))
+    size=big
+fi
+../benchmark_nonOverlapping.py -n 1000 -c $size -s $percentage -o ../../../output -i 100 -m "0.05 0.9 0.04" -r 1
 
 #cd ..
 #rm -rf $tmpdir
