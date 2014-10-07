@@ -58,10 +58,10 @@ if commandline_interface():
     affinities = Affinities()
     affinities.readAffinitiesCustom(options.affinity_file)
 
-    actualCommunities = Communities()
-    actualCommunities.readCommunitiesLFR(options.actual_communities_file)
+    #actualCommunities = Communities()
+    #actualCommunities.readCommunitiesLFR(options.actual_communities_file)
 
     communities = Communities()
-    #communities.classifyCommunities(affinities)
-    communities.classifyCommunitiesOverlapping(affinities, actualCommunities)
+    communities.classifyCommunities(affinities)
+    #communities.classifyCommunitiesOverlapping(affinities, actualCommunities)
     communities.writeCommunitesCustom(options.classified_communities_file)
