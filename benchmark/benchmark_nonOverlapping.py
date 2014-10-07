@@ -28,9 +28,9 @@ class Benchmark:
                 , numberOfNodes
                 , communitySize
                 , _seedFraction
-                , _iterations
+                , _samplesPerDatapoint
                 , _mixingRange
-                , _rounds):
+                , _iterations):
 
 
         # LFR parameters
@@ -54,7 +54,7 @@ class Benchmark:
             raise Exception("wrong parameter for communitySize. it must either be small or big")
 
         #how many graphs with the same parameters
-        self.iterations = _iterations
+        self.samplesPerDatapoint = _samplesPerDatapoint
 
         #the values for the mixing parameter
         self.mixingRange = _mixingRange
@@ -62,8 +62,8 @@ class Benchmark:
         #the fraction of seed nodes
         self.seedFraction = _seedFraction
 
-        #the number of rounds for the iterative method
-        self.rounds = _rounds
+        #the number of iterations for the iterative method
+        self.iterations = _iterations
 
         #a list of nmi-values for each mixing parameter and round for the iterative method
         #self.nmiValues[mu][round][i] will give the nmi for mixingParam mu after the "round"th iterative round and the ith iteration
@@ -89,19 +89,19 @@ class Benchmark:
         print "====================================="
         print ""
         print "parameters for next benchmark:"
-        print "seedFraction =", self.seedFraction 
-        print "N =",            self.N
-        print "minc =",         self.minc
-        print "maxc =",         self.maxc
-        print "k =",            self.k
-        print "maxk =",         self.maxk
-        print "t1 =",           self.t1
-        print "t2 =",           self.t2
-        print "on =",           self.on
-        print "om =",           self.om
-        print "rounds =",       self.rounds
-        print "iterations =",   self.iterations
-        print "mixingRange =",  self.mixingRange
+        print "seedFraction =",        self.seedFraction 
+        print "N =",                   self.N
+        print "minc =",                self.minc
+        print "maxc =",                self.maxc
+        print "k =",                   self.k
+        print "maxk =",                self.maxk
+        print "t1 =",                  self.t1
+        print "t2 =",                  self.t2
+        print "on =",                  self.on
+        print "om =",                  self.om
+        print "iterations =",          self.iterations
+        print "samplesPerDatapoint =", self.samplesPerDatapoint
+        print "mixingRange =",         self.mixingRange
 
         for mu in self.mixingRange:
             print ""
@@ -113,9 +113,9 @@ class Benchmark:
 
             
             #nmis[round][i] contains the nmi for a fixed mixingParam mu after the "round"th iterative round and the ith iteration
-            nmiValuesFixedMu = [ [] for x in range(self.rounds) ]
+            nmiValuesFixedMu = [ [] for x in range(self.iterations) ]
 
-            while successful < self.iterations:
+            while successful < self.samplesPerDatapoint:
                 #call graph generator and calculate nmi
 
                 # this scripts generates a graph, runs the algorithm and calculates the nmi
@@ -128,7 +128,7 @@ class Benchmark:
                 call = [ scriptName
                        , "-o", nmiFileName
                        , "-s", str(self.seedFraction)
-                       , "-r", str(self.rounds)
+                       , "-i", str(self.iterations)
                        , "--seed_strategy", "degree"
                        , "--k", str(self.k)
                        , "--maxk" ,str(self.maxk)
@@ -153,13 +153,13 @@ class Benchmark:
                         for line in f:
                             nmisOfIteration.append(float(line))
 
-                    if len(nmisOfIteration) != self.rounds:
+                    if len(nmisOfIteration) != self.iterations:
                         raise Exception("wrong number of lines in nmi-file")
 
-                    for r in range(self.rounds):
+                    for r in range(self.iterations):
                         nmiValuesFixedMu[r].append(nmisOfIteration[r])
 
-                    print "(" + str(successful) + "/" + str(self.iterations) + "): " + str(nmisOfIteration)
+                    print "(" + str(successful) + "/" + str(self.samplesPerDatapoint) + "): " + str(nmisOfIteration)
                 else:
                     successiveErrors = successiveErrors + 1
                     if successiveErrors > 100:
@@ -172,8 +172,8 @@ class Benchmark:
 
             tmpMean = defaultdict()
             tmpMean["mu"] = mu
-            tmpMean["value"] = [[] for x in range(self.rounds) ]
-            for r in range(self.rounds):
+            tmpMean["value"] = [[] for x in range(self.iterations) ]
+            for r in range(self.iterations):
                 tmpMean["value"][r] = np.mean(nmiValuesFixedMu[r])
             self.nmiValuesMean.append(tmpMean)
 
@@ -183,20 +183,20 @@ class Benchmark:
     # dump the object as json file
     def dump(self):
         obj = defaultdict()
-        obj["_k"]            = self.k
-        obj["_maxk"]         = self.maxk
-        obj["_t1"]           = self.t1
-        obj["_t2"]           = self.t2
-        obj["_N"]            = self.N
-        obj["_on"]           = self.on
-        obj["_om"]           = self.om
-        obj["_minc"]         = self.minc
-        obj["_maxc"]         = self.maxc
-        obj["_rounds"]       = self.rounds
-        obj["_iterations"]   = self.iterations
-        obj["_seedFraction"] = self.seedFraction
-        obj["nmiValues"]     = self.nmiValues
-        obj["nmiValuesMean"] = self.nmiValuesMean
+        obj["_k"]                   = self.k
+        obj["_maxk"]                = self.maxk
+        obj["_t1"]                  = self.t1
+        obj["_t2"]                  = self.t2
+        obj["_N"]                   = self.N
+        obj["_on"]                  = self.on
+        obj["_om"]                  = self.om
+        obj["_minc"]                = self.minc
+        obj["_maxc"]                = self.maxc
+        obj["_iterations"]          = self.iterations
+        obj["_samplesPerDatapoint"] = self.samplesPerDatapoint
+        obj["_seedFraction"]        = self.seedFraction
+        obj["nmiValues"]            = self.nmiValues
+        obj["nmiValuesMean"]        = self.nmiValuesMean
 
         #print (options.outputfolder + "/" + self.filename, 'w')
         with open(options.outputfolder + "/" + self.filename, 'w') as outfile:
@@ -224,14 +224,14 @@ def commandline_interface():
     parser.add_option("-o", dest="outputfolder", type="str",
         help="the folder the json files will be written to")
 
-    parser.add_option("-i", dest="iterations", type="int",
-        help="iterations per data point")
+    parser.add_option("--samples_per_datapoint", dest="samplesPerDatapoint", type="int",
+        help="samplse per data point")
 
     parser.add_option("-m", dest="mixingRange", type="str",
         help="start stop step, separated by whitespaces")
 
-    parser.add_option("-r", dest="rounds", type="int",
-        help="number of rounds for the iterative method")
+    parser.add_option("-i", dest="iterations", type="int",
+        help="number of iterations for the iterative method")
 
     
     global options, args
@@ -241,9 +241,9 @@ def commandline_interface():
             options.communitySizes and
             options.seedFractions and
             options.outputfolder and
-            options.iterations and
+            options.samplesPerDatapoint and
             options.mixingRange and
-            options.rounds): 
+            options.iterations): 
         parser.print_help()
         return False
     return True
@@ -252,13 +252,13 @@ def commandline_interface():
 options, args = 0, 0
 if commandline_interface():
 
-    numberOfNodes   = [int(N) for N in options.numberOfNodes.split()]
-    communitySizes  = options.communitySizes.split()
-    seedFractions   = [float(s) for s in options.seedFractions.split()]
-    iterations      = options.iterations
+    numberOfNodes       = [int(N) for N in options.numberOfNodes.split()]
+    communitySizes      = options.communitySizes.split()
+    seedFractions       = [float(s) for s in options.seedFractions.split()]
+    samplesPerDatapoint = options.samplesPerDatapoint
 
-    tmp             = [float(x) for x in options.mixingRange.split()]
-    mixingRange     = [x for x in np.arange(tmp[0], tmp[1], tmp[2])]
+    tmp                 = [float(x) for x in options.mixingRange.split()]
+    mixingRange         = [x for x in np.arange(tmp[0], tmp[1], tmp[2])]
 
 
     print "outputfolder:", options.outputfolder
@@ -270,8 +270,8 @@ if commandline_interface():
     for N in numberOfNodes:
         for size in communitySizes:
             for seed in seedFractions:
-                print "> create Benchmark(", N, size, seed, iterations, mixingRange, options.rounds, ")"
-                benchmarks.append(Benchmark(N, size, seed, iterations, mixingRange, options.rounds))
+                print "> create Benchmark(", N, size, seed, samplesPerDatapoint, mixingRange, options.iterations, ")"
+                benchmarks.append(Benchmark(N, size, seed, samplesPerDatapoint, mixingRange, options.iterations))
 
     print "start benchmarks"
     for benchmark in benchmarks:

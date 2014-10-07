@@ -131,13 +131,6 @@ class Communities(object):
         self.communityToVertices = None
         self.numberOfCommunities = None
 
-    # A helper function which calculates "communityToVerties" and 
-    # "numberOfCommunities" from "vertexToCommunities".
-    def _reverseMapping(self):           
-        self.communityToVertices = self.reverseMapping(self.vertexToCommunities)
-        self.numberOfCommunities = len(self.communityToVertices)
-
-
 
     def reverseMapping(self, inputDict):
         outputDict = defaultdict(list)
@@ -147,6 +140,7 @@ class Communities(object):
             for element in listOfKey:
                 outputDict[element].append(key)
         return outputDict
+
 
     # Read community information from the LFR community file.
     # The input is a file which where each line consists 

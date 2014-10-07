@@ -29,7 +29,7 @@ def commandline_interface():
     # parameters for our scripts
     parser.add_option("-o",              dest="output_file",   help="write the nmi value to this file")
     parser.add_option("-s",              dest="seed_frac",     help="the percentage of seed nodes")
-    parser.add_option("-r",              dest="rounds",        type="int", help="the number of rounds for the iterative method")
+    parser.add_option("-i",              dest="iterations",    type="int", help="the number of iterations for the iterative method")
     parser.add_option("--seed_strategy", dest="seed_strategy", help="strategy for picking seed nodes")
 
     options, args = parser.parse_args()
@@ -37,7 +37,7 @@ def commandline_interface():
     valid = True
     if not (options.output_file and
             options.seed_frac and
-            options.rounds and
+            options.iterations and
             options.seed_strategy):
         parser.print_help()
         valid = False
@@ -50,7 +50,11 @@ def commandline_interface():
 # SETTINGS
 
 # the multiplication factor for the iterative method
+#factor=0.3
+#method="threshold"
+
 factor=1.1
+method="fraction"
 
 
 ##########################################
@@ -124,7 +128,8 @@ if valid:
             "-g", graph,
             "-s", seedNodes,
             "-A", affinities,
-            "-r", str(options.rounds),
+            "-i", str(options.iterations),
+            "-m", method,
             "-f", str(factor)])
 
 
@@ -133,7 +138,7 @@ if valid:
         if os.path.exists(options.output_file):
             os.remove(options.output_file)
 
-        for i in range(options.rounds):
+        for i in range(options.iterations):
 
             affinities_i = affinities + "_" + str(i)
             detectedCommunities_i = detectedCommunities + "_" + str(i)

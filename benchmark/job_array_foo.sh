@@ -13,7 +13,7 @@
 # BSUB -W 60:00
 
 ### Request memory you need for your job in TOTAL in MB
-# BSUB -M 5000
+# BSUB -M 1024
 
 #BSUB -B
 #BSUB -N
@@ -21,8 +21,17 @@
 
 ##############################################
 
-# fail fast
 
-echo "begin benchmark"
-./benchmark_nonOverlapping.py -n "1000" -c "small big" -s "0.05 0.10 0.15 0.20" -i 100 -m "4 96 2"
+
+
+echo begin benchmark, LSB_JOBINDEX: $LSB_JOBINDEX
+LSB_JOBINDEX=1
+
+tmpdir=tmpdir_$LSB_JOBINDEX
+rm -f $tmpdir
+mkdir $tmpdir
+cd $tmpdir
+../benchmark_nonOverlapping.py -n 1000 -c 100-200 -s 0.0$LSB_JOBINDEX -o ../nmivalues --samples_per_datapoint 20 -m "0.08 0.61 0.04" -i 50
+
+
 echo "end benchmark"

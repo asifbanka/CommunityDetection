@@ -7,10 +7,4 @@ graphParser.py
     TODO
 
 LFRtoNMI.sh
-    paramaters:
-    output file
-    percentage of seed nodes (in (0,1.0))
-    number of rounds for iterative algorithm (1 for non iterative)
-    strategy for picking seed nodes (uniform or degree)
-    all other parameters are passed to the LFR
-    
+    see LFRtoNMI --help 

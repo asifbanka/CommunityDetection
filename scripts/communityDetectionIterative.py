@@ -21,7 +21,8 @@ parser = OptionParser()
 parser.add_option("-g", "--graph", dest="graph")
 parser.add_option("-s", "--seed", dest="seed", help="")
 parser.add_option("-A", "--affinities", dest="affinities")
-parser.add_option("-r", "--rounds", dest="rounds", type="int")
+parser.add_option("-i", "--iterations", dest="iterations", type="int")
+parser.add_option("-m", "--method", dest="method", type="string")
 parser.add_option("-f", "--factor", dest="factor", type="float" )
 (options, args) = parser.parse_args()
 
@@ -29,10 +30,11 @@ valid = True
 if not (options.graph and 
         options.seed and 
         options.affinities and 
-        options.rounds and
+        options.iterations and
+        options.method and
         options.factor):
     print "ERROR: wrong parameters"
-    print "usage: -g graph -s seed -a affinities -r rounds -f factor"
+    print "usage: -g graph -s seed -a affinities -i iterations -m method -f factor"
     valid = False
 
 if valid == False:
@@ -64,7 +66,7 @@ def affinityFileNo(i):
 ########################################################
 
 
-def pickSeedsNonoverlapping(communities, affinities, factor):
+def pickSeedsNonoverlappingFraction(communities, affinities, factor):
     communities.numberOfCommunities = len(affinities.vertexToAffinities.itervalues().next())
 
     seedsOfCommunity = [defaultdict(list) for i in range(communities.numberOfCommunities)]
@@ -82,7 +84,19 @@ def pickSeedsNonoverlapping(communities, affinities, factor):
         for (nodeId, affinity) in sortedItems[-numberOfNewSeedNodes:]:
             communities.vertexToCommunities[nodeId] = [i]
 
-    communities._reverseMapping()
+    communities.communityToVertices = communities.reverseMapping(communities.vertexToCommunities)
+
+
+def pickSeedsNonoverlappingThreshold(communities, affinities, factor):
+    communities.numberOfCommunities = len(affinities.vertexToAffinities.itervalues().next())
+
+    communities.vertexToCommunities = defaultdict(list)
+    for nodeId, affinitiesOfVertex in affinities.vertexToAffinities.iteritems():
+        maxIndex = np.argmax(affinitiesOfVertex)
+        if affinitiesOfVertex[maxIndex] >= factor:
+            communities.vertexToCommunities[nodeId] = [maxIndex]
+
+    communities.communityToVertices = communities.reverseMapping(communities.vertexToCommunities)
 
 
 ########################################################
@@ -94,7 +108,7 @@ shutil.copy2(options.seed, seedFileNo(0))
 #print "initial number of seed nodes:", len(seeds)
 #writeSeedFile(seeds, seedFileNo(0))
 
-for i in range(options.rounds):
+for i in range(options.iterations):
 
     print "------------"
 
@@ -109,7 +123,14 @@ for i in range(options.rounds):
     affinities.readAffinitiesCustom(affinityFileNo(i))
 
     communities = Communities()
-    pickSeedsNonoverlapping(communities, affinities, options.factor)
+
+    if options.method == "fraction":
+        pickSeedsNonoverlappingFraction(communities, affinities, options.factor)
+    elif options.method == "threshold":
+        pickSeedsNonoverlappingThreshold(communities, affinities, options.factor)
+    else:
+        raise Exception("invalid method")
+
 
     if len(communities.vertexToCommunities) == 0:
         raise Exception("got no new seeds for the next round. this is probably due to a bad parameter for -f")
@@ -118,4 +139,4 @@ for i in range(options.rounds):
     communities.writeSeedsCustom(communities.vertexToCommunities.keys(), seedFileNo(i+1))
 
 
-#shutil.copy2(affinityFileNo(options.rounds-1), options.affinities)
+#shutil.copy2(affinityFileNo(options.iterations-1), options.affinities)
