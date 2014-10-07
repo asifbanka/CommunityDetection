@@ -24,9 +24,6 @@ def commandline_interface():
     parser.add_option("-C", dest="classified_communities_file", type="string",
             help="Output: classified communities")
     
-    #parser.add_option("-o", dest="overlapping", type="int",
-        #help="if communities are overlapping set to 1, otherwise to 0")
-    
     global options, args
     (options, args) = parser.parse_args()
 
@@ -39,11 +36,6 @@ def commandline_interface():
         parser.error("Output file not given")
         parser.print_help()
         return False
-
-    #elif not hasattr(options, "overlapping"):
-        #parser.error("Specify if using overlapping or non-overlapping mode")
-        #parser.print_help()
-        #return False
 
     return True
 

@@ -37,7 +37,7 @@ else
     percentage=$((0.05 * ($LSB_JOBINDEX - 0)))
     size=big
 fi
-../benchmark_nonOverlapping.py -n 1000 -c $size -s $percentage -o ../../../output -i 100 -m "0.05 0.9 0.04" -r 1
+../benchmark_nonOverlapping.py -n 1000 -c $size -s $percentage -o ../../../output --samples_per_datapoint 100 -m "0.05 0.9 0.04" -i 1
 
 #cd ..
 #rm -rf $tmpdir
