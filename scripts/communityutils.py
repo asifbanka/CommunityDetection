@@ -133,14 +133,20 @@ class Communities(object):
 
     # A helper function which calculates "communityToVerties" and 
     # "numberOfCommunities" from "vertexToCommunities".
-    def _reverseMapping(self):
-        # remap value list as keys, keys as values
-        self.communityToVertices = defaultdict(list)
-        for vertex, communities in self.vertexToCommunities.iteritems():
-            for c in communities:
-                self.communityToVertices[c].append(vertex)
-        self.numberOfCommunities = len(self.communityToVertices)            
+    def _reverseMapping(self):           
+        self.communityToVertices = self.reverseMapping(self.vertexToCommunities)
+        self.numberOfCommunities = len(self.communityToVertices)
 
+
+
+    def reverseMapping(self, inputDict):
+        outputDict = defaultdict(list)
+        # remap value list as keys, keys as values
+       
+        for key, listOfKey in inputDict.iteritems():
+            for element in listOfKey:
+                outputDict[element].append(key)
+        return outputDict
 
     # Read community information from the LFR community file.
     # The input is a file which where each line consists 
@@ -153,7 +159,8 @@ class Communities(object):
             belongings = [[(int(x) - 1) for x in line.split()] for line in f.readlines()]
             for belonging in belongings:
                 self.vertexToCommunities[belonging[0]] = belonging[1:]
-        self._reverseMapping()
+        self.communityToVertices = self.reverseMapping(self.vertexToCommunities)
+        self.numberOfCommunities = len(self.communityToVertices) 
 
 
     # Write output community file.
@@ -172,7 +179,8 @@ class Communities(object):
         for vertex, affinities in affinities.vertexToAffinities.iteritems():
             maxIndex = max([(v,i) for i,v in enumerate(affinities)])[1]
             self.vertexToCommunities[vertex] = [maxIndex]
-        self._reverseMapping()
+        self.communityToVertices = self.reverseMapping(self.vertexToCommunities)
+        self.numberOfCommunities = len(self.communityToVertices)
 
     # Classify communities from the affinity output of the c++ algorithm.
     # Simply assign the vertex the the community with the maximum affinity-value.
@@ -199,7 +207,8 @@ class Communities(object):
                 #print "bbb", s
             #print "ccc", s
 
-        self._reverseMapping()
+        self.communityToVertices = self.reverseMapping(self.vertexToCommunities)
+        self.numberOfCommunities = len(self.communityToVertices)
 
 
     # Generate seed nodes from a community object.
