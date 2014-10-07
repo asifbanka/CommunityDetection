@@ -43,6 +43,20 @@ class Graph(object):
             self.numEdges += len(neighbours)
 
 
+    def readGraphOurFormat(self,filename):
+        with open (filename, "r") as f:     
+            edges = [[(int(vertex)) for vertex in line.split()] for line in f.readlines()]
+
+            self.vertexToNeighbours = defaultdict(list)
+            for edge in edges:
+                if len(edge) != 2:
+                    raise Exception("there must be exactly two entries in each line of the input graph")
+                self.vertexToNeighbours[edge[0]].append(edge[1])
+        self.numVertices = len(self.vertexToNeighbours)
+        self.numEdges = 0
+        for neighbours in self.vertexToNeighbours.values():
+            self.numEdges += len(neighbours)
+
     # Write output graph in our custom format
     # The number and nodes and edges are written in the first line, then a list of edges follow.
     def writeGraphCustom(self, filename):
@@ -162,6 +176,16 @@ class Communities(object):
         self.communityToVertices = self.reverseMapping(self.vertexToCommunities)
         self.numberOfCommunities = len(self.communityToVertices) 
 
+
+    #the same as readCommunitiesLFR but reads our file format instead    
+    def readCommunitiesOurFormat(self, filename):
+        self.communityToVertices = defaultdict(list)
+        with open (filename, "r") as f:
+            for community,line in enumerate(f):
+                for vertex in line.split():
+                    self.communityToVertices[community].append(vertex)
+        self.vertexToCommunities = self.reverseMapping(self.communityToVertices)
+        self.numberOfCommunities = len(self.communityToVertices)             
 
     # Write output community file.
     # Each line represents one community and lists all the vertices in this community.
