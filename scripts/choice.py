@@ -1,10 +1,12 @@
 import random
+
+#using rejection sampling method
 def choice(a, size=1, replace=True, p=None):
         if a is None:
             raise Exception("need data")
 
         if (size > len(a)) and (replace==False):
-            raise Exception("can't sample more then there are items in the set if replace is false")
+            raise Exception("can't sample more than there are items in the set if replace is false")
 
         if p is None: # default is uniform distribution
             p = list()
