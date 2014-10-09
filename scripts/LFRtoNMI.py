@@ -49,12 +49,8 @@ def commandline_interface():
 # 
 # SETTINGS
 
-# the multiplication factor for the iterative method
-#factor=0.3
-#method="threshold"
-
-factor=1.1
 method="fraction"
+factor=1.1
 
 
 ##########################################
@@ -135,9 +131,7 @@ if valid:
 
         print "=> classify communities and calculate NMI"
 
-        if os.path.exists(options.output_file):
-            os.remove(options.output_file)
-
+        nmis = []
         for i in range(options.iterations):
 
             affinities_i = affinities + "_" + str(i)
@@ -148,8 +142,21 @@ if valid:
                 "-c", communitiesLFR,
                 "-C", detectedCommunities_i])
 
-            call = "{0} {1} {2} | awk '{{print $2}}' >> {3}".format(NMI, communities, detectedCommunities_i, options.output_file)
-            sp.check_call(call, shell=True)
+            nmis.append(sp.check_output([NMI, communities, detectedCommunities_i]).split()[1])
+
+        with open (options.output_file, "w") as f:
+            f.writelines("\n".join(nmis))
+
+        os.remove(graphLFR)
+        os.remove(communitiesLFR)
+        os.remove(graph)
+        os.remove(communities)
+        os.remove(seedNodes)
+        for i in range(options.iterations):
+            os.remove(seedNodes + "_" + str(i))
+            os.remove(affinities + "_" + str(i))
+            os.remove(detectedCommunities + "_" + str(i))
+        os.remove(seedNodes + "_" + str(options.iterations))
 
 
         print ""
@@ -164,8 +171,5 @@ if valid:
 
 
     except sp.CalledProcessError:
-        print ""
-        print "======================="
-        print ""
         sys.stderr.write(str(datetime.datetime.now()) + " - ERROR in subprocess.\n")
         sys.exit(1)
