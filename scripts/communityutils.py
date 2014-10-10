@@ -43,6 +43,23 @@ class Graph(object):
             self.numEdges += len(neighbours)
 
 
+    def readGraphCustom(self,filename):
+        with open (filename, "r") as f:
+
+            # split strings into ints on whitespaces and subtract 1 from each value
+            edges = [[int(vertex) for vertex in line.split()] for line in f.readlines()[1:]]
+
+            self.vertexToNeighbours = defaultdict(list)
+            for edge in edges:
+                if len(edge) != 2:
+                    raise Exception("there must be exactly two entries in each line of the input graph")
+                self.vertexToNeighbours[edge[0]].append(edge[1])
+        self.numVertices = len(self.vertexToNeighbours)
+        self.numEdges = 0
+        for neighbours in self.vertexToNeighbours.values():
+            self.numEdges += len(neighbours)
+
+
     def readGraphOurFormat(self,filename):
         with open (filename, "r") as f:     
             edges = [[(int(vertex)) for vertex in line.split()] for line in f.readlines()]
@@ -80,6 +97,13 @@ class Graph(object):
                     if neighbour not in visited:
                         queue.append(neighbour)
         return len(visited) == len(self.vertexToNeighbours)
+
+    def isSymmetric(self):
+        for node, neighbours in self.vertexToNeighbours.iteritems():
+            for neighbour in neighbours:
+                if not node in self.vertexToNeighbours[neighbour]:
+                    return False
+        return True
 
 
 
