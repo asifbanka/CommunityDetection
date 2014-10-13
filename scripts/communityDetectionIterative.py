@@ -103,7 +103,7 @@ def pickSeedsNonoverlappingThreshold(communities, affinities, factor):
 
 # check if the input graph is valid
 graph = Graph()
-graph.readGraphCustom(options.graph)
+graph.readGraphOurFormat(options.graph)
 if not graph.isSymmetric():
     raise Exception("graph is not symmetric!")
 if not graph.isConnected():

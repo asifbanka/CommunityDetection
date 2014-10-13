@@ -43,26 +43,9 @@ class Graph(object):
             self.numEdges += len(neighbours)
 
 
-    def readGraphCustom(self,filename):
-        with open (filename, "r") as f:
-
-            # split strings into ints on whitespaces and subtract 1 from each value
-            edges = [[int(vertex) for vertex in line.split()] for line in f.readlines()[1:]]
-
-            self.vertexToNeighbours = defaultdict(list)
-            for edge in edges:
-                if len(edge) != 2:
-                    raise Exception("there must be exactly two entries in each line of the input graph")
-                self.vertexToNeighbours[edge[0]].append(edge[1])
-        self.numVertices = len(self.vertexToNeighbours)
-        self.numEdges = 0
-        for neighbours in self.vertexToNeighbours.values():
-            self.numEdges += len(neighbours)
-
-
     def readGraphOurFormat(self,filename):
         with open (filename, "r") as f:     
-            edges = [[(int(vertex)) for vertex in line.split()] for line in f.readlines()]
+            edges = [[(int(vertex)) for vertex in line.split()] for line in f.readlines()[1:]]
 
             self.vertexToNeighbours = defaultdict(list)
             for edge in edges:
@@ -240,14 +223,6 @@ class Communities(object):
 
             communities = [i for (v,i) in sortedTuples][:numberOfCommunities]
             self.vertexToCommunities[vertex] = communities
-
-            #s = sum(affinities)
-            #s = sortedTuples[0][0] - sortedTuples[1][0]
-            #if numberOfCommunities == 1:
-                #print "aaa", s
-            #if numberOfCommunities == 2:
-                #print "bbb", s
-            #print "ccc", s
 
         self.communityToVertices = self.reverseMapping(self.vertexToCommunities)
         self.numberOfCommunities = len(self.communityToVertices)
