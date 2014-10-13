@@ -196,38 +196,6 @@ class Communities(object):
                 f.write(" ".join([str(x) for x in vertices]) + "\n")
 
 
-    # Classify communities from the affinity output of the c++ algorithm.
-    # Simply assign the vertex the the community with the maximum affinity-value.
-    def classifyCommunities(self, affinities):
-        communitiesPerVertex = 1
-        self.vertexToCommunities = defaultdict(list)
-        for vertex, affinities in affinities.vertexToAffinities.iteritems():
-            maxIndex = max([(v,i) for i,v in enumerate(affinities)])[1]
-            self.vertexToCommunities[vertex] = [maxIndex]
-        self.communityToVertices = self.reverseMapping(self.vertexToCommunities)
-        self.numberOfCommunities = len(self.communityToVertices)
-
-    # Classify communities from the affinity output of the c++ algorithm.
-    # Simply assign the vertex the the community with the maximum affinity-value.
-    def classifyCommunitiesOverlapping(self, affinities, actualCommunities):
-        self.vertexToCommunities = defaultdict(list)
-        for vertex, affinities in affinities.vertexToAffinities.iteritems():
-            # Put affinities with their index (the corresponding community) in tuple 
-            # and sort them by first entry (affinity). 
-            # Then extract the second entry (the community) from each tuple.
-            sortedTuples = sorted([(v,i) for i,v in enumerate(affinities)])
-            sortedTuples.reverse()
-
-            foo = actualCommunities.vertexToCommunities[vertex]
-            numberOfCommunities = len(foo)
-
-            communities = [i for (v,i) in sortedTuples][:numberOfCommunities]
-            self.vertexToCommunities[vertex] = communities
-
-        self.communityToVertices = self.reverseMapping(self.vertexToCommunities)
-        self.numberOfCommunities = len(self.communityToVertices)
-
-
     # Generate seed nodes from a community object.
     # Pick a fraction of "seedFraction" nodes from each community.
     # The number of seeds per community is at least 1 and rounded to the next bigger integer
