@@ -142,7 +142,8 @@ if valid:
                 "-c", communitiesLFR,
                 "-C", detectedCommunities_i])
 
-            nmis.append(sp.check_output([NMI, communities, detectedCommunities_i]).split()[1])
+            output = sp.Popen([NMI, communities, detectedCommunities_i], stdout=sp.PIPE).communicate()[0]
+            nmis.append(output.split()[1])
 
         with open (options.output_file, "w") as f:
             f.writelines("\n".join(nmis))
