@@ -6,6 +6,8 @@ from collections import deque
 from random import sample
 from math import ceil
 import choice
+#import statistics   only in 3.2 so sad
+import json
 
 ##########################################
 #
@@ -269,10 +271,36 @@ class Communities(object):
                 maxDiff = currentDiff
                 maxDiffPosition = i
 
-        communities = affinitytuple[:i+1]
-        
+        first_half = affinitytuple[:maxDiffPosition+1]
+        communities = list()
+        for element in first_half:
+            communities.append(element[0])
         return communities, maxDiffPosition, maxDiff       
 
 
-    
+    def getDeviation(self,affinityVector):
+        #return statistics.pstdev(affinityVector)
+        return None
 
+
+
+
+    def getJSONOfVertex(self,affinities,groundTruth,vertex):
+        affinityVector = self.vertexToAffinities[vertex]
+        deviation = getDeviation(affinityVector)
+        communitiesAccordingToGap,GapPostion,GapSize = getGap(affinityVector)  
+        actualNumberOfCommunities = len(groundTruth.vertexToCommunities[vertex])
+        actualCommunities = groundTruth.vertexToCommunities[vertex]
+
+        return json.JSONEncoder.encode({"nodeid":vertex,
+            "number_of_communities":actualNumberOfCommunities,
+            "gap_postion":GapPostion,
+            "standard_deviation":deviation,
+            "affinities":affinityVector,
+            "gap_size":GapSize,
+            "actual_communities":actualCommunities,
+            "communities_according_to_gap":communitiesAccordingToGap})
+
+
+    
+        
