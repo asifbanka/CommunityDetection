@@ -245,7 +245,34 @@ class Communities(object):
                     tmp[community] = 1
                 f.write("\n" + str(seed) + " " + " ".join([str(x) for x in tmp]))
 
+
+    def getKey(self, item):
+        return item[1]
+
+    #Find position of biggest gap            
+    def getGap(self,affinityVector):
+        affinitytuple = list()
+
+        #create new data structure with community id and correspodning affinity
+        for i, affinity in enumerate(affinityVector):
+            affinitytuple.append((i,affinity))
+
+        affinitytuple = sorted(affinitytuple,key=self.getKey, reverse=True)
+
+
+        #Find position of maximum gap
+        maxDiff = 0
+        maxDiffPosition = -1
+        for i in xrange(0,len(affinitytuple[:-1])):
+            currentDiff = affinitytuple[i][1] - affinitytuple[i+1][1]
+            if currentDiff > maxDiff:
+                maxDiff = currentDiff
+                maxDiffPosition = i
+
+        communities = affinitytuple[:i+1]
+        
+        return communities, maxDiffPosition, maxDiff       
+
+
     
-
-
 
