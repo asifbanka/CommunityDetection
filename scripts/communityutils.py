@@ -287,7 +287,7 @@ class Communities(object):
 
         return {"nodeid":vertex,
             "actual_number_of_communities":actualNumberOfCommunities,
-            "gap_postion":GapPostion,
+            "gap_position":GapPostion,
             "standard_deviation":deviation,
             "affinities":affinityVector,
             "gap_size":GapSize,

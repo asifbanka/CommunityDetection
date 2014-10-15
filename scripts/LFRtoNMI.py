@@ -140,6 +140,7 @@ if valid:
             sp.check_call([communityClassifier,
                 "-a", affinities_i,
                 "-c", communitiesLFR,
+                "--classification_strategy", "gap",
                 "-C", detectedCommunities_i])
 
             output = sp.Popen([NMI, communities, detectedCommunities_i], stdout=sp.PIPE).communicate()[0]

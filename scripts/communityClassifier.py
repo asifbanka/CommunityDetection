@@ -21,7 +21,7 @@ def commandline_interface():
     parser.add_option("-c", dest="actual_communities_file", type="string",
             help="Output: classified communities")
 
-    parser.add_option("-s", dest="classification_strategy", type="string",  default="gap",
+    parser.add_option("--classification_strategy", dest="classification_strategy", type="string",
             help="Output: heuristic for community classification (max (default)| gap)")
  
     parser.add_option("-C", dest="classified_communities_file", type="string",
@@ -30,18 +30,10 @@ def commandline_interface():
     global options, args
     (options, args) = parser.parse_args()
 
-    if not options.affinity_file:
-        parser.error("Affinity file not given")
-        parser.print_help()
-        return False
-    
-    elif options.classification_strategy != "max" and options.classification_strategy != "gap": 
-        parser.error("Invalid strategy")
-        parser.print_help()
-        return False
-    
-    elif not options.classified_communities_file:
-        parser.error("Output file not given")
+
+    if not (options.affinity_file
+            and options.classification_strategy
+            and options.classified_communities_file):
         parser.print_help()
         return False
 
@@ -111,9 +103,10 @@ if commandline_interface():
 
     if options.classification_strategy == "max":
         classifiedCommunities.classifyCommunities(affinities)
-    
     elif options.classification_strategy == "gap":
         classifiedCommunities.classifyCommunitiesWithGaps(affinities)
+    else:
+        raise Exception("invalid classification_strategy")
 
     #read Ground Truth
     groundTruth = Communities()

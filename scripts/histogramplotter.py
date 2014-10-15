@@ -20,12 +20,16 @@ def commandline_interface():
    
     parser.add_option("-o", dest="output_file", type="string",
             help="deduces fileformat automatically. *.pdf or *.png works")
+
+    parser.add_option("-f", dest="json_fields", type="string",
+            help="whitespace separated list of fields to plot")
    
     global options, args
     (options, args) = parser.parse_args()
 
     if not (options.output_file and
-            options.input_file):
+            options.input_file and
+            options.json_fields):
         parser.print_help()
         return False
 
@@ -50,7 +54,7 @@ def aggregatedata(filename, jsonkeys):
     aggregated = defaultdict(lambda : defaultdict(list))
     for jsonkey in jsonkeys:
         for entry in data["body"]:
-            k = entry["number_of_communities"]
+            k = entry["actual_number_of_communities"]
             aggregated[k][jsonkey].append(entry[jsonkey])
     return aggregated
 
@@ -70,8 +74,14 @@ def getCycledColor():
         colorindex = -1
 
 def addhistbar(ax, values):
-    hist, bins = np.histogram(values, bins=50)
-    #freq = [float(x)/len(values) for x in hist]
+
+    #for integers each int should be an individual bin
+    #floats shall be placed in a fixed number of bins
+    if all(isinstance(item, int) for item in values):
+        hist, bins = np.histogram(values, bins=range(min(values), max(values)))
+    else:
+        hist, bins = np.histogram(values, bins=50)
+
     center = (bins[:-1] + bins[1:]) / 2
     width = 1.0 * (bins[1] - bins[0])
     return ax.bar(center, hist, align='center', width=width, linewidth=0, alpha=0.5, facecolor=getCycledColor())
@@ -81,19 +91,17 @@ def addhistbar(ax, values):
 #
 # MAIN
 
+#parse parameters
 options, args = 0, 0
 if not commandline_interface():
     sys.exit(1)
 
-#TODO: change this to the keys you want do display
-jsonkeys = ["gap_position", "standard_deviation"]
-
-
-
+#parse data
+jsonkeys = options.json_fields.split()
 aggregated = aggregatedata(options.input_file, jsonkeys)
 
+#plot data
 fig, ax = plt.subplots()
-
 legends = []
 for jsonkey in jsonkeys:
     for k in aggregated.keys():
@@ -101,5 +109,4 @@ for jsonkey in jsonkeys:
         label = jsonkey + ", k=" + str(k)
         legends.append((rect, label))
 ax.legend(zip(*legends)[0], zip(*legends)[1])
-
 fig.savefig(options.output_file)
