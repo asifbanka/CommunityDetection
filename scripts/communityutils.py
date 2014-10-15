@@ -278,29 +278,27 @@ class Communities(object):
         return communities, maxDiffPosition, maxDiff       
 
 
-    def getDeviation(self,affinityVector):
-        #return statistics.pstdev(affinityVector)
-        return None
-
-
-
-
     def getJSONOfVertex(self,affinities,groundTruth,vertex):
-        affinityVector = self.vertexToAffinities[vertex]
-        deviation = getDeviation(affinityVector)
-        communitiesAccordingToGap,GapPostion,GapSize = getGap(affinityVector)  
+        affinityVector = affinities.vertexToAffinities[vertex]
+        deviation = math_tools.standartDeviation(affinityVector)
+        communitiesAccordingToGap,GapPostion,GapSize = self.getGap(affinityVector)  
         actualNumberOfCommunities = len(groundTruth.vertexToCommunities[vertex])
         actualCommunities = groundTruth.vertexToCommunities[vertex]
 
-        return json.JSONEncoder.encode({"nodeid":vertex,
-            "number_of_communities":actualNumberOfCommunities,
+        return {"nodeid":vertex,
+            "actual_number_of_communities":actualNumberOfCommunities,
             "gap_postion":GapPostion,
             "standard_deviation":deviation,
             "affinities":affinityVector,
             "gap_size":GapSize,
             "actual_communities":actualCommunities,
-            "communities_according_to_gap":communitiesAccordingToGap})
+            "communities_according_to_gap":communitiesAccordingToGap}
 
 
-    
-        
+    def writeJSONfile(self, filename, affinities, groundTruth):
+        output = list()
+        for vertex in self.vertexToCommunities:
+            output.append(self.getJSONOfVertex(affinities, groundTruth, vertex))
+
+        with open (filename, "w") as f:
+            f.write(json.JSONEncoder(indent=4).encode({"body": output}))

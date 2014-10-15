@@ -77,7 +77,7 @@ setattr(Communities, 'classifyCommunitiesWithGaps', classifyCommunitiesWithGaps)
 
 # Classify communities from the affinity output of the c++ algorithm.
 # Simply assign the vertex the the community with the maximum affinity-value.
-def classifyCommunitiesOverlapping(self, affinities, actualCommunities):
+def classifyCommunitiesOverlapping(self, affinities, groundTruth):
     self.vertexToCommunities = defaultdict(list)
     for vertex, affinities in affinities.vertexToAffinities.iteritems():
         # Put affinities with their index (the corresponding community) in tuple 
@@ -86,7 +86,7 @@ def classifyCommunitiesOverlapping(self, affinities, actualCommunities):
         sortedTuples = sorted([(v,i) for i,v in enumerate(affinities)])
         sortedTuples.reverse()
 
-        foo = actualCommunities.vertexToCommunities[vertex]
+        foo = groundTruth.vertexToCommunities[vertex]
         numberOfCommunities = len(foo)
 
         communities = [i for (v,i) in sortedTuples][:numberOfCommunities]
@@ -116,12 +116,13 @@ if commandline_interface():
         classifiedCommunities.classifyCommunitiesWithGaps(affinities)
 
     #read Ground Truth
-    actualCommunities = Communities()
-    actualCommunities.readCommunitiesLFR(options.actual_communities_file)
+    groundTruth = Communities()
+    groundTruth.readCommunitiesLFR(options.actual_communities_file)
     #or this:
-    #actualCommunities = Communities()
-    #actualCommunities.readCommunitiesLFR(options.actual_communities_file)
+    #groundTruth = Communities()
+    #groundTruth.readCommunitiesLFR(options.actual_communities_file)
 
-    #communities.classifyCommunitiesOverlapping(affinities, actualCommunities)
+    #communities.classifyCommunitiesOverlapping(affinities, groundTruth)
 
     classifiedCommunities.writeCommunitesCustom(options.classified_communities_file)
+    classifiedCommunities.writeJSONfile("statistics.json", affinities, groundTruth)
