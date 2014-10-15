@@ -5,7 +5,7 @@ from collections import defaultdict
 from collections import deque
 from random import sample
 from math import ceil
-import choice
+import math_tools
 #import statistics   only in 3.2 so sad
 import json
 
@@ -230,7 +230,7 @@ class Communities(object):
             else:
                 seedCount = int(ceil(seedFraction * len(self.communityToVertices[c])))
 
-            tmp = choice.choice(vertices, seedCount, replace=False, p=probabilities)
+            tmp = math_tools.choice(vertices, seedCount, replace=False, p=probabilities)
             seeds = seeds.union(tmp)
         return seeds
 
