@@ -14,30 +14,31 @@ from communityutils import *
 
 
 ########################################################
+#
+# COMMAND LINE INTERFACE
 
 
 # parse the parameters
 parser = OptionParser()
-parser.add_option("-g", "--graph", dest="graph")
-parser.add_option("-s", "--seed", dest="seed", help="")
-parser.add_option("-A", "--affinities", dest="affinities")
-parser.add_option("-i", "--iterations", dest="iterations", type="int")
-parser.add_option("-m", "--method", dest="method", type="string")
-parser.add_option("-f", "--factor", dest="factor", type="float" )
-(options, args) = parser.parse_args()
+parser.add_option("-g", "--graph",          dest="graph",                             help="input graph")
+parser.add_option("-s", "--seed",           dest="seed",                              help="input seeds")
+parser.add_option("-A", "--affinities",     dest="affinities",                        help="output affinities")
+parser.add_option("-i", "--iterations",     dest="iterations",         type="int",    help="number of iterations")
+parser.add_option("--iterative_strategy",   dest="iterative_strategy", type="string", help="")
+parser.add_option("--iterative_factor",     dest="iterative_factor",   type="float" , help="")
+options, args = parser.parse_args()
 
 valid = True
 if not (options.graph and 
         options.seed and 
         options.affinities and 
         options.iterations and
-        options.method and
-        options.factor):
-    print "ERROR: wrong parameters"
-    print "usage: -g graph -s seed -a affinities -i iterations -m method -f factor"
+        options.iterative_strategy and
+        options.iterative_factor):
     valid = False
 
 if valid == False:
+    parser.print_help()
     exit(1)
 
 
@@ -133,10 +134,10 @@ for i in range(options.iterations):
 
     communities = Communities()
 
-    if options.method == "fraction":
-        pickSeedsNonoverlappingFraction(communities, affinities, options.factor)
-    elif options.method == "threshold":
-        pickSeedsNonoverlappingThreshold(communities, affinities, options.factor)
+    if options.iterative_strategy == "fraction":
+        pickSeedsNonoverlappingFraction(communities, affinities, options.iterative_factor)
+    elif options.iterative_strategy == "threshold":
+        pickSeedsNonoverlappingThreshold(communities, affinities, options.iterative_factor)
     else:
         raise Exception("invalid method")
 

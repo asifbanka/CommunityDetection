@@ -29,7 +29,7 @@ def commandline_interface():
     parser.add_option("-n", dest="seed_frac", type="float",
             help="fraction of seed nodes (in range 0.0 to 1.0)")
 
-    parser.add_option("-s", dest="seed_strategy", type="string",default="uniform",
+    parser.add_option("--seed_strategy", dest="seed_strategy", type="string",default="uniform",
             help="strategy for picking seed nodes (uniform,degree)")
    
     global options, args

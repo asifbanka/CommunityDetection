@@ -279,20 +279,25 @@ class Communities(object):
 
 
     def getJSONOfVertex(self,affinities,groundTruth,vertex):
-        affinityVector = affinities.vertexToAffinities[vertex]
-        deviation = math_tools.standartDeviation(affinityVector)
-        communitiesAccordingToGap,GapPostion,GapSize = self.getGap(affinityVector)  
-        actualNumberOfCommunities = len(groundTruth.vertexToCommunities[vertex])
-        actualCommunities = groundTruth.vertexToCommunities[vertex]
+        affinity_vector = affinities.vertexToAffinities[vertex]
+        deviation = math_tools.standartDeviation(affinity_vector)
+        communities_according_to_gap,gap_position ,gap_size = self.getGap(affinity_vector)  
 
-        return {"nodeid":vertex,
-            "actual_number_of_communities":actualNumberOfCommunities,
-            "gap_position":GapPostion,
+        actual_communities = groundTruth.vertexToCommunities[vertex]
+        detected_communities = self.vertexToCommunities[vertex]
+
+        return {
+            "nodeid":vertex,
+            "actual_communities":actual_communities,
+            "actual_number_of_communities":len(actual_communities),
+            "detected_communities":detected_communities,
+            "detected_number_of_communities":len(detected_communities),
+
+            "gap_position":gap_position,
             "standard_deviation":deviation,
-            "affinities":affinityVector,
-            "gap_size":GapSize,
-            "actual_communities":actualCommunities,
-            "communities_according_to_gap":communitiesAccordingToGap}
+            "affinities":affinity_vector,
+            "gap_size":gap_size,
+            "communities_according_to_gap":communities_according_to_gap}
 
 
     def writeJSONfile(self, filename, affinities, groundTruth):
