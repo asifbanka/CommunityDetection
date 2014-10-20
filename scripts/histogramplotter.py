@@ -78,12 +78,13 @@ def addhistbar(ax, values):
     #for integers each int should be an individual bin
     #floats shall be placed in a fixed number of bins
     if all(isinstance(item, int) for item in values):
-        hist, bins = np.histogram(values, bins=range(min(values), max(values)))
+        hist, bins = np.histogram(values, bins=range(min(values)-1, max(values)+1))
     else:
         hist, bins = np.histogram(values, bins=50)
 
     center = (bins[:-1] + bins[1:]) / 2
     width = 1.0 * (bins[1] - bins[0])
+
     return ax.bar(center, hist, align='center', width=width, linewidth=0, alpha=0.5, facecolor=getCycledColor())
 
 

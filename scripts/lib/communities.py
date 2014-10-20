@@ -129,11 +129,12 @@ class Communities(object):
             seeds = seeds.union(tmp)
         return seeds
 
+
     # stuff
     # ----------------------------
 
     #Find position of biggest gap            
-    def getGap(self,affinityVector):
+    def _getGap(self,affinityVector):
         affinitytuple = list()
 
         #create new data structure with community id and correspodning affinity
@@ -158,10 +159,10 @@ class Communities(object):
         return communities, maxDiffPosition, maxDiff       
 
 
-    def getJSONOfVertex(self,affinities, groundTruth, vertex):
+    def _getJSONOfVertex(self,affinities, groundTruth, vertex):
         affinity_vector = affinities.vertexToAffinities[vertex]
         deviation = math_tools.standartDeviation(affinity_vector)
-        communities_according_to_gap,gap_position ,gap_size = self.getGap(affinity_vector)  
+        communities_according_to_gap,gap_position ,gap_size = self._getGap(affinity_vector)  
 
         actual_communities = groundTruth.vertexToCommunities[vertex]
         detected_communities = self.vertexToCommunities[vertex]
@@ -183,8 +184,7 @@ class Communities(object):
     def writeJSONfile(self, filename, affinities, groundTruth):
         output = list()
         for vertex in self.vertexToCommunities:
-            output.append(self.getJSONOfVertex(affinities, groundTruth, vertex))
-
+            output.append(self._getJSONOfVertex(affinities, groundTruth, vertex))
         with open (filename, "w") as f:
             f.write(json.JSONEncoder(indent=4).encode({"body": output}))
 
@@ -209,7 +209,7 @@ class Communities(object):
     def classifyCommunitiesWithGaps(self, affinities):
         self.vertexToCommunities = defaultdict(list)
         for vertex, affinities in affinities.vertexToAffinities.iteritems():
-            communities,gapPosition,gapSize = self.getGap(affinities)
+            communities,gapPosition,gapSize = self._getGap(affinities)
             self.vertexToCommunities[vertex] = communities
         self.communityToVertices = self.reverseMapping(self.vertexToCommunities)
         self.numberOfCommunities = len(self.communityToVertices)
@@ -218,18 +218,13 @@ class Communities(object):
     def classifyCommunitiesGroundTruth(self, affinities, groundTruth):
         self.vertexToCommunities = defaultdict(list)
         for vertex, affinities in affinities.vertexToAffinities.iteritems():
+            actual_number_of_communities = len(groundTruth.vertexToCommunities[vertex])
             # Put affinities with their index (the corresponding community) in tuple 
             # and sort them by first entry (affinity). 
             # Then extract the second entry (the community) from each tuple.
-            sortedTuples = sorted([(v,i) for i,v in enumerate(affinities)])
-            sortedTuples.reverse()
-
-            foo = groundTruth.vertexToCommunities[vertex]
-            numberOfCommunities = len(foo)
-
-            communities = [i for (v,i) in sortedTuples][:numberOfCommunities]
+            sortedTuples = sorted([(v,i) for i,v in enumerate(affinities)], reverse=True)
+            communities = [i for (v,i) in sortedTuples][:actual_number_of_communities]
             self.vertexToCommunities[vertex] = communities
-
         self.communityToVertices = self.reverseMapping(self.vertexToCommunities)
         self.numberOfCommunities = len(self.communityToVertices)
 

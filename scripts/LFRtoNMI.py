@@ -95,7 +95,6 @@ detectedCommunities = "tmp_detectedCommunities"
 #
 # MAIN
 
-
 try:
     print "=> run LFR"
     call = [LFR]
@@ -129,11 +128,11 @@ try:
         "-A", affinities,
         "-i", str(options.iterations),
         "--iterative_strategy", iterative_strategy,
-        "--iterative_factor", str(iterative_factor)])
+        "--iterative_factor", str(iterative_factor),
+        "--classification_strategy", options.classification_strategy])
 
 
     print "=> classify communities and calculate NMI"
-
     nmis = []
     for i in range(options.iterations):
 
@@ -169,8 +168,7 @@ try:
     print ""
     print "NMI:" 
     print "----"
-    with open (options.output_file, "r") as f:
-        print f.read()
+    with open (options.output_file, "r") as f: print f.read()
 
 
 # in case one of the scripts fail

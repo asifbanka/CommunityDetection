@@ -23,7 +23,7 @@ parser.add_option("-c", dest="actual_communities_file", type="string",
         help="Output: classified communities")
 
 parser.add_option("--classification_strategy", dest="classification_strategy", type="string",
-        help="Output: heuristic for community classification (max (default)| gap)")
+        help="Output: heuristic for community classification (max | gap)")
 
 parser.add_option("-C", dest="classified_communities_file", type="string",
         help="Output: classified communities")

@@ -21,12 +21,13 @@ from lib.communities import *
 
 # parse the parameters
 parser = OptionParser()
-parser.add_option("-g", "--graph",          dest="graph",                             help="input graph")
-parser.add_option("-s", "--seed",           dest="seed",                              help="input seeds")
-parser.add_option("-A", "--affinities",     dest="affinities",                        help="output affinities")
-parser.add_option("-i", "--iterations",     dest="iterations",         type="int",    help="number of iterations")
-parser.add_option("--iterative_strategy",   dest="iterative_strategy", type="string", help="")
-parser.add_option("--iterative_factor",     dest="iterative_factor",   type="float" , help="")
+parser.add_option("-g", "--graph",             dest="graph",                             help="input graph")
+parser.add_option("-s", "--seed",              dest="seed",                              help="input seeds")
+parser.add_option("-A", "--affinities",        dest="affinities",                        help="output affinities")
+parser.add_option("-i", "--iterations",        dest="iterations",         type="int",    help="number of iterations")
+parser.add_option("--iterative_strategy",      dest="iterative_strategy", type="string", help="")
+parser.add_option("--iterative_factor",        dest="iterative_factor",   type="float" , help="")
+parser.add_option("--classification_strategy", dest="classification_strategy",           help="")
 options, args = parser.parse_args()
 
 valid = True
@@ -35,7 +36,8 @@ if not (options.graph and
         options.affinities and 
         options.iterations and
         options.iterative_strategy and
-        options.iterative_factor):
+        options.iterative_factor and
+        options.classification_strategy):
     valid = False
 
 if valid == False:
@@ -45,16 +47,13 @@ if valid == False:
 
 ########################################################
 
-
 # all the filenames
-
 
 # the root of the repository
 ROOT = os.path.dirname(os.path.realpath(__file__)) + "/../"
 
 # the c++ algorithm
 PATH_TO_ALGORITHM = ROOT + "algorithm/build/community_detection"
-
 
 # the name of the temporary seed file for the ith iteration
 def seedFileNo(i):
@@ -68,37 +67,35 @@ def affinityFileNo(i):
 ########################################################
 
 
-def pickSeedsNonoverlappingFraction(communities, affinities, factor):
-    communities.numberOfCommunities = len(affinities.vertexToAffinities.itervalues().next())
+def pick_seeds_by_fraction(affinities, factor):
+    number_of_communities = len(affinities.vertexToAffinities.itervalues().next())
 
-    seedsOfCommunity = [defaultdict(list) for i in range(communities.numberOfCommunities)]
-    for nodeId, affinitiesOfVertex in affinities.vertexToAffinities.iteritems():
-        maxIndex = np.argmax(affinitiesOfVertex)
-        seedsOfCommunity[maxIndex][nodeId] = affinitiesOfVertex
+    community_to_vertices = defaultdict(list)
+    for vertex, affinities_of_vertex in affinities.vertexToAffinities.iteritems():
+        community = np.argmax(affinities_of_vertex)
+        community_to_vertices[community].append(vertex)
 
-    communities.vertexToCommunities = defaultdict(list)
-    for i in range(communities.numberOfCommunities):
+    seeds = set()
+    for community, vertices in community_to_vertices.iteritems():
+        number_of_seed_nodes = sum(1 for vertex in vertices if max(affinities.vertexToAffinities[vertex]) == 1)
+        number_of_new_seed_nodes = int(math.ceil(number_of_seed_nodes * factor))
 
-        numberOfSeedNodes = sum(1 for x in seedsOfCommunity[i].values() if max(x) == 1)
-        numberOfNewSeedNodes = int(math.ceil(numberOfSeedNodes * factor))
+        sorted_items = sorted(vertices, key=lambda vertex: max(affinities.vertexToAffinities[vertex]), reverse=True)
+        seeds = seeds.union(sorted_items[:number_of_new_seed_nodes])
 
-        sortedItems = sorted(seedsOfCommunity[i].items(), key=lambda tup: max(tup[1]))
-        for (nodeId, affinity) in sortedItems[-numberOfNewSeedNodes:]:
-            communities.vertexToCommunities[nodeId] = [i]
-
-    communities.communityToVertices = communities.reverseMapping(communities.vertexToCommunities)
+    return seeds
 
 
-def pickSeedsNonoverlappingThreshold(communities, affinities, factor):
-    communities.numberOfCommunities = len(affinities.vertexToAffinities.itervalues().next())
+#def pick_seeds_by_threshold(communities, affinities, factor):
+    #communities.numberOfCommunities = len(affinities.vertexToAffinities.itervalues().next())
 
-    communities.vertexToCommunities = defaultdict(list)
-    for nodeId, affinitiesOfVertex in affinities.vertexToAffinities.iteritems():
-        maxIndex = np.argmax(affinitiesOfVertex)
-        if affinitiesOfVertex[maxIndex] >= factor:
-            communities.vertexToCommunities[nodeId] = [maxIndex]
+    #communities.vertexToCommunities = defaultdict(list)
+    #for nodeId, affinitiesOfVertex in affinities.vertexToAffinities.iteritems():
+        #maxIndex = np.argmax(affinitiesOfVertex)
+        #if affinitiesOfVertex[maxIndex] >= factor:
+            #communities.vertexToCommunities[nodeId] = [maxIndex]
 
-    communities.communityToVertices = communities.reverseMapping(communities.vertexToCommunities)
+    #communities.communityToVertices = communities.reverseMapping(communities.vertexToCommunities)
 
 
 ########################################################
@@ -114,10 +111,6 @@ if not graph.isConnected():
 
 print "copy", options.seed, "to", seedFileNo(0)
 shutil.copy2(options.seed, seedFileNo(0))
-#seeds = readSeedFile(options.seed)
-#print "initial number of seed nodes:", len(seeds)
-#writeSeedFile(seeds, seedFileNo(0))
-
 
 for i in range(options.iterations):
 
@@ -128,26 +121,32 @@ for i in range(options.iterations):
         print "error in subprocess"
         exit(1)
 
-    print "read seed nodes from", affinityFileNo(i), ", modify them, and write them to", seedFileNo(i+1)
+    print "read seed nodes from", affinityFileNo(i), ", modify them using the", options.classification_strategy ,"strategy, and write them to", seedFileNo(i+1)
 
     affinities = Affinities()
     affinities.readAffinitiesOurFormat(affinityFileNo(i))
 
-    communities = Communities()
 
+    # generate a new set of seed nodes
+    seeds = set()
     if options.iterative_strategy == "fraction":
-        pickSeedsNonoverlappingFraction(communities, affinities, options.iterative_factor)
+        seeds = pick_seeds_by_fraction(affinities, options.iterative_factor)
     elif options.iterative_strategy == "threshold":
-        pickSeedsNonoverlappingThreshold(communities, affinities, options.iterative_factor)
-    else:
-        raise Exception("invalid method")
-
-
-    if len(communities.vertexToCommunities) == 0:
+        raise Exception("sorry. i did not port this function")
+    if len(seeds) == 0:
         raise Exception("got no new seeds for the next round. this is probably due to a bad parameter for -f")
+    print "number of seeds ", len(seeds)
 
-    print "number of seeds ", len(communities.vertexToCommunities)
-    communities.writeSeedsOurFormat(communities.vertexToCommunities.keys(), seedFileNo(i+1))
+
+    # classify vertices with propper strategy and write some of them as seed nodes to file
+    communities = Communities()
+    if options.classification_strategy == "max":
+        communities.classifyCommunities(affinities)
+    elif options.classification_strategy == "gap":
+        communities.classifyCommunitiesWithGaps(affinities)
+    else:
+        raise Exception("invalid classification_strategy")
+    communities.writeSeedsOurFormat(seeds, seedFileNo(i+1))
 
 
 #shutil.copy2(affinityFileNo(options.iterations-1), options.affinities)
