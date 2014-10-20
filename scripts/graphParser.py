@@ -4,7 +4,8 @@ import sys
 import datetime
 from optparse import OptionParser
 
-from communityutils import *
+from lib.communityutils import *
+from lib.communities import *
 
 
 ##########################################

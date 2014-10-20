@@ -10,7 +10,8 @@ from collections import defaultdict
 from optparse import OptionParser
 from pprint import pprint
 
-from communityutils import *
+from lib.communityutils import *
+from lib.communities import *
 
 
 ########################################################
