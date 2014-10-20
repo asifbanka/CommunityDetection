@@ -92,7 +92,7 @@ setattr(Communities, 'classifyCommunitiesGroundTruth', classifyCommunitiesGround
 # MAIN PROGRAM
 
 affinities = Affinities()
-affinities.readAffinitiesCustom(options.affinity_file)
+affinities.readAffinitiesOurFormat(options.affinity_file)
 
 classifiedCommunities = Communities()
 
@@ -111,5 +111,5 @@ else:
     raise Exception("invalid classification_strategy")
 
 
-classifiedCommunities.writeCommunitesCustom(options.classified_communities_file)
+classifiedCommunities.writeCommunitesOurFormat(options.classified_communities_file)
 classifiedCommunities.writeJSONfile("statistics.json", affinities, groundTruth)

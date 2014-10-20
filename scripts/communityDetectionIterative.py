@@ -130,7 +130,7 @@ for i in range(options.iterations):
     print "read seed nodes from", affinityFileNo(i), ", modify them, and write them to", seedFileNo(i+1)
 
     affinities = Affinities()
-    affinities.readAffinitiesCustom(affinityFileNo(i))
+    affinities.readAffinitiesOurFormat(affinityFileNo(i))
 
     communities = Communities()
 
@@ -146,7 +146,7 @@ for i in range(options.iterations):
         raise Exception("got no new seeds for the next round. this is probably due to a bad parameter for -f")
 
     print "number of seeds ", len(communities.vertexToCommunities)
-    communities.writeSeedsCustom(communities.vertexToCommunities.keys(), seedFileNo(i+1))
+    communities.writeSeedsOurFormat(communities.vertexToCommunities.keys(), seedFileNo(i+1))
 
 
 #shutil.copy2(affinityFileNo(options.iterations-1), options.affinities)

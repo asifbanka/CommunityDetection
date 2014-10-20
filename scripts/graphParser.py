@@ -86,19 +86,19 @@ if commandline_interface():
         # proceed if graph is connected
 
         #write the graph to file in our custom format
-        graph.writeGraphCustom(options.graph_file_output)
+        graph.writeGraphOurFormat(options.graph_file_output)
 
         # read, process, and write community file
         communities = Communities()
         communities.readCommunitiesLFR(options.community_file_input)
-        communities.writeCommunitesCustom(options.community_file_output)
+        communities.writeCommunitesOurFormat(options.community_file_output)
 
         # pick seeds and write seed file
         if options.seed_strategy == "uniform":
-            seeds = communities.generateSeeds(options.seed_frac)
+            seeds = communities.generateSeedsUniformly(options.seed_frac)
         elif options.seed_strategy == "degree":
-            seeds = communities.generateHighestDegreeSeeds(graph, options.seed_frac)
+            seeds = communities.generateSeedsDegreeBased(graph, options.seed_frac)
         else:
             raise Exception("unknown parameter {0} for strategy".format(options.seed_strategy))
         
-        communities.writeSeedsCustom(seeds, options.seed_nodes)
+        communities.writeSeedsOurFormat(seeds, options.seed_nodes)

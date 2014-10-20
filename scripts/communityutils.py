@@ -61,7 +61,7 @@ class Graph(object):
 
     # Write output graph in our custom format
     # The number and nodes and edges are written in the first line, then a list of edges follow.
-    def writeGraphCustom(self, filename):
+    def writeGraphOurFormat(self, filename):
         with open (filename, "w") as f:
             f.write("{0} {1}".format(self.numVertices, self.numEdges))
             for v, neighbours in self.vertexToNeighbours.iteritems():
@@ -107,7 +107,7 @@ class Affinities(object):
         self.vertexToAffinities  = None
 
     # Read output from c++ algorithm to affinity-dict.
-    def readAffinitiesCustom(self, filename):
+    def readAffinitiesOurFormat(self, filename):
 
         self.vertexToAffinities = defaultdict(list)
         with open (filename, "r") as f:
@@ -158,12 +158,13 @@ class Communities(object):
     def reverseMapping(self, inputDict):
         outputDict = defaultdict(list)
         # remap value list as keys, keys as values
-       
         for key, listOfKey in inputDict.iteritems():
             for element in listOfKey:
                 outputDict[element].append(key)
         return outputDict
 
+    # input and output
+    # ----------------
 
     # Read community information from the LFR community file.
     # The input is a file which where each line consists 
@@ -181,6 +182,8 @@ class Communities(object):
 
 
     #the same as readCommunitiesLFR but reads our file format instead    
+    #TODO: what format are you talking about?
+    #TODO: this function seems buggy: vertices are not cast to int
     def readCommunitiesOurFormat(self, filename):
         self.communityToVertices = defaultdict(list)
         with open (filename, "r") as f:
@@ -190,18 +193,37 @@ class Communities(object):
         self.vertexToCommunities = self.reverseMapping(self.communityToVertices)
         self.numberOfCommunities = len(self.communityToVertices)             
 
+
     # Write output community file.
     # Each line represents one community and lists all the vertices in this community.
-    def writeCommunitesCustom(self, filename):
+    def writeCommunitesOurFormat(self, filename):
         with open (filename, "w") as f:
             for vertices in self.communityToVertices.values():
                 f.write(" ".join([str(x) for x in vertices]) + "\n")
 
 
+    # Write seed-information to file in affinity-fileformat.
+    # seeds is a set of nodeids
+    def writeSeedsOurFormat(self, seeds, filename):
+        if seeds is None:
+            raise Exception("seeds need to be generated first")
+        with open (filename, "w") as f:
+            
+            f.write("{0} {1}".format(len(seeds), self.numberOfCommunities))
+            for seed in seeds:
+                tmp = [0] * self.numberOfCommunities
+                for community in self.vertexToCommunities[seed]:
+                    tmp[community] = 1
+                f.write("\n" + str(seed) + " " + " ".join([str(x) for x in tmp]))
+
+
+    # methods for generating seeds
+    # ----------------------------
+
     # Generate seed nodes from a community object.
     # Pick a fraction of "seedFraction" nodes from each community.
     # The number of seeds per community is at least 1 and rounded to the next bigger integer
-    def generateSeeds(self, seedFraction):
+    def generateSeedsUniformly(self, seedFraction):
         seeds = set()
         for c in self.communityToVertices:
             if seedFraction == 0:
@@ -212,7 +234,7 @@ class Communities(object):
         return seeds
 
 
-    def generateHighestDegreeSeeds(self, graph, seedFraction):
+    def generateSeedsDegreeBased(self, graph, seedFraction):
         seeds = set()
 
         for c, vertices in self.communityToVertices.iteritems():
@@ -234,22 +256,8 @@ class Communities(object):
             seeds = seeds.union(tmp)
         return seeds
 
-    # Write seed-information to file in affinity-fileformat.
-    def writeSeedsCustom(self, seeds, filename):
-        if seeds is None:
-            raise Exception("seeds need to be generated first")
-        with open (filename, "w") as f:
-            
-            f.write("{0} {1}".format(len(seeds), self.numberOfCommunities))
-            for seed in seeds:
-                tmp = [0] * self.numberOfCommunities
-                for community in self.vertexToCommunities[seed]:
-                    tmp[community] = 1
-                f.write("\n" + str(seed) + " " + " ".join([str(x) for x in tmp]))
-
-
-    def getKey(self, item):
-        return item[1]
+    # stuff
+    # ----------------------------
 
     #Find position of biggest gap            
     def getGap(self,affinityVector):
@@ -259,8 +267,7 @@ class Communities(object):
         for i, affinity in enumerate(affinityVector):
             affinitytuple.append((i,affinity))
 
-        affinitytuple = sorted(affinitytuple,key=self.getKey, reverse=True)
-
+        affinitytuple = sorted(affinitytuple,key=lambda item: item[1], reverse=True)
 
         #Find position of maximum gap
         maxDiff = 0
@@ -278,7 +285,7 @@ class Communities(object):
         return communities, maxDiffPosition, maxDiff       
 
 
-    def getJSONOfVertex(self,affinities,groundTruth,vertex):
+    def getJSONOfVertex(self,affinities, groundTruth, vertex):
         affinity_vector = affinities.vertexToAffinities[vertex]
         deviation = math_tools.standartDeviation(affinity_vector)
         communities_according_to_gap,gap_position ,gap_size = self.getGap(affinity_vector)  
