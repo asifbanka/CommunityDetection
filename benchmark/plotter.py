@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/python
 
 import matplotlib
 matplotlib.use("pdf")
@@ -22,7 +22,7 @@ def plotFile(filename, round):
         if round == "first":
             i = 0
         elif round == "last":
-            i = int(data["_rounds"])-1
+            i = int(data["_iterations"])-1
         else:
             raise Exception("pass either first or last as parameter")
 
@@ -77,12 +77,10 @@ if commandline_interface():
             line, = plt.plot(xs, ys, "-o", label=label)
             lines.append(line)
 
-    plt.legend(handles=lines)
-    plt.legend(loc="best", fancybox=True, framealpha=0.5)
+    plt.legend(fancybox=True, shadow= True, loc=4)
     plt.axis([0,1,0,1])
     plt.xlabel("mixing parameter")
     plt.ylabel("nmi")
 
     plt.savefig(options.output)
     #plt.show()
-

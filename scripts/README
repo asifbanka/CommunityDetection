@@ -7,6 +7,4 @@ graphParser.py
     TODO
 
 LFRtoNMI.sh
-    first parameter: percentage
-    all other parameters are passed to the LFR
-    
+    see LFRtoNMI --help 
