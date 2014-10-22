@@ -30,7 +30,8 @@ class Benchmark:
                 , _seedFraction
                 , _samplesPerDatapoint
                 , _mixingRange
-                , _iterations):
+                , _iterations
+                , _classification_strategy):
 
 
         # LFR parameters
@@ -73,6 +74,8 @@ class Benchmark:
         #self.nmiValues[mu][round] will give the mean-nmi for mixingParam mu after the "round"th iterative round
         self.nmiValuesMean = []
 
+        self.classification_strategy = _classification_strategy
+
         #the filename under which this object gets stored
         self.filename = ( str(self.N) + "N"
                       + "_" + communitySize + "Communities"
@@ -89,19 +92,20 @@ class Benchmark:
         print "====================================="
         print ""
         print "parameters for next benchmark:"
-        print "seedFraction =",        self.seedFraction 
-        print "N =",                   self.N
-        print "minc =",                self.minc
-        print "maxc =",                self.maxc
-        print "k =",                   self.k
-        print "maxk =",                self.maxk
-        print "t1 =",                  self.t1
-        print "t2 =",                  self.t2
-        print "on =",                  self.on
-        print "om =",                  self.om
-        print "iterations =",          self.iterations
-        print "samplesPerDatapoint =", self.samplesPerDatapoint
-        print "mixingRange =",         self.mixingRange
+        print "seedFraction =",           self.seedFraction 
+        print "N =",                      self.N
+        print "minc =",                   self.minc
+        print "maxc =",                   self.maxc
+        print "k =",                      self.k
+        print "maxk =",                   self.maxk
+        print "t1 =",                     self.t1
+        print "t2 =",                     self.t2
+        print "on =",                     self.on
+        print "om =",                     self.om
+        print "iterations =",             self.iterations
+        print "samplesPerDatapoint =",    self.samplesPerDatapoint
+        print "mixingRange =",            self.mixingRange
+        print "classificationStrategy =", self.classification_strategy
 
         for mu in self.mixingRange:
             print ""
@@ -126,10 +130,6 @@ class Benchmark:
                 if not os.path.isfile(scriptName):
                         raise Exception("path to LFRtoNMI.py is wrong")
                 call = [ scriptName
-                       , "-o", nmiFileName
-                       , "-s", str(self.seedFraction)
-                       , "-i", str(self.iterations)
-                       , "--seed_strategy", "degree"
                        , "--k", str(self.k)
                        , "--maxk" ,str(self.maxk)
                        , "--t1", str(self.t1)
@@ -140,7 +140,13 @@ class Benchmark:
                        , "--N", str(self.N)
                        , "--on", str(self.on)
                        , "--om", str(self.om)
+                       , "-o", nmiFileName
+                       , "-s", str(self.seedFraction)
+                       , "-i", str(self.iterations)
+                       , "--seed_strategy", "degree"
+                       , "--classification_strategy", self.classification_strategy
                        ]
+
                 returnValue = sp.call(call, stdin=None , stderr=LOGERROR, stdout=DEVNULL, shell=False)
 
                 if returnValue == 0:
@@ -183,20 +189,21 @@ class Benchmark:
     # dump the object as json file
     def dump(self):
         obj = defaultdict()
-        obj["_k"]                   = self.k
-        obj["_maxk"]                = self.maxk
-        obj["_t1"]                  = self.t1
-        obj["_t2"]                  = self.t2
-        obj["_N"]                   = self.N
-        obj["_on"]                  = self.on
-        obj["_om"]                  = self.om
-        obj["_minc"]                = self.minc
-        obj["_maxc"]                = self.maxc
-        obj["_iterations"]          = self.iterations
-        obj["_samplesPerDatapoint"] = self.samplesPerDatapoint
-        obj["_seedFraction"]        = self.seedFraction
-        obj["nmiValues"]            = self.nmiValues
-        obj["nmiValuesMean"]        = self.nmiValuesMean
+        obj["_k"]                       = self.k
+        obj["_maxk"]                    = self.maxk
+        obj["_t1"]                      = self.t1
+        obj["_t2"]                      = self.t2
+        obj["_N"]                       = self.N
+        obj["_on"]                      = self.on
+        obj["_om"]                      = self.om
+        obj["_minc"]                    = self.minc
+        obj["_maxc"]                    = self.maxc
+        obj["_iterations"]              = self.iterations
+        obj["_samplesPerDatapoint"]     = self.samplesPerDatapoint
+        obj["_seedFraction"]            = self.seedFraction
+        obj["_classification_strategy"] = self.classification_strategy
+        obj["nmiValues"]                = self.nmiValues
+        obj["nmiValuesMean"]            = self.nmiValuesMean
 
         #print (options.outputfolder + "/" + self.filename, 'w')
         with open(options.outputfolder + "/" + self.filename, 'w') as outfile:
@@ -224,14 +231,17 @@ def commandline_interface():
     parser.add_option("-o", dest="outputfolder", type="str",
         help="the folder the json files will be written to")
 
-    parser.add_option("--samples_per_datapoint", dest="samplesPerDatapoint", type="int",
-        help="samplse per data point")
-
     parser.add_option("-m", dest="mixingRange", type="str",
         help="start stop step, separated by whitespaces")
 
     parser.add_option("-i", dest="iterations", type="int",
         help="number of iterations for the iterative method")
+
+    parser.add_option("--samples_per_datapoint", dest="samplesPerDatapoint", type="int",
+        help="samplse per data point")
+
+    parser.add_option("--classification_strategy", dest="classification_strategy",
+        help="")
 
     
     global options, args
@@ -243,7 +253,8 @@ def commandline_interface():
             options.outputfolder and
             options.samplesPerDatapoint and
             options.mixingRange and
-            options.iterations): 
+            options.iterations and
+            options.classification_strategy): 
         parser.print_help()
         return False
     return True
@@ -270,8 +281,8 @@ if commandline_interface():
     for N in numberOfNodes:
         for size in communitySizes:
             for seed in seedFractions:
-                print "> create Benchmark(", N, size, seed, samplesPerDatapoint, mixingRange, options.iterations, ")"
-                benchmarks.append(Benchmark(N, size, seed, samplesPerDatapoint, mixingRange, options.iterations))
+                print "> create Benchmark(", N, size, seed, samplesPerDatapoint, mixingRange, options.iterations, options.classification_strategy, ")"
+                benchmarks.append(Benchmark(N, size, seed, samplesPerDatapoint, mixingRange, options.iterations, options.classification_strategy))
 
     print "start benchmarks"
     for benchmark in benchmarks:
