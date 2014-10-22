@@ -40,17 +40,27 @@ class Benchmark:
         self.t1 = 2
         self.t2 = 1
         self.N = numberOfNodes
-        self.on = 0
-        self.om = 0
+
         if communitySize == "small":
             self.minc = 10
             self.maxc = 50
-        elif communitySize == "big":
+            self.on = 0
+            self.om = 0
+        elif communitySize == "nonoverlap":
             self.minc = 20 
             self.maxc = 100 
-        elif communitySize == "100-200":
-            self.minc = 100
-            self.maxc = 200 
+            self.on = 0
+            self.om = 0
+        elif communitySize == "overlap15":
+            self.minc = 20 
+            self.maxc = 100 
+            self.on = int(self.N * 0.15)
+            self.om = 3
+        elif communitySize == "overlap30":
+            self.minc = 20 
+            self.maxc = 100 
+            self.on = int(self.N * 0.30)
+            self.om = 3
         else:
             raise Exception("wrong parameter for communitySize. it must either be small or big")
 
