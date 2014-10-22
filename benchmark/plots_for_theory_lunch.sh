@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 ### Job name
-#BSUB -J NONOVERLAPPING_ITERATIVE[1-8]
+#BSUB -J NONOVERLAPPING_ITERATIVE[1-17]
 
 ### File / path where STDOUT & STDERR will be written
 ###    %J is the job ID, %I is the array ID
@@ -13,7 +13,7 @@
 # BSUB -W 60:00
 
 ### Request memory you need for your job in TOTAL in MB
-# BSUB -M 1024
+# BSUB -M 2024
 
 #BSUB -B
 #BSUB -N
