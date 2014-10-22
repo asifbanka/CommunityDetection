@@ -56,7 +56,7 @@ if valid == False:
 # SETTINGS
 
 iterative_strategy="fraction"
-iterative_factor=1.1
+iterative_factor=1.15
 
 
 ##########################################
