@@ -18,18 +18,20 @@ def plotFile(filename, round):
     with open(filename) as infile:
         data = json.load(infile)
 
-        i = 0
-        if round == "first":
-            i = 0
-        elif round == "last":
-            i = int(data["_iterations"])-1
+        i=0
+        if round == -1:
+            label = str(int(data["_seedFraction"]*100))+"% Seeds"
         else:
-            raise Exception("pass either first or last as parameter")
+            i=round
+            if round > int(data["_iterations"])-1:
+                i=int(data["_iterations"])-1
 
-        label += "N=" + str(data["_N"])
-        label += ", seed=" + str(data["_seedFraction"])
-        label += ", maxc=" + str(data["_maxc"])
-        label += ", round=" + str(i)
+            label = "Iteration "+str(i)    
+
+        #label += "N=" + str(data["_N"])
+        #label = str(int(data["_seedFraction"]*100))+"% seeds"
+        #label += ," maxc=" + str(data["_maxc"])
+        #label += ", round=" + str(i)
 
         nmiValuesMean = data["nmiValuesMean"]
         for tup in nmiValuesMean:
@@ -44,13 +46,14 @@ def commandline_interface():
     
     # command line options
     parser.add_option("-f", dest="files", type="string",
-        help="Whitespace-separated list json-files. This program plots NMI (y-axis) agains the mixing parameter (x-axis). Each json-file represents one plot-line.")
+        help="Whitespace-separated list of json-files. This program plots NMI (y-axis) against the mixing parameter (x-axis). \
+        Each json-file represents one plot-line.")
 
     parser.add_option("-o", dest="output", type="string",
         help="pdf output file")
 
-    parser.add_option("-i", dest="iterative", action="store_true",
-        help="flag without parameter. if set plot first and last value of iterative method")
+    parser.add_option("-i", dest="iterations", type="int",
+        help="flag for setting the number iteration for the second line in iterative method. -1 if non iterativ plot")
 
     global options, args
     (options, args) = parser.parse_args()
@@ -68,19 +71,24 @@ if commandline_interface():
     graphs = []
     lines = []
     for f in filenames:
-        xs, ys, label = plotFile(f, "first")
-        line, = plt.plot(xs, ys, "-o", label=label)
-        lines.append(line)
-
-        if options.iterative:
-            xs, ys, label = plotFile(f, "last")
+        if(options.iterations == -1):
+            xs, ys, label = plotFile(f, -1)
             line, = plt.plot(xs, ys, "-o", label=label)
             lines.append(line)
 
-    plt.legend(fancybox=True, shadow= True, loc=4)
-    plt.axis([0,1,0,1])
-    plt.xlabel("mixing parameter")
-    plt.ylabel("nmi")
+        else:
+            xs, ys, label = plotFile(f, 0)
+            line, = plt.plot(xs, ys, "-o", label=label)
+            lines.append(line)
 
+            xs, ys, label = plotFile(f, options.iterations)
+            line, = plt.plot(xs, ys, "-o", label=label)
+            lines.append(line)
+
+    plt.legend(fancybox=True, shadow= True, loc=1)
+    plt.axis([0,1,0,1])
+    plt.xlabel("Mixing Parameter")
+    plt.ylabel("Normalized Mutual Information")
+    plt.title("")
     plt.savefig(options.output)
     #plt.show()

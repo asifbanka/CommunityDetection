@@ -1,3 +1,20 @@
+# LFR #
+#######
+time_seed.dat 
+statistics.dat
+community.dat
+network.dat
+
+# Our temporary files #
+#######################
+LOGERROR
+statistics.json
+tmp_*
+
+# Python #
+##########
+*.py[cod]
+
 # Compiled source #
 ###################
 *.com
