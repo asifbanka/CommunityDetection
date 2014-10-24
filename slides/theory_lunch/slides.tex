@@ -8,6 +8,8 @@
 \usepackage{listliketab}
 \usepackage[table]{xcolor}
 \usepackage{booktabs}
+\usepackage{pdfpages}
+\usepackage{graphicx}
 
 \usepackage{pgf}
 \usepackage{tikz}
@@ -782,4 +784,98 @@ Assuming $m = O(n)$, we take $O(n \log n)$ per community. The total time taken i
 where $k$ is the number of communities.
 \end{frame}
 
+\begin{frame}[t]
+\frametitle{Implementation}
+\begin{itemize}
+	\item Code in \highlight{C++} with \highlight{Python} scripts.
+	\item For numerical computation: \highlight{Eigen Library}.
+	\item \highlight{Cholesky decomposition} for solving linear equations ($D_1 - A_1$ 
+		is symmetric and positive semidefinite).  
+\end{itemize}
+\end{frame}
+ 
+\begin{frame}[t]
+\frametitle{Benchmark}
+The standard benchmark for community detection is the LFR benchmark.
+\begin{itemize}
+	\item Created by Lanchichinetti, Fortunato and Radicchi, \emph{Benchmark graphs for 
+		testing community detection algorithms}, Physical Review E 78, 2008.
+	\item The node degrees and community sizes are governed by a \highlight{power law distribution}.
+	\item Can control what fraction of the communities overlap.
+	\item The fraction of inter-community edges is controlled by a \highlight{mixing parameter}.
+	\item The quality of the solution is measured by the \highlight{normalized mutual information}.
+	\item Seed nodes are chosen randomly with a probability proportional to the degree.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Test graphs}
+\begin{itemize}
+    \item Test graphs have 1000 nodes each.
+    \item Each test result is the mean of 100 runs.
+    \item Two strategies: 
+        \begin{itemize}
+            \item single run
+            \item iterative
+        \end{itemize}
+    \item Non-overlapping and overlapping communities.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Non-overlapping Communities: Single Run}
+\vspace{-5mm}
+\begin{figure}[ht]
+    \centering
+        \includegraphics[scale=0.5]{nonoverlapSingle.pdf}
+\end{figure}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Non-overlapping Communities: Iterative}
+\begin{figure}[ht]
+    \centering
+        \includegraphics[scale=0.25]{nonoverlapIterative1per.pdf} 
+            \hfill
+        \includegraphics[scale=0.25]{nonoverlapIterative2per.pdf} \\
+    
+        \begin{center}
+            \includegraphics[scale=0.25]{nonoverlapIterative4per.pdf}
+        \end{center}
+\end{figure}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Overlapping Communities: Single Run}
+\begin{figure}[ht]
+    \centering
+        \includegraphics[scale=0.25]{overlapSingle15Communities.pdf}
+        \hfill
+        \includegraphics[scale=0.25]{overlapSingle30Communities.pdf}
+\end{figure}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Overlapping Communities: Iterative}
+\begin{figure}[ht]
+    \centering
+        \includegraphics[scale=0.25]{overlapIterative1per.pdf} 
+            \hfill
+        \includegraphics[scale=0.25]{overlapIterative2per.pdf} \\
+    
+        \begin{center}
+            \includegraphics[scale=0.25]{overlapIterative4per.pdf}
+        \end{center}
+\end{figure}
+\end{frame}
+
+\begin{frame}[t]
+\frametitle{Remarks About Test Cases}
+\begin{itemize}
+    \item For detecting overlapping communities, we need more seed nodes.
+	\item Alternative strategies of picking seed nodes. 
+    \item If the network is too fuzzy (high mixing parameter), then 
+        the algorithm does not give meaningful results.
+\end{itemize}
+\end{frame}
 \end{document}
