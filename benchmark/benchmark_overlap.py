@@ -44,15 +44,16 @@ class Benchmark:
         self.N = numberOfNodes
         self.om = _overlapAmount
 
+
         if communitySize == "small":
             self.minc = 10
             self.maxc = 50
-            self.on = 0
+            
             
         elif communitySize == "big":
             self.minc = 20 
             self.maxc = 100 
-            self.on = 0
+            
             
         else:
             raise Exception("wrong parameter for communitySize. it must either be small or big")
@@ -72,12 +73,12 @@ class Benchmark:
         #the number of iterations for the iterative method
         self.iterations = _iterations
 
-        #a list of nmi-values for each mixing parameter and round for the iterative method
-        #self.nmiValues[mu][round][i] will give the nmi for mixingParam mu after the "round"th iterative round and the ith iteration
+        #a list of nmi-values for each overlap parameter and round for the iterative method
+        #self.nmiValues[on][round][i] will give the nmi for mixingParam mu after the "round"th iterative round and the ith iteration
         self.nmiValues = []
 
-        #the mean nmi-value for each mixing parameter
-        #self.nmiValues[mu][round] will give the mean-nmi for mixingParam mu after the "round"th iterative round
+        #the mean nmi-value for each overlap parameter
+        #self.nmiValues[on][round] will give the mean-nmi for mixingParam mu after the "round"th iterative round
         self.nmiValuesMean = []
 
         self.classification_strategy = _classification_strategy
@@ -85,7 +86,7 @@ class Benchmark:
         #the filename under which this object gets stored
         self.filename = ( str(self.N) + "N"
                       + "_" + communitySize + "Communities"
-                      + "_" + str(self.on) + "on"
+                      + "_" + str(self.mu) + "mu"
                       + "_" + str(self.om) + "om"
                       + "_" + str(self.seedFraction) + "seed"
                       + ".json" 
@@ -110,14 +111,15 @@ class Benchmark:
         print "om =",                     self.om
         print "iterations =",             self.iterations
         print "samplesPerDatapoint =",    self.samplesPerDatapoint
-        print "mixingRange =",            self.mixingRange
+        print "_overlapRange =",            self.overlapRange
         print "classificationStrategy =", self.classification_strategy
 
          
         for on in self.overlapRange:
-            on = on * self.N
+            on_p = on                   #the percentage of the overlapping nodes
+            on = on * self.N            #the actual value of overlapping nodes
             print ""
-            print "on = " + str(on)
+            print "on = " + str(on_p)+"% (" + str(on) + " vertices)"
             print "---------"
 
             successful = 0
@@ -146,7 +148,7 @@ class Benchmark:
                        , "--maxc", str(self.maxc)
                        , "--mu", str(self.mu)
                        , "--N", str(self.N)
-                       , "--on", str(self.on)
+                       , "--on", str(on)
                        , "--om", str(self.om)
                        , "-o", nmiFileName
                        , "-s", str(self.seedFraction)
@@ -188,7 +190,7 @@ class Benchmark:
             tmpMean["on"] = on
             tmpMean["value"] = [[] for x in range(self.iterations) ]
             for r in range(self.iterations):
-                tmpMean["value"][r] = np.mean(nmiValuesFixedMu[r])
+                tmpMean["value"][r] = np.mean(nmiValuesFixedOn[r])
             self.nmiValuesMean.append(tmpMean)
 
 
@@ -254,6 +256,8 @@ def commandline_interface():
     parser.add_option("--classification_strategy", dest="classification_strategy",
         help="")
 
+    parser.add_option("--om",dest="overlap_amount",type="int",help="the amount of communities an overlapping vertex is in")
+
     
     global options, args
     (options, args) = parser.parse_args()
@@ -263,7 +267,7 @@ def commandline_interface():
             options.seedFractions and
             options.outputfolder and
             options.samplesPerDatapoint and
-            options.mixingRange and
+            options.mixingParam and
             options.iterations and
             options.classification_strategy): 
         parser.print_help()
@@ -281,7 +285,7 @@ if commandline_interface():
 
 
     mixingParam          = options.mixingParam
-
+    overlap_amount      = options.overlap_amount
     tmp                 = [float(x) for x in options.overlapRange.split()]
     overlapRange         = [x for x in np.arange(tmp[0], tmp[1], tmp[2])]
 
@@ -298,7 +302,7 @@ if commandline_interface():
         for size in communitySizes:
             for seed in seedFractions:
                 print "> create Benchmark(", N, size, seed, samplesPerDatapoint, mixingParam, options.iterations, options.classification_strategy, ")"
-                benchmarks.append(Benchmark(N, size, seed, samplesPerDatapoint, mixingParam, options.iterations, options.classification_strategy))
+                benchmarks.append(Benchmark(N, size, seed, samplesPerDatapoint, mixingParam,overlapRange,overlap_amount, options.iterations, options.classification_strategy))
 
     print "start benchmarks"
     for benchmark in benchmarks:
