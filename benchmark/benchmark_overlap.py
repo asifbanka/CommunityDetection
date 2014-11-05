@@ -182,12 +182,12 @@ class Benchmark:
                         raise Exception("LFRtoNMI crashes a lot for these parameters")
 
             tmp = defaultdict()
-            tmp["on"] = on
+            tmp["on"] = on_p
             tmp["value"] = nmiValuesFixedOn
             self.nmiValues.append(tmp)
 
             tmpMean = defaultdict()
-            tmpMean["on"] = on
+            tmpMean["on"] = on_p
             tmpMean["value"] = [[] for x in range(self.iterations) ]
             for r in range(self.iterations):
                 tmpMean["value"][r] = np.mean(nmiValuesFixedOn[r])
