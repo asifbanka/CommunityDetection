@@ -21,11 +21,11 @@ the ground truth using an information-theoretic measure known as the \emph{norma
 mutual information}. We closely follow this test framework in this paper. 
 
 
-\subsection{The Major Algorithms}
+\section{The Major Algorithms}
 In what follows, we briefly describe the more important algorithms 
 for community detection. We are particularly interested in the performance 
 of these algorithms as reported in the study by Lancichinetti and 
-Fortunato~\cite{LF09}.
+Fortunato~\cite{LF09} on their benchmark graphs. 
 
 \paragraph{The Girvan-Newman algorithm.} 
 One of the very first algorithms for detecting disjoint communities 
@@ -82,4 +82,24 @@ community detection algorithms~\cite{LF09}:
 \end{quote}
 
 \paragraph{The Cfinder algorithm of Palla \etal} One of the first algorithms that dealt with overlapping 
-communitites was proposed by Palla \etal~\cite{PDFV05}. 
+communitites was proposed by Palla \etal~\cite{PDFV05}. A community, in this case, is defined to be a set of nodes 
+that are the union of $k$-cliques such that any one clique can be reached from another via a series of 
+adjacent $k$-cliques, where two $k$-cliques are defined to be adjacent if they 
+share $k - 1$ nodes. 
+
+The algorithm first finds out all maximal cliques in the graph, which takes exponential-time
+in the worst case. It then creates a symmetric clique-clique overlap matrix $\mat{C}$ which is a square matrix whose 
+rows and columns are indexed by the set of maximal cliques in the graph and whose $(i, j)\th$ 
+is the number of vertices that are in both the $i\th$ and $j\th$ cliques. This matrix is then modified into 
+a binary matrix by replacing all those entries with value less than $k - 1$ by a $0$ and the remaining entries by 
+a $1$. The final step is to find the connected components of the graph represented by this binary symmetric matrix
+which constitute the communities of the original graph. 
+
+The authors report to have tested the algorithm on various networks including the protein-protein interaction 
+network of \emph{Saccharomyces cerevisiae}\footnote{A species of yeast used in winemaking, baking, and brewing.} 
+with $k = 4$; the co-authorship network of the Los Alamos condensed matter archive (with $k = 6$). 
+Lancichinetti and Fortunato report that Cfinder did not perform particularly well on the LFR benchmark and 
+that its performance is sensitive to the sizes of community (but not the network size). For networks will 
+small communities it has a decent performance, but has a worse performance on those with larger communities. 
+
+\paragraph{Using random walks to model information flow.} Rosvall and Bergman  
