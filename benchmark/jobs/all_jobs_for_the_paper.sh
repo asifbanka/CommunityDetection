@@ -65,7 +65,7 @@ communitysizes=(big small)
 #use these seed fractions when not doing iteration
 seedsNonIterative=( 0.05 0.10 0.15 0.20 )
 #use these seed fractions when doing iteration
-seedsIterative=( 0.02 0.3 0.5 0.10 )
+seedsIterative=( 0.02 0.03 0.05 0.10 )
 #use these mixing parameter when doing overlapping detection
 overlapMixing=( 0.1 0.3 )
 #number of iterations for the iterative method

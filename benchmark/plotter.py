@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 from optparse import OptionParser
-from pprint import pprint
 
 ##########################################
 #
@@ -19,7 +18,7 @@ def commandline_interface():
     
     # command line options
     parser.add_option("-f", dest="files", type="string",
-        help="Whitespace-separated list of json-files. This program plots NMI (y-axis) against the mixing parameter (x-axis). \
+        help="Whitespace-separated list of json-files. This program plots NMI (y-axis) against the mixing parameter or overlap (x-axis). \
         Each json-file represents one plot-line.")
 
     parser.add_option("-o", dest="output", type="string",
@@ -27,6 +26,9 @@ def commandline_interface():
 
     parser.add_option("-i", dest="iterations", type="string",
         help="a list of iterations to display")
+
+    parser.add_option("-m", dest="mode", type="string",
+        help="either overlap or nonoverlap")
 
     global options, args
     (options, args) = parser.parse_args()
@@ -49,44 +51,18 @@ def loadJson(filename):
 #
 # PLOTTING 
 
-# plot the json-file "filename"
-# plot either the first (round="first") or the last (round="last") round of the iterative method
-def plotFileOld(filename, round):
-    xs = []
-    ys = []
-    label = ""
-    data = loadJson(filename)
-
-    i=0
-    if round == -1:
-        label = str(int(data["_seedFraction"]*100))+"% Seeds"
-    else:
-        i=round
-        if round > int(data["_iterations"])-1:
-            i=int(data["_iterations"])-1
-
-        label = "Iteration "+str(i)    
-
-    #label += "N=" + str(data["_N"])
-    #label = str(int(data["_seedFraction"]*100))+"% seeds"
-    #label += ," maxc=" + str(data["_maxc"])
-    #label += ", round=" + str(i)
-
-    nmiValuesMean = data["nmiValuesMean"]
-    for tup in nmiValuesMean:
-        xs.append(float(tup["mu"]))
-        ys.append(float(tup["value"][i]))
-    return xs, ys, label
-
-
-# 
-def getXsYs(data, iteration):
+def getXsYs(data, iteration, mode):
     xs = []
     ys = []
 
     nmiValuesMean = data["nmiValuesMean"]
     for tup in nmiValuesMean:
-        xs.append(float(tup["mu"]))
+        if options.mode == "overlap":
+            xs.append(float(tup["on"]))
+        elif options.mode == "nonoverlap":
+            xs.append(float(tup["mu"]))
+        else:
+            raise Exception()
         ys.append(float(tup["value"][iteration]))
     return xs, ys
 
@@ -94,12 +70,12 @@ def getXsYs(data, iteration):
 #
 # LABELING
 
-#if there we display just one file, put the seed percentage in the title and not the label
-def getTitleAndLabel(dataList, iterations):
-
+#generates the cuve's labels and the title for the plot
+def getTitleAndLabel(dataList, iterations, mode):
 
     #number of nodes for each file
     N = [int(x["_N"]) for x in dataList]
+
 
     #each file has either big or small communities
     communitysizes = []
@@ -125,6 +101,7 @@ def getTitleAndLabel(dataList, iterations):
 
     #title must contain community sizes and number of nodes
     title = str(N[0]) + " nodes, " + communitysizes[0] + " communities"
+    labels = ["" for x in dataList]
 
 
     #if we have just one seed percentage, put it in the title, otherwise in the label
@@ -145,6 +122,18 @@ def getTitleAndLabel(dataList, iterations):
         labels = ["iteration " + str(x) for x in iterations]
 
 
+    #add the mixing parameter to the title if in overlap mode
+    if mode == "overlap":
+        mus = [(x["_mu"]) for x in dataList]
+        if len(set(mus)) != 1:
+            raise Exception("there different mu values in these files")
+        title += ", "+ str(mus[0]) + " mixing parameter"
+
+
+    #add some space below the title
+    title += "\n"
+
+
     return title, labels
 
 ##########################################
@@ -154,31 +143,38 @@ def getTitleAndLabel(dataList, iterations):
 options, args = 0, 0
 if commandline_interface():
 
+    if(options.mode != "overlap" and options.mode != "nonoverlap"):
+        raise Exception("mode must be either overlap or nonoverlap")
+
     filenames = options.files.split()
     iterations = [int(x) for x in options.iterations.split()]
-
-
-    #pick title for plot
-    dataList = [loadJson(x) for x in filenames]
-    title, labels = getTitleAndLabel(dataList, iterations)
-
-    graphs = []
-    lines = []
-
-    if(len(dataList) != 1 and len(iterations) != 1):
+    if(len(filenames) != 1 and len(iterations) != 1):
         raise Exception("right now we do not support plotting multiple files with multiple iterations")
 
+
+    dataList = [loadJson(x) for x in filenames]
+
+    #pick title for plot
+    title, labels = getTitleAndLabel(dataList, iterations, options.mode)
+
+    lines = []
     labelIdx = 0
     for data in dataList:
         for iteration in iterations:
-            xs, ys = getXsYs(data, iteration)
+            xs, ys = getXsYs(data, iteration, options.mode)
             line, = plt.plot(xs, ys, "-o", label=labels[labelIdx])
             labelIdx = labelIdx + 1
             lines.append(line)
 
     plt.title(title)
-    plt.legend(fancybox=True, shadow= True, loc=1)
-    plt.axis([0,1,0,1])
-    plt.xlabel("Mixing Parameter")
-    plt.ylabel("Normalized Mutual Information")
+    plt.legend(fancybox=True, shadow=False, loc=1)
+    if options.mode == "overlap":
+        plt.axis([0,0.6,0,1])
+        plt.xlabel("Fraction of overlapping vertices")
+        plt.ylabel("Normalized Mutual Information")
+    else:
+        plt.axis([0,1,0,1])
+        plt.xlabel("Mixing Parameter")
+        plt.ylabel("Normalized Mutual Information")
+
     plt.savefig(options.output)
