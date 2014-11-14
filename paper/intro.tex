@@ -19,8 +19,13 @@ which comprises of testing algorithms on a set of benchmark graphs
 known as the LFR-benchmark with the test results being evaluated against 
 the ground truth using an information-theoretic measure known as the \emph{normalized 
 mutual information}. We closely follow this test framework in this paper. 
-In what follows, we briefly mention those algorithms that we find are interesting 
-or that were reported to have done particularly well in~\cite{LF09}.
+
+
+\subsection{The Major Algorithms}
+In what follows, we briefly describe the more important algorithms 
+for community detection. We are particularly interested in the performance 
+of these algorithms as reported in the study by Lancichinetti and 
+Fortunato~\cite{LF09}.
 
 \paragraph{The Girvan-Newman algorithm.} 
 One of the very first algorithms for detecting disjoint communities 
@@ -49,13 +54,32 @@ This is the null model against which the within-community edges of the partition
 The worst-case complexity of the Newman-Girvan algorithm is dominated by the time taken 
 to compute the betweeness scores and is $O(m^2 n)$ for general graphs and $O(n^3)$ for sparse graphs.
 
-\paragraph{The greedy algorithm for modularity optimization by Clauset et al.~\cite{CNM04}.}
+\paragraph{The greedy algorithm for modularity optimization by Clauset \etal~\cite{CNM04}.}
 This algorithm starts with each node being the sole member of a community of one, and 
 repeatedly joins two communities whose amalgamation produces the largest increase in modularity. 
 The algorithm makes use of efficient data structures and has a running time of $O(m \log^2 n)$, 
 which for sparse graphs works out to $O(n \log^2 n)$. 
 
-\paragraph{Fast Modularity Optimization by Blondel et al.} 
-The algorithm of Blondel et al.~\cite{BGLL08} is 
+\paragraph{Fast Modularity Optimization by Blondel \etal} 
+The algorithm of Blondel \etal~\cite{BGLL08} consists of two phases which are repeated iteratively. 
+It starts out by placing each node in its own community and then locally optimizing the modularity 
+in the neighborhood of each node. In the second phase, a new network is built whose nodes are the 
+communities found out in the first phase. That is, communities are replaced by ``super-nodes''; the 
+within-community edges are modeled by a (weighted) self-loop to the super-node; and the between-community 
+edges are modeled by a single edge between the corresponding super-nodes, with the weight being 
+the sum of the weights of the edges between these two communities. 
+Once the second phase is complete, the entire procedure is repeated until the modularity does not 
+increase any further. The algorithm is efficient due to the fact that one can quickly compute the 
+change in modularity obtained by moving an isolated node into a community.
 
+This is what Lancichinetti and Fortunato state about modularity-based techniques in their analysis of 
+community detection algorithms~\cite{LF09}: 
+\begin{quote}
+	\emph{Modularity-based methods have a rather poor performance, which worsens for larger systems and smaller 
+	communities due to the well-known resolution limit of the measure. The only exception is represented 
+	by the algorithm of Blondel \emph{\etal}, whose performance is very good probably because the estimated modularity 
+	is not a very good approximation of the real one $\ldots$} 
+\end{quote}
 
+\paragraph{The Cfinder algorithm of Palla \etal} One of the first algorithms that dealt with overlapping 
+communitites was proposed by Palla \etal~\cite{PDFV05}. 
