@@ -1,0 +1,69 @@
+\newpage
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[node distance=1cm, auto]  
+        \tikzset{
+            mynode/.style={
+                rectangle,
+                rounded corners,
+                draw=black, 
+                %top color=white, 
+                %bottom color=yellow!50,
+                very thick, 
+                inner sep=1em, 
+                minimum size=3em, 
+                text centered
+            },
+            myarrow/.style={
+                ->, 
+                >=latex', 
+                shorten >=1pt, 
+                thick
+            },
+            mylabel/.style={
+                text width=7em,
+                text centered
+            },
+            % I found this nice trick at http://tex.stackexchange.com/questions/50780/arrows-at-right-angles-on-a-tikzpicture-matrix
+            bendedarrow/.style={
+                to path={(\tikztostart) -- ++(#1,0pt) \tikztonodes |- (\tikztotarget) },
+                pos=0.5
+            }
+        }  
+        
+        % NODES
+
+        \node[mynode]                  (lfr)            {LFR};  
+        \node[mynode, below=of lfr]    (seeds)          {Seed Generation};  
+        \node[mynode, below=of seeds]  (walk)           {Random Walk};  
+        \node[mynode, below=of walk]   (classification) {Classification};  
+
+        % shift nmi node to the right
+        \coordinate (middle) at ($(seeds)!0.5!(walk)$);
+        \node[mynode, right=of middle, xshift=2cm] (nmi) {NMI};  
+
+        % EDGES
+
+        % simple edges
+        \draw[myarrow] (lfr)   -- (seeds);	
+        \draw[myarrow] (seeds) -- (walk);	
+        \draw[myarrow] (walk)  -- (classification);	
+
+        % ingoing edges to nmi
+        \draw[myarrow] (lfr)              -| (nmi);	
+        \draw[myarrow] (classification)   -| (nmi);	
+
+        % outgoing edge from nmi
+        \node[right=1cm of nmi] (dummy1) {}; 
+        \draw[myarrow] (nmi)   -- (dummy1);	
+
+        % a dashed, bended arrow with iteration written on it
+        \draw [myarrow, dashed, bendedarrow=-2.5cm] (classification) to (seeds);
+        \node[left=1cm of walk] (dummy2) {}; 
+        \node[mylabel, rotate=90] at (dummy2) (label1) {Iteration};  
+
+    \end{tikzpicture} 
+    \label{fig:pipeline}
+    \caption{Pipeline} 
+\end{figure}

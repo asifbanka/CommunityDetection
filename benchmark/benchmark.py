@@ -46,7 +46,7 @@ class Benchmark:
             self.maxc = 50
             self.on = 0
             self.om = 0
-        elif communitySize == "nonoverlap":
+        elif communitySize == "big":
             self.minc = 20 
             self.maxc = 100 
             self.on = 0
