@@ -253,6 +253,9 @@ def commandline_interface():
     parser.add_option("--classification_strategy", dest="classification_strategy",
         help="")
 
+    parser.add_option("--overwrite_file", dest="overwrite_file", type="int", default=1,
+        help="if nonzero exit if output file already exists")
+
     
     global options, args
     (options, args) = parser.parse_args()
@@ -296,5 +299,8 @@ if commandline_interface():
 
     print "start benchmarks"
     for benchmark in benchmarks:
-        benchmark.run()
-        benchmark.dump()
+        if os.path.isfile(options.outputfolder + "/" + benchmark.filename) and not options.overwrite_file:
+            print "file already exists, abort"
+        else:
+            benchmark.run()
+            benchmark.dump()
