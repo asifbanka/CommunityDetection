@@ -51,6 +51,13 @@ class Benchmark:
             self.maxc = 100 
             self.on = 0
             self.om = 0
+
+        elif communitySize == "diverse":
+            self.minc = 20 
+            self.maxc = 200 
+            self.on = 0
+            self.om = 0
+
         elif communitySize == "overlap15":
             self.minc = 20 
             self.maxc = 100 
