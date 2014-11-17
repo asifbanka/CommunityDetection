@@ -15,9 +15,9 @@
 ### Request memory you need for your job in TOTAL in MB
 # BSUB -M 2024
 
-#BSUB -B
-#BSUB -N
-#BSUB -u jan.dreier@rwth-aachen.de
+###BSUB -B
+###BSUB -N
+###BSUB -u jan.dreier@rwth-aachen.de
 
 ##############################################
 
@@ -65,11 +65,11 @@ communitysizes=(big small)
 #use these seed fractions when not doing iteration
 seedsNonIterative=( 0.05 0.10 0.15 0.20 )
 #use these seed fractions when doing iteration
-seedsIterative=( 0.02 0.03 0.05 0.10 )
+seedsIterative=( 0.02 0.04 0.06 0.08 0.10 )
 #use these mixing parameter when doing overlapping detection
 overlapMixing=( 0.1 0.3 )
 #number of iterations for the iterative method
-iterations=10
+iterations=20
 #samples per datapoint
 samples=100
 
@@ -84,7 +84,13 @@ do
             job=$((job+1))
             if [ "$job" -eq "$LSB_JOBINDEX" ]
             then
-                $benchmark_nonoverlap -o $outdir/nonoverlap_noniter -n $n -c $c -s $s -i 1 -m "0.05 0.8 0.05" --samples_per_datapoint $samples --classification_strategy max
+                $benchmark_nonoverlap \
+                    -o $outdir/nonoverlap_noniter \
+                    -n $n -c $c -s $s -i 1 \
+                    -m "0.05 0.8 0.05" \
+                    --samples_per_datapoint $samples \
+                    --classification_strategy max \
+                    --overwrite_file 0
             fi
         done
     done
@@ -100,7 +106,14 @@ do
             job=$((job+1))
             if [ "$job" -eq "$LSB_JOBINDEX" ]
             then
-                $benchmark_nonoverlap -o $outdir/nonoverlap_iter -n $n -c $c -s $s -i $iterations -m "0.05 0.8 0.05" --samples_per_datapoint $samples --classification_strategy max
+                $benchmark_nonoverlap \
+                    -o $outdir/nonoverlap_iter \
+                    -n $n -c $c -s $s \
+                    -i $iterations \
+                    -m "0.05 0.8 0.05" \
+                    --samples_per_datapoint $samples \
+                    --classification_strategy max \
+                    --overwrite_file 0
             fi
         done
     done
@@ -118,7 +131,14 @@ do
                 job=$((job+1))
                 if [ "$job" -eq "$LSB_JOBINDEX" ]
                 then
-                    $benchmark_overlap -o $outdir/overlap_noniter -n $n -c $c -s $s -i 1 -O "0.0 0.5 0.05" --om 3 -m $m --samples_per_datapoint $samples --classification_strategy gap
+                    $benchmark_overlap \
+                        -o $outdir/overlap_noniter \
+                        -n $n -c $c -s $s -i 1 \
+                        -O "0.0 0.5 0.05" \
+                        --om 3 -m $m \
+                        --samples_per_datapoint $samples \
+                        --classification_strategy gap \
+                        --overwrite_file 0
                 fi
             done
         done
@@ -137,7 +157,15 @@ do
                 job=$((job+1))
                 if [ "$job" -eq "$LSB_JOBINDEX" ]
                 then
-                    $benchmark_overlap -o $outdir/overlap_iter -n $n -c $c -s $s -i $iterations -O "0.0 0.5 0.05" --om 3 -m $m --samples_per_datapoint $samples --classification_strategy gap
+                    $benchmark_overlap \
+                        -o $outdir/overlap_iter \
+                        -n $n -c $c -s $s \
+                        -i $iterations \
+                        -O "0.0 0.5 0.05" \
+                        --om 3 -m $m \
+                        --samples_per_datapoint $samples \
+                        --classification_strategy gap \
+                        --overwrite_file 0
                 fi
             done
         done
