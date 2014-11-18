@@ -20,7 +20,7 @@ In each of these cases, we have a sense of what it is that is required to be fou
 
 In broad brush-strokes, this is how our algorithm works.  It requires that we know
 some members from each community that we are aiming to discover. We call these members 
-\emph{seed nodes}. A seed node can belong to several communitites and our algorithm 
+\emph{seed nodes}. A seed node can belong to several communities and our algorithm 
 actually finds out overlapping communities in the network. The algorithm uses the 
 partial community information and propagates it to the other nodes of the network 
 by simulating a random walk from non-seed nodes to the set of seed nodes. 
@@ -39,7 +39,7 @@ time, where~$n$ is the number of nodes in the network. One of the contributions 
 this paper is to show how this can be reduced to solving a set of (symmetric, diagonally dominant) 
 systems of linear equations (one set per community), which can be done in $O(m \log n)$ time, 
 where~$m$ is the number of edges in the graph. The fact that such systems can be solved in 
-almost linear time was due to work that was spearheaded by Speilman and 
+almost linear time was due to work that was spearheaded by Spielman and 
 Teng~\cite{ST04,EEST05,ST08,KMP10,KMP11,Vis13}. We assume that our networks are 
 sparse in the sense that $m = O(n)$, so that the running time of our algorithm can  
 be bounded by $O(n \log n)$.    
@@ -175,7 +175,7 @@ An $n \times n$ matrix $\mat{A} = [a_{ij}]$ is \emph{diagonally dominant} if
 \] 
 A matrix is \emph{symmetric diagonally dominant (SDD)} if, in addition to the above, 
 it is symmetric. For more information about matrices and matrix computations, 
-see the texbooks by Golub and Van Loan~\cite{GvL13} and Horn and Johnson~\cite{HJ13}. 
+see the textbooks by Golub and Van Loan~\cite{GvL13} and Horn and Johnson~\cite{HJ13}. 
 
 An example of a symmetric, diagonally dominant matrix is the graph Laplacian. 
 Given an unweighted, undirected graph~$G$, the \emph{Laplacian} of $G$ 
@@ -218,9 +218,9 @@ and this result is crucial to the analysis of the running time of our algorithm.
 
 The solution of $n \times n$ system of linear equations takes $O(n^3)$ time 
 if one uses Gaussian elimination. \texttt{More stuff here on sparse systems ...}
-Speilman and Teng made a seminal contribution in this direction and 
+Spielman and Teng made a seminal contribution in this direction and 
 showed that SDD linear systems can be solved in nearly-linear 
-time~\cite{ST04,EEST05,ST08}. Speilman and Teng's algorithm (the ST-solver)
+time~\cite{ST04,EEST05,ST08}. Spielman and Teng's algorithm (the ST-solver)
 iteratively produces a sequence of approximate solutions which converge to the 
 actual solution of the system $\mat{A} \vect{x} = \vect{b}$. The performance 
 of such an iterative system is measured in terms of the time taken to reduce 
