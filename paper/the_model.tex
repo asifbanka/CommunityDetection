@@ -20,7 +20,7 @@ In each of these cases, we have a sense of what it is that is required to be fou
 
 In broad brush-strokes, this is how our algorithm works.  It requires that we know
 some members from each community that we are aiming to discover. We call these members 
-\emph{seed nodes}. A seed node can belong to several communitites and our algorithm 
+\emph{seed nodes}. A seed node can belong to several communities and our algorithm 
 actually finds out overlapping communities in the network. The algorithm uses the 
 partial community information and propagates it to the other nodes of the network 
 by simulating a random walk from non-seed nodes to the set of seed nodes. 
@@ -39,7 +39,7 @@ time, where~$n$ is the number of nodes in the network. One of the contributions 
 this paper is to show how this can be reduced to solving a set of (symmetric, diagonally dominant) 
 systems of linear equations (one set per community), which can be done in $O(m \log n)$ time, 
 where~$m$ is the number of edges in the graph. The fact that such systems can be solved in 
-almost linear time was due to work that was spearheaded by Speilman and 
+almost linear time was due to work that was spearheaded by Spielman and 
 Teng~\cite{ST04,EEST05,ST08,KMP10,KMP11,Vis13}. We assume that our networks are 
 sparse in the sense that $m = O(n)$, so that the running time of our algorithm can  
 be bounded by $O(n \log n)$.    
@@ -175,7 +175,7 @@ An $n \times n$ matrix $\mat{A} = [a_{ij}]$ is \emph{diagonally dominant} if
 \] 
 A matrix is \emph{symmetric diagonally dominant (SDD)} if, in addition to the above, 
 it is symmetric. For more information about matrices and matrix computations, 
-see the texbooks by Golub and Van Loan~\cite{GvL13} and Horn and Johnson~\cite{HJ13}. 
+see the textbooks by Golub and Van Loan~\cite{GvL13} and Horn and Johnson~\cite{HJ13}. 
 
 An example of a symmetric, diagonally dominant matrix is the graph Laplacian. 
 Given an unweighted, undirected graph~$G$, the \emph{Laplacian} of $G$ 
@@ -218,9 +218,9 @@ and this result is crucial to the analysis of the running time of our algorithm.
 
 The solution of $n \times n$ system of linear equations takes $O(n^3)$ time 
 if one uses Gaussian elimination. \texttt{More stuff here on sparse systems ...}
-Speilman and Teng made a seminal contribution in this direction and 
+Spielman and Teng made a seminal contribution in this direction and 
 showed that SDD linear systems can be solved in nearly-linear 
-time~\cite{ST04,EEST05,ST08}. Speilman and Teng's algorithm (the ST-solver)
+time~\cite{ST04,EEST05,ST08}. Spielman and Teng's algorithm (the ST-solver)
 iteratively produces a sequence of approximate solutions which converge to the 
 actual solution of the system $\mat{A} \vect{x} = \vect{b}$. The performance 
 of such an iterative system is measured in terms of the time taken to reduce 
@@ -343,191 +343,3 @@ is $O(n \cdot \log n)$ per community.
 %is what was claimed.  
 \end{proof}
 
-\subsection{Some More Intuition}
-
-Before we present our experimental results, it might be 
-worthwhile to study how well our algorithm performs, at least in 
-special cases.
-
-Suppose that one of the communities in the network in question is $C_1$
-which has $n_1$ nodes and $e_1$ internal edges (edges with both end-points within 
-the community). Community $C_1$ is separated from the ``rest of the network,'' 
-denoted $C_2$, by $e_3$ edges; that is, the cut $(C_1, C_2)$ has $e_3$ edges. 
-We assume that $C_2$ has $n_2$ vertices and $e_2$ internal edges. Now $C_2$ 
-could be a community in itself or a collection of communities. We wish to 
-ascertain the probability with which a random walk starting at a randomly 
-chosen node in $C_1$ ends up in a seed node for $C_1$. Assume that we 
-pick a set $S_1$ of $s_1$ seed nodes from $C_1$ and a set $S_2$ of $s_2$ 
-seed nodes from the rest of the graph, uniformly at random. We first want to 
-estimate the probability that a randomly picked node~$u$ from $C_1$ transitions 
-to one of the seed nodes in $S_1$ in \emph{one} step.
-
-This could happen because~$u$ itself is a seed node, which happens with probability $s_1 / n_1$.
-Next suppose that~$u$ does not have any neighbors in~$C_2$. If we denote the nodes 
-of $C_1$ that do have a neighbor in~$C_2$ by $\partial C_1$, then the probability 
-of a non-seed node in $C_1 - \partial C_1$ to transition in one step to a seed 
-node in $S_1$ is:
-\begin{equation}
-    \frac{1}{d(u)} \cdot \sum_{x \in N(u)} \frac{s_1}{n_1} = \frac{s_1}{n_1}.
-\end{equation}
-Finally consider the case where~$u$ has a neighbor in $C_2$. The probability with 
-which a randomly chosen node in $C_1$ transitions to a node in $C_1$ (in one step) is 
-\[
-    \frac{\mbox{average internal degree of a vertex in $C_1$}}
-         {\mbox{total average degree of a vertex in $C_1$}},
-\]
-which works out to be 
-\begin{equation}\label{exp:c1-c1}
-    \frac{2e_1}{n_1} \div \frac{2e_1 + e_3}{n_1} = \frac{2e_1}{2e_1 + e_3}.
-\end{equation}
-The probability with which a randomly chosen node from $C_1$ makes a 
-one-step transition to $C_2$ is 
-\begin{equation}\label{exp:c1-c2}
-    \frac{e_3}{2e_1 + e_3}.
-\end{equation}
-Therefore the probability with which a non-seed node in $\partial C_1$ 
-transitions in one step to a seed node in $S_1$ is:
-\begin{equation}
-    \frac{2e_1 / n_1 }{2e_1 / n_1 + e_3 / |\partial C_1|} \cdot \frac{s_1}{n_1} 
-        = \frac{2e_1}{2e_1 + e_3 \cdot (n_1 / |\partial C_1|)} \cdot \frac{s_1}{n_1}.
-\end{equation}
-
-Now we can write down the probability of a randomly picked 
-node in $C_1$ transitioning in one step to a seed node in $S_1$
-as:
-\begin{equation}\label{exp:c1-s1}
-    \frac{s_1}{n_1} +  \left ( 1 - \frac{|\partial C_1|}{n_1} \right ) \cdot \frac{s_1}{n_1} 
-            + \frac{|\partial C_1|}{n_1} 
-            \cdot \frac{2e_1}{2e_1 +e_3 \cdot ( n_1 /|\partial C_1 |)} 
-            \cdot \frac{s_1}{n_1}.
-\end{equation}
-With a little algebraic manipulation, the above expression simplifies to: 
-\begin{equation}\label{exp:final_c1-s1}
-    \frac{s_1}{n_1} \cdot \left ( 2 - \frac{|\partial C_1|}{n_1} 
-        \cdot \frac{e_3 \cdot 
-        \frac{n_1}{|\partial C_1|}}{2e_1 + e_3 \cdot \frac{n_1}{|\partial C_1|}} \right ).
-\end{equation}
-Now the fractions $|\partial C_1| / n_1$ and 
-$e_3 \cdot (n_1 / |\partial C_1|)/ (2e_1 + e_3 \cdot (n_1 / |\partial C_1|))$ 
-are each at most one, so that their product is also at most one. Therefore, 
-expression~(\ref{exp:final_c1-s1}) is at least $s_1/ n_1$ and 
-at most $2s_1 / n_1$. We wish to keep things simple here and we 
-choose to assign a probability of $s_1 / n_1$ to the event that 
-a randomly chosen non-seed node in $C_1$ transitions to a seed node
-in $S_1$ in one step.
-
-Next note that the probability expression~(\ref{exp:c1-c1}) can be broken down 
-into two events: the probability of transitioning to a seed node 
-in $S_1$ (which is $s_1 / n_1$), and the probability of transitioning 
-to a non-seed node in $C_1$, which then is:
-\begin{equation}\label{exp:non_seed_c1}
-    \frac{2e_1}{2e_1 + e_3} - \frac{s_1}{n_1}.
-\end{equation}
-By symmetry, the transition
-probabilities of randomly picked node from $C_2$ are:
-\begin{align}
-    \mbox{to a seed node in $S_2$}      & = \frac{s_2}{n_2} \\
-    \mbox{to a non-seed node in $C_2$}  & = \frac{2e_2}{2e_2 + e_3} - \frac{s_2}{n_2} \\
-    \mbox{to a node in $C_1$}           & = \frac{e_3}{2e_2 + e_3}.
-\end{align}
-This gives rise to the four-state Markov chain depicted in Figure~\ref{fig:4stateMC}, 
-where we used bars on $C_1$ and $C_2$ to denote the fact that these 
-states represent the non-seed node counterparts of the respective node sets.
-Note that the sum of the above three probabilities sum up to one, as they should.
-
-We can now analyze the transition matrix of this absorbing Markov chain as 
-before:
-\begin{equation}\label{eqn:4-state-matrix}
-    \mat{P} =
-    \bordermatrix{\text{}   & \bar{C}_1 & \bar{C}_2 & S_1 & S_2 \cr
-                  \bar{C}_1 & q_1       &  q_2      & r_1 & 0   \cr
-                  \bar{C}_2 & q_3       &  q_4      &  0  & r_2 \cr
-                        S_1 &  0        &   0       &  1  &  0  \cr
-                        S_2 &  0        &   0       &  0  &  1},
-\end{equation}
-where we used $q_1, q_2, q_3, q_4, r_1, r_2$ to represent the respective 
-probabilities that were calculated before. This matrix is in canonical form 
-(see~\ref{eqn:canonical_form_P}) and the probabilities with which a non-seed 
-node in $C_1$ and $C_2$ is absorbed in a seed node is given by the $2 \times 2$ matrix 
-$\inv{(\mat{I} - \mat{Q})} \cdot \mat{R}$, which is:
-\begin{equation}
-    \inv{(\mat{I} - \mat{Q})} \cdot \mat{R} = \frac{1}{f(q_1, q_2, q_3, q_4)}
-        \cdot \left ( \begin{matrix}
-                            r_1 (1 - q_4) & r_2 q_2         \\  
-                            r_1 q_3       & r_1 (1 - q_1)
-                      \end{matrix} \right ),
-\end{equation}
-where $f(q_1, q_2, q_3, q_4) = (1 - q_1) (1 - q_4) - q_2 q_3$.
-
-\begin{figure}[t]
-\begin{center}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
-                    semithick]
-  \tikzstyle{every state}=[text=black]
-
-  \node[state]         (S1)               {$S_1$};
-  \node[state]         (C1) [below of=S1] {$\bar{C}_1$};
-  \node[state]         (S2) [right of=S1] {$S_2$};
-  \node[state]         (C2) [below of=S2] {$\bar{C}_2$};
-
-  \path (S1) edge [loop above]  node {$1$}                                        (S1)
-        (C1) edge               node {$\frac{s_1}{n_1}$}                          (S1)
-        (C1) edge [bend left]   node (dummy1) [above] {$\frac{e_3}{2e_1 + e_3}$}  (C2)
-             edge [loop left]   node {$\frac{2e_1}{2e_1 + e_3} - \frac{s_1}{n_1}$} (C1)
-        (C2) edge [bend left]   node (dummy2) [below] {$\frac{e_3}{2e_2 + e_3}$}  (C1)
-             edge [loop right]  node {$\frac{2e_2}{2e_2 + e_3} - \frac{s_2}{n_2}$} (C2)
-        (C2) edge               node {$\frac{s_2}{n_2}$}                          (S2)
-        (S2) edge [loop above]  node {$1$}                                        (S2);
-        
-\end{tikzpicture}
-\end{center}
-\caption{The four-state Markov chain representing transitions for a random node.}
-\label{fig:4stateMC}
-\end{figure}
-
-The probability of a random non-seed node of $C_1$ being absorbed by a 
-seed node of $C_1$ is proportional to $r_1 (1 - q_4)$, which is: 
-\begin{equation}\label{exp:prob_c1-s1}
-    \frac{s_1}{n_1} \left ( \frac{e_3}{2e_2 + e_3} + \frac{s_2}{n_2} \right ).
-\end{equation}
-The probability of a random non-seed node of $C_1$ being absorbed by 
-a seed node of $C_2$ is proportional to $r_2 q_2$, which is: 
-\begin{equation}\label{exp:prob_c1-s2}
-    \frac{s_2}{n_2} \cdot \frac{e_3}{2e_1 + e_3}.
-\end{equation}
-After a little manipulation, the ratio of the first expression~(\ref{exp:prob_c1-s1}) 
-to the second~(\ref{exp:prob_c1-s2}) works out to:
-\begin{equation} \label{exp:final_ratio}
-    \frac{s_1}{n_1} \cdot \frac{2e_1 + e_3}{e_3} + 
-    \frac{s_1}{n_1} \cdot \frac{n_2}{s_2} \cdot 
-            \frac{2e_1 + e_3}{2e_2 + e_3}.
-\end{equation}
-
-Up till now, we have made no assumption about community structure. 
-A commonly assumed structural characteristic is that communities 
-are more dense inside than outside. \texttt{There are quite a few 
-references that we ought to cite here.} We make this 
-assumption now in order to make some sense of expression~(\ref{exp:final_ratio}).
-Let us suppose that $C_1$ is ``clique-like'' so that $e_1 = \Omega(n_1^2)$ and 
-that there are relatively few connections between it and the rest of the 
-graph, which amounts to assuming that $e_3 = O(n_1)$. Then the first term 
-of expression~(\ref{exp:final_ratio}) is $\Omega(s_1)$. The second 
-term of this expression is harder to evaluate. If we assume that $C_2$ 
-is also a clique-like community, then $e_2 = \Omega (n_2^2)$, in which 
-case, the second term is $\Omega(s_1 n_1 /s_2 n_2)$ whose value 
-depends on the relative community sizes. If, on the other hand, $C_2$ 
-is a collection of several communities, we may continue to assume that 
-it is sparse and hence $e_2 = O(n_2)$. The second term now is $\Omega(s_1 n_1 / s_2)$,
-which is certainly large. The point is, irrespective of what $C_2$ constitutes, 
-if $C_1$ is a dense-enough community it's non-seed nodes will tend to be absorbed
-in $S_1$ rather than in $S_2$. We summarize this in the following theorem.
-\begin{theorem}
-    Let $G$ be a network and let $C_1, \ldots, C_k \subseteq G$ be the 
-    communities in the network. For each community~$C_i$, we assume that 
-    $E(C_i) = \Omega (n_i^2)$ and $E(C, G - C) = O(n_i)$, where $n_i := |V(C_i)|$.
-    Further suppose that $s_i$ seed nodes are chosen uniformly at random from each 
-    community $C_i$. Then a non-seed node picked u.a.r from~$C_i$ is absorbed 
-    in a seed node of $C_i$ with a probability that is a factor $\Omega(s_i)$ 
-    larger than the probability with which it is absorbed in the seed nodes 
-    of the remaining communities.
-\end{theorem}
