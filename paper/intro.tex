@@ -23,98 +23,78 @@ the ground truth using an information-theoretic measure known as the \emph{norma
 mutual information}. We closely follow this test framework in this paper. 
 
 
-The notion of a community is a loose one and 
+The notion of a community is a loose one and there is no well-accepted definition.
+Different community detection algorithms use different measures to estimate 
+the goodness of a partition. One of the very first algorithms due to 
+Girvan and Newman~\cite{GN02} introduced a measure known as modularity 
+which, given a partition of the nodes of the network, compares the fraction of 
+inter-community edges with the edges that would be present if the edges had been 
+added randomly while preserving the node degrees. Other authors such as Palla 
+\etal~\cite{PDFV05} simply declare that communities are node sets that formed 
+by overlapping maximal cliques. Other authors such as Rosvall and Bergstrom~\cite{RB08} 
+define the goodness of a partition in terms of the number of bits required to 
+describe per step of an infinite random walk in the network, the intuition being 
+that in a ``correct'' partition, a random walker is likely to spend more time 
+within communities rather than between communities, thereby decreasing the 
+description of the walk. 
 
-\section{The Major Algorithms}
-In what follows, we briefly describe the more important algorithms 
-for community detection. We are particularly interested in the performance 
-of these algorithms as reported in the study by Lancichinetti and 
-Fortunato~\cite{LF09} on their benchmark graphs. 
+Another characteristic of existing community detection algorithms 
+is that they are too slow. Algorithms that optimize modularity typically 
+take $O(n^2)$ even on sparse networks. The overlapping clique finding 
+algorithm of Palla \etal~\cite{PDFV05} take exponential time in the worst case.
+In other cases, derivation of worst-case running time bounds are ignored. 
 
-\paragraph{The Girvan-Newman algorithm.} 
-One of the very first algorithms for detecting disjoint communities 
-was due to Girvan and Newman~\cite{GN02, GN04}. Their 
-algorithm starts with a network and iteratively removes edges based 
-on a metric called \emph{edge betweenness}. The betweenness of an 
-edge is defined as the number of shortest paths between vertex pairs 
-that pass through that edge. After an edge is removed, betweenness 
-scores are recalculated and an edge with the highest score is deleted. 
-This procedure ends when the modularity of the resulting partition
-reaches a maximum. Modularity is a measure that estimates the goodness 
-of a partition by comparing the network with a so-called ``null model''
-in which edges are added at random between the nodes of the network 
-so as to preserve the degree sequence of the nodes. 
+\paragraph{This paper.}
+Given that it is unlikely that users of community detection algorithms 
+would unanimously settle on one definition of what constitutes a community, 
+we feel that existing algorithms totally ignore the \emph{user perspective}. To this 
+end, we chose to design an algorithm that takes as input ``user preferences'' into 
+account. The user is expected to classify a small set of nodes of the network 
+into communities (which is typically 2\% of the nodes of each community in 
+the disjoint communities case). Obviously this is possible only when the user has some 
+information about the network, such as, what it represents, which nodes 
+are the important ones and into which communities they are classified. We thus 
+break out of the chicken-and-egg problem  by requiring that users specify 
+the communities that they expect to find in a network. This situation is not 
+as ridiculous as it sounds. You might happen to have data on the leading scientific 
+authors in a co-authorship network and their fields of research but not data on 
+all members of the network; you might know the political affiliations of
+some of people in a social network and aim to discover political spectrum of 
+the whole network with the aim, perhaps, to predict the outcome of an election;
+\texttt{Some more examples??}
 
-Formally, the \emph{modularity} of a partition is defined as:
-\begin{equation}\label{eqn:modularity}
-	Q = \frac{1}{2m} \sum_{i, j} \left ( A_{i j} - \frac{d_i d_j}{2m} \right ) \delta(i, j),
-\end{equation}
-where $A_{ij}$ represent the entries of the adjacency matrix of the network; $d_i$ is the 
-degree of node $i$; $m$ is the number of edges in the network; and $\delta(i, j) = 1$ if nodes
-$i$ and $j$ belong to the same set of the partition and $0$ otherwise. The term $d_i d_j / 2m$ 
-represents the expected number of edges between nodes $i$ and $j$ if we consider a random model
-in which each node $i$ has $d_i$ ``stubs'' and we are allowed to connect stubs at random to form edges. 
-This is the null model against which the within-community edges of the partition is compared against.
-The worst-case complexity of the Newman-Girvan algorithm is dominated by the time taken 
-to compute the betweeness scores and is $O(m^2 n)$ for general graphs and $O(n^3)$ for sparse graphs.
 
-\paragraph{The greedy algorithm for modularity optimization by Clauset \etal~\cite{CNM04}.}
-This algorithm starts with each node being the sole member of a community of one, and 
-repeatedly joins two communities whose amalgamation produces the largest increase in modularity. 
-The algorithm makes use of efficient data structures and has a running time of $O(m \log^2 n)$, 
-which for sparse graphs works out to $O(n \log^2 n)$. 
+An important characteristic of algorithms surveyed in~\cite{LF09} 
+is that the algorithms either find disjoint communities or overlapping 
+ones. The techniques that typically optimize the goodness of a partition based 
+on some optimization criteria yield disjoint communities. The ones that are 
+designed to find overlapping communities such as the overlapping clique finding 
+algorithm of Palla \etal~\cite{PDFV05} do not seem to yield very good results (see~\cite{LF09}).
+Our algorithm naturally extends to the overlapping case. Of course, there is a higher 
+price that has to be paid in that the number of nodes that need to be classified by the user 
+is typically larger (5\% to 10\% of the nodes per community). The algorithm however 
+does not need any major changes and we view this is as an aesthetically pleasing 
+feature of our approach. 
 
-\paragraph{Fast Modularity Optimization by Blondel \etal} 
-The algorithm of Blondel \etal~\cite{BGLL08} consists of two phases which are repeated iteratively. 
-It starts out by placing each node in its own community and then locally optimizing the modularity 
-in the neighborhood of each node. In the second phase, a new network is built whose nodes are the 
-communities found out in the first phase. That is, communities are replaced by ``super-nodes''; the 
-within-community edges are modeled by a (weighted) self-loop to the super-node; and the between-community 
-edges are modeled by a single edge between the corresponding super-nodes, with the weight being 
-the sum of the weights of the edges between these two communities. 
-Once the second phase is complete, the entire procedure is repeated until the modularity does not 
-increase any further. The algorithm is efficient due to the fact that one can quickly compute the 
-change in modularity obtained by moving an isolated node into a community.
+Thirdly, in many of the approaches, the worst-case running time of the algorithms 
+is neither stated nor analyzed. We show that our algorithm runs in time $O(k m \log n)$, 
+where $k$ is the number of communities to be discovered (which is supplied by the user), 
+$n$ and $m$ are the number of nodes and edges in the network. In the case of sparse graphs 
+and a constant number of communities, the running time is $O(n \log n)$. Given that even 
+an $O(n^2)$ time algorithm is computationally expensive, we seem to have reached the holy grail 
+of a nearly linear time algorithm.
 
-This is what Lancichinetti and Fortunato state about modularity-based techniques in their analysis of 
-community detection algorithms~\cite{LF09}: 
-\begin{quote}
-	\emph{Modularity-based methods have a rather poor performance, which worsens for larger systems and smaller 
-	communities due to the well-known resolution limit of the measure. The only exception is represented 
-	by the algorithm of Blondel \emph{\etal}, whose performance is very good probably because the estimated modularity 
-	is not a very good approximation of the real one $\ldots$} 
-\end{quote}
+Finally, we provide an extensive experimental evaluation of our algorithm on the LFR benchmark
+introduced by Lancichinetti, Fortunato and Radicchi in~\cite{LFR08, LF09}. In order to ensure 
+a fair comparison with other algorithms reviewed in~\cite{LF09}, we used the same parameters 
+to generate the benchmark graphs. \texttt{Briefly mention which parameters are relevant?}
 
-\paragraph{The Cfinder algorithm of Palla \etal} One of the first algorithms that dealt with overlapping 
-communities was proposed by Palla \etal~\cite{PDFV05}. A community, in this case, is defined to be a set of nodes 
-that are the union of $k$-cliques such that any one clique can be reached from another via a series of 
-adjacent $k$-cliques, where two $k$-cliques are defined to be adjacent if they 
-share $k - 1$ nodes. 
 
-The algorithm first finds out all maximal cliques in the graph, which takes exponential-time
-in the worst case. It then creates a symmetric clique-clique overlap matrix $\mat{C}$ which is a square matrix whose 
-rows and columns are indexed by the set of maximal cliques in the graph and whose $(i, j)\th$ 
-is the number of vertices that are in both the $i\th$ and $j\th$ cliques. This matrix is then modified into 
-a binary matrix by replacing all those entries with value less than $k - 1$ by a $0$ and the remaining entries by 
-a $1$. The final step is to find the connected components of the graph represented by this binary symmetric matrix
-which constitute the communities of the original graph. 
+This paper if organized as follows. In Section~\ref{sec:major_algorithms}, we review some 
+of the more influential algorithms in community detection. In Section~\ref{sec:algorithm}, we 
+describe our algorithm and analyze its running time. In Section~\ref{sec:experiments}, we present 
+the experimental results. Finally we conclude in Section~\ref{sec:conclusions} with possibilities
+of how our approach might be extended. 
 
-The authors report to have tested the algorithm on various networks including the protein-protein interaction 
-network of \emph{Saccharomyces cerevisiae}\footnote{A species of yeast used in winemaking, baking, and brewing.} 
-with $k = 4$; the co-authorship network of the Los Alamos condensed matter archive (with $k = 6$). 
-Lancichinetti and Fortunato report that Cfinder did not perform particularly well on the LFR benchmark and 
-that its performance is sensitive to the sizes of community (but not the network size). For networks will 
-small communities it has a decent performance, but has a worse performance on those with larger communities. 
 
-\paragraph{Using random walks to model information flow.} Rosvall and Bergman~\cite{RB08} approach the 
-problem of finding communities from an information-theoretic angle. They transform the problem 
-into one of finding an optimal description of an infinite random walk in the network.  Given a fixed 
-partition $M$ of $n$ nodes into $k$ clusters, Rosvall and Bergman use a two-level code where each 
-cluster is assigned a unique codeword but the codewords assigned to individual nodes within a 
-cluster repeat between clusters. One can now define the average number of bits per step that is 
-takes to describe an infinite random walk on the network partitioned according to $M$. The intuition 
-is that a random walker is statistically likely to spend more time within clusters than between clusters
-and therefore the ``best'' partition corresponds to the one which has the shortest possible description.
-The best partition is found out using a combination of a greedy search heuristic followed by simulated 
-annealing. Lancichinetti and Fortunato report that this algorithm (dubbed Infomap) was the best-performing 
-among all other community detection algorithms on their benchmark.  
+
