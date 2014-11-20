@@ -249,7 +249,7 @@ def commandline_interface():
         help="the folder the json files will be written to")
 
     parser.add_option("-m", dest="mixingRange", type="str",
-        help="start stop step, separated by whitespaces")
+        help="start stop step, separated by whitespaces. if only one entry use this as single mixing parameter")
 
     parser.add_option("-i", dest="iterations", type="int",
         help="number of iterations for the iterative method")
@@ -289,7 +289,10 @@ if commandline_interface():
     samplesPerDatapoint = options.samplesPerDatapoint
 
     tmp                 = [float(x) for x in options.mixingRange.split()]
-    mixingRange         = [x for x in np.arange(tmp[0], tmp[1], tmp[2])]
+    if len(tmp) == 1:
+        mixingRange = tmp
+    else:
+        mixingRange     = [x for x in np.arange(tmp[0], tmp[1], tmp[2])]
 
 
     print "outputfolder:", options.outputfolder

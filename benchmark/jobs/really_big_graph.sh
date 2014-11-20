@@ -1,11 +1,11 @@
 #!/usr/bin/env zsh
 
 ### Job name
-#BSUB -J REALLY_BIG_GRAPH[1-1]
+#BSUB -J REALLY_BIG_GRAPH[1-9]
 
 ### File / path where STDOUT & STDERR will be written
 ###    %J is the job ID, %I is the array ID
-#BSUB -o FOO%J.%I
+#BSUB -o REALLY_BIG_GRAPH%J.%I
 
 ### Request the time you need for execution in minutes
 ### The format for the parameter is: [hour:]minute,
@@ -13,11 +13,11 @@
 # BSUB -W 120:00
 
 ### Request memory you need for your job in TOTAL in MB
-# BSUB -M 2024
+# BSUB -M 10000 
 
-###BSUB -B
-###BSUB -N
-###BSUB -u jan.dreier@rwth-aachen.de
+#BSUB -B
+#BSUB -N
+#BSUB -u jan.dreier@rwth-aachen.de
 
 ##############################################
 
@@ -60,8 +60,9 @@ nodes=( 50000 )
 #run the benchmark with these community sizes
 communitysizes=( diverse )
 #use these seed fractions when not doing iteration
-seedsNonIterative=( 0.05 )
+seedsNonIterative=( 0.02 0.05 )
 samples=1
+muRange=( 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 )
 
 
 #non-overlapping, non-iterative
@@ -71,17 +72,22 @@ do
     do
         for s in $seedsNonIterative
         do
-            job=$((job+1))
-            if [ "$job" -eq "$LSB_JOBINDEX" ]
-            then
-                $benchmark_nonoverlap \
-                    -o $outdir/nonoverlap_noniter \
-                    -n $n -c $c -s $s -i 1 \
-                    -m "0.05 0.06 0.05" \
-                    --samples_per_datapoint $samples \
-                    --classification_strategy max \
-                    --overwrite_file 1
-            fi
+	    for mu in $muRange
+            do
+                job=$((job+1))
+                if [ "$job" -eq "$LSB_JOBINDEX" ]
+                then
+
+	            mkdir -p $outdir/job$job
+                    $benchmark_nonoverlap \
+                        -o $outdir/job$job \
+                        -n $n -c $c -s $s -i 1 \
+                        -m $mu
+                        --samples_per_datapoint $samples \
+                        --classification_strategy max \
+                        --overwrite_file 1
+                fi
+            done
         done
     done
 done
