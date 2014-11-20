@@ -103,10 +103,10 @@ and~(\ref{eqn:defining_prob_seed}) satisfy these two properties. To see this, no
 the transition matrix implicitly defines an arc-weighted  directed graph on the nodes 
 of the network. Call this directed graph $G_{\mat{P}}$. For non-seed nodes~$u$ and~$v$ that 
 are connected by an edge in the network, there exist two arcs $(u, v)$ and $(v, u)$ 
-in $G_{\mat{P}}$ with weights $1/\deg (u)$ and $1/ \deg (v)$, respectively.
+in $G_{\mat{P}}$ with weights $1/\deg_G (u)$ and $1/ \deg_G (v)$, respectively.
 If $x$ is a seed node with $p$ non-seed neighbors 
 $u_1, \ldots, u_p$, then the edges~$\{u_i, x\}$ in~$G$, for $1 \leq i \leq p$, 
-are represented by arcs~$(u_i, x)$ (with weight $1 / \deg (u_i)$) in $G_{\mat{P}}$. 
+are represented by arcs~$(u_i, x)$ (with weight $1 / \deg_G (u_i)$) in $G_{\mat{P}}$. 
 In addition, $x$ has self-loop with weight~$1$. It is worthwhile to note 
 that if two seed nodes are adjacent in~$G$, then the corresponding edge does not have a 
 directed counterpart in $G_{\mat{P}}$.  
@@ -148,10 +148,10 @@ a community~$j$ can be computed as:
 	\alpha (u, j) = \sum_{i = 1}^{s} (\mat{N} \mat{R}) (u, x_i) \cdot \alpha (x_i, j).
 \end{equation}
 If we compute $\mat{N}$ by first computing the inverse $(\mat{I} - \mat{Q})^{-1}$
-and then multiplying the result by $\mat{R}$, we taken time $O(n^3)$. In the 
+and then multiplying the result by $\mat{R}$, we would have taken time $O(n^3)$. In the 
 next subsection, we show how to reduce this problem to that of solving a 
 system of linear equations of a special type which takes time $O(m \log n)$, where $m$
-is the number of edges. 
+is the number of edges in the network.
 
 \subsection{Symmetric Diagonally Dominant Linear Systems}
 
@@ -170,27 +170,29 @@ is defined to be
 \mat{L}_G = \mat{D}_G - \mat{A}_G,
 \] 
 where $\mat{A}_G$ is the adjacency matrix of the graph~$G$ and $\mat{D}_G$ 
-is the diagonal matrix of vertex degrees. This definition extends 
-to weighted graphs. A weighted graph $G = (V, E)$ has an associated weight function 
-$w \colon V \times V \to \R$ which satisfies the conditions: 
-\begin{inparaenum}[(1)]
-	\item $w(u, v) = w(v, u)$;  
-	\item $w(u, v) \geq 0$; and, 
-	\item if $\{u, v\} \notin E$ then $w(u, v) = 0$. 
-\end{inparaenum}
-In the context of weighted graphs, the degree~$\deg_G (u)$ of a vertex~$u$ is defined to be 
-\[\label{eqn:weighted_degree}
-	\deg_G (u) = \sum_{v \in V} w(u, v). 
-\] 
-The adjacency matrix $\mat{A}_{G}$ is defined as:
-\[\label{eqn:weighted_adj_matrix}
-	\mat{A}_{G}(u, v) = w(u, v),
-\]
-and the Laplacian is defined as before as: 
-\[\label{eqn:weighted_laplacian}
-	\mat{L}_G = \mat{D}_G - \mat{A}_G,
-\]
-where $\mat{D}_G$ is the diagonal matrix of vertex degrees in the weighted graph~$G$.
+is the diagonal matrix of vertex degrees. 
+
+%This definition extends 
+%to weighted graphs. A weighted graph $G = (V, E)$ has an associated weight function 
+%$w \colon V \times V \to \R$ which satisfies the conditions: 
+%\begin{inparaenum}[(1)]
+%	\item $w(u, v) = w(v, u)$;  
+%	\item $w(u, v) \geq 0$; and, 
+%	\item if $\{u, v\} \notin E$ then $w(u, v) = 0$. 
+%\end{inparaenum}
+%In the context of weighted graphs, the degree~$\deg_G (u)$ of a vertex~$u$ is defined to be 
+%\[\label{eqn:weighted_degree}
+%	\deg_G (u) = \sum_{v \in V} w(u, v). 
+%\] 
+%The adjacency matrix $\mat{A}_{G}$ is defined as:
+%\[\label{eqn:weighted_adj_matrix}
+%	\mat{A}_{G}(u, v) = w(u, v),
+%\]
+%and the Laplacian is defined as before as: 
+%\[\label{eqn:weighted_laplacian}
+%	\mat{L}_G = \mat{D}_G - \mat{A}_G,
+%\]
+%where $\mat{D}_G$ is the diagonal matrix of vertex degrees in the weighted graph~$G$.
 
 A symmetric, diagonally dominant (SDD) system of linear equations is a system of 
 equations of the form:
@@ -203,8 +205,7 @@ There is near-linear time algorithm for solving such a system of linear equation
 and this result is crucial to the analysis of the running time of our algorithm. 
 
 The solution of $n \times n$ system of linear equations takes $O(n^3)$ time 
-if one uses Gaussian elimination. \texttt{More stuff here on sparse systems ...}
-Spielman and Teng made a seminal contribution in this direction and 
+if one uses Gaussian elimination. Spielman and Teng made a seminal contribution in this direction and 
 showed that SDD linear systems can be solved in nearly-linear 
 time~\cite{ST04,EEST05,ST08}. Spielman and Teng's algorithm (the ST-solver)
 iteratively produces a sequence of approximate solutions which converge to the 
@@ -218,7 +219,7 @@ $\tilde{O}(m \log n \log (1/\epsilon) )$, where the $\tilde{O}$ notation hides
 a factor that is at most $(\log \log n)^2$. A highly readable account 
 of SDD systems is the monograph by Vishnoi~\cite{Vis13}. We summarize the 
 main result that we use as a black-box.  
-\begin{proposition} \label{prop:SDD_systems} {\textrm{\cite{KMP11,Vis13}}}
+\begin{proposition} \label{prop:SDD_systems} {{\rm \cite{KMP11,Vis13}}}
 	Given a system of linear equations $\mat{A} \vect{x} = \vect{b}$, where $\mat{A}$
 	is an SDD matrix, there exists an algorithm to compute $\tilde{\vect{x}}$  
 	such that:
