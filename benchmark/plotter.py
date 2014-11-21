@@ -153,28 +153,32 @@ if commandline_interface():
 
 
     dataList = [loadJson(x) for x in filenames]
+    dataList = sorted(dataList, key=lambda x: x["_seedFraction"])
 
     #pick title for plot
     title, labels = getTitleAndLabel(dataList, iterations, options.mode)
 
     lines = []
-    labelIdx = 0
+    i = 0
     for data in dataList:
         for iteration in iterations:
             xs, ys = getXsYs(data, iteration, options.mode)
-            line, = plt.plot(xs, ys, "-o", label=labels[labelIdx])
-            labelIdx = labelIdx + 1
+            markers = ["o", "v", "^", "s", "d"]
+            fillstyles = [ u'full', u'none' ] * 5
+            line, = plt.plot(xs, ys, "-o", label=labels[i], marker=markers[i],  fillstyle=fillstyles[i])
+            i = i + 1
             lines.append(line)
 
     plt.title(title)
-    plt.legend(fancybox=True, shadow=False, loc=1)
+    plt.legend(fancybox=True, shadow=False, loc=3)
     if options.mode == "overlap":
         plt.axis([0,0.6,0,1])
         plt.xlabel("Fraction of overlapping vertices")
         plt.ylabel("Normalized Mutual Information")
     else:
-        plt.axis([0,1,0,1])
+        plt.axis([0,0.8,0,1])
         plt.xlabel("Mixing Parameter")
         plt.ylabel("Normalized Mutual Information")
+    plt.grid(True)
 
     plt.savefig(options.output)
