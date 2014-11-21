@@ -1,5 +1,5 @@
 Many real-world graphs that model complex systems exhibit an organization 
-into subgraphs that are more densely connected on the inside than between each other. 
+into subgraphs, or \textit{communities} that are more densely connected on the inside than between each other. 
 Social networks such as Facebook and LinkedIn divide into groups of friends 
 or coworkers, or business partners; scientific collaboration networks divide 
 themselves into research communities; the World Wide Web divides into groups 
@@ -11,20 +11,20 @@ important problem in network science and is the subject
 of intensive research~\cite{GN02, GN04, CNM04, RCC04, DM04, PDFV05, NL07, 
 BGLL08, RB08, RN09}. Existing community detection algorithms are 
 distinguished by whether they find disjoint (non-overlapping) 
-communitities or overlapping communitities. Typically finding 
-overlapping communitities is a much harder problem and most of the 
-earlier community detection algorithms focussed on finding disjoint 
+communities or overlapping communities. Typically finding 
+overlapping communities is a much harder problem and most of the 
+earlier community detection algorithms focused on finding disjoint 
 communities. A comparative analysis of several community detection algorithms 
 (both non-overlapping and overlapping) was presented by Lancichinetti and Fortunato 
 in~\cite{LF09}. Their paper proposes a test framework which comprises of a 
 benchmark suite (the LFR-benchmark), with the test results being evaluated against 
 the ground truth using an information-theoretic measure known as the \emph{normalized 
-mutual information}. We closely follow this test framework in this paper. 
+mutual information} \cite{AL09}. We closely follow their test setup in this paper. 
 
 
 The notion of a community is a loose one and there is no well-accepted definition.
 A typical definition is to consider a partition of the node set of the network 
-such that the density of inter-module edges is greater than the desnity of edges 
+such that the density of inter-module edges is greater than the density of edges 
 across modules. Different community detection algorithms formalize this informal 
 definition differently. One of the very first algorithms due to 
 Girvan and Newman~\cite{GN02} introduced a measure known as modularity 
@@ -49,7 +49,7 @@ In other cases, derivation of worst-case running time bounds are ignored.
 Given that it is unlikely that users of community detection algorithms 
 would unanimously settle on one definition of what constitutes a community, 
 we feel that existing algorithms totally ignore the \emph{user perspective}. To this 
-end, we chose to design an algorithm that takes as input user preferences into 
+end, we chose to design an algorithm that takes user preferences into 
 account. The user is expected to classify a small set of nodes of the network 
 into communities (which is typically 2\% of the nodes of each community in 
 the disjoint communities case). Obviously this is possible only when the user has some 
