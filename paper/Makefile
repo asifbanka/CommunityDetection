@@ -2,6 +2,9 @@ target = main
 
 all: main.pdf 
 
+theplots:
+	../benchmark/makeallplots.sh json plots
+
 bib:
 	pdflatex $(target).tex
 	-bibtex --min-crossrefs=99 $(target) # Ignore bibtex errors
