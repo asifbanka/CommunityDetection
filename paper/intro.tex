@@ -19,7 +19,7 @@ communities. A comparative analysis of several community detection algorithms
 in~\cite{LF09}. Their paper proposes a test framework which comprises of a 
 benchmark suite (the LFR-benchmark), with the test results being evaluated against 
 the ground truth using an information-theoretic measure known as the \emph{normalized 
-mutual information}. We closely follow this test framework in this paper. 
+mutual information} \cite{AL09}. We closely follow their test setup in this paper. 
 
 
 The notion of a community is a loose one and there is no well-accepted definition.
@@ -49,7 +49,7 @@ In other cases, derivation of worst-case running time bounds are ignored.
 Given that it is unlikely that users of community detection algorithms 
 would unanimously settle on one definition of what constitutes a community, 
 we feel that existing algorithms totally ignore the \emph{user perspective}. To this 
-end, we chose to design an algorithm that takes as input user preferences into 
+end, we chose to design an algorithm that takes user preferences into 
 account. The user is expected to classify a small set of nodes of the network 
 into communities (which is typically 2\% of the nodes of each community in 
 the disjoint communities case). Obviously this is possible only when the user has some 
