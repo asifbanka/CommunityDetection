@@ -11,6 +11,11 @@ LOGERROR
 statistics.json
 tmp_*
 
+# generated plots
+
+paper/plots/nonoverlap*
+paper/plots/overlap*
+
 # Python #
 ##########
 *.py[cod]

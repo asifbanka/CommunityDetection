@@ -1,45 +1,29 @@
-A \emph{social network} consists of a set of social actors and a set of ties 
-between them. A social network is modeled as a graph which may be directed 
-or undirected. In this paper, we deal with social networks that are modeled as undirected 
-graphs. In the context of community detection in social networks, we make 
-the following assumptions. 
+We assume that the complex networks that we deal with are modeled as undirected graphs.  
+In broad brush-strokes, this is how our algorithm works.  The algorithm receives 
+as input a network and a set of nodes from each community that we are aiming to 
+discover. We call these nodes \emph{seed nodes}. A seed node can belong to several 
+communities and our algorithm actually finds out overlapping communities in the 
+network. The algorithm uses the partial community information and propagates it 
+to the other nodes of the network by simulating a random walk from non-seed nodes 
+to the set of seed nodes.  
 
-Our first assumption is that we know what the network at hand represents. That is, 
-we have a sense of context about the network. The network could represent 
-friendships as in the Facebook network; co-authorships as in the DBLP network; 
-it could be a network of professionals such as LinkedIn, or a network of movie 
-lovers such as IMDB. Secondly, we assume that we know what is it that constitutes 
-a community within the network. This is crucial because, for one, we do not 
-formally define what a community is. We take it as being given as part of the 
-input specification. While this may appear as an artifice, in many real-life situations 
-where we are required to find communities, we do in fact know what 
-it is that we are searching for. For example, we might want to find the set of 
-people with a given political leaning, or a set of people who love a particular 
-genre of movie, or a set of people with a specific skill-set and experience. 
-In each of these cases, we have a sense of what it is that is required to be found. 
-
-In broad brush-strokes, this is how our algorithm works.  It requires that we know
-some members from each community that we are aiming to discover. We call these members 
-\emph{seed nodes}. A seed node can belong to several communitites and our algorithm 
-actually finds out overlapping communities in the network. The algorithm uses the 
-partial community information and propagates it to the other nodes of the network 
-by simulating a random walk from non-seed nodes to the set of seed nodes. 
-
-Suppose that $x_1, \ldots, x_s$ are the seed nodes in the network and that a random walk starting at 
-a non-seed node~$u$ reaches these nodes with probabilities $p_1, \ldots, p_s$. If out 
-of these~$s$ seed nodes, $x_{i_1}, \ldots, x_{i_r}$ belong to a community~$C$, then 
-the algorithm assigns a probability of $\sum_{j = 1}^r p_{i_j}$ for the event 
-that~$u$ belongs to~$C$. For each community, we can now assign a probability for 
-the event that~$u$ belongs to it. The communities that the algorithm 
-assigns~$u$ are those for which the probabilities exceed a certain threshold. 
+Suppose that $x_1, \ldots, x_s$ are the seed nodes in the network and let $u$ 
+be a non-seed node. We consider random walks starting at $u$ and of lengths 1, 2, till 
+infinity and estimate the probability $p_1, \ldots, p_s$ of any such walk ending up at the 
+seed nodes $x_1, \ldots, x_s$, respectively. If out of these~$s$ seed nodes, 
+$x_{i_1}, \ldots, x_{i_r}$ belong to a community~$C$, then the algorithm assigns 
+a probability of $\sum_{j = 1}^r p_{i_j}$ to the event that~$u$ belongs to~$C$. 
+Therefore for each community, we assign a probability for the event that~$u$ belongs 
+to it. \texttt{Reference to the classification strategy used in the experiments}  
 
 The random walk can be represented by a transition matrix and the walk itself can be simulated 
 by multiplying this matrix with itself repeatedly. This, however, takes $O(n^3)$
 time, where~$n$ is the number of nodes in the network. One of the contributions of 
-this paper is to show how this can be reduced to solving a set of (symmetric, diagonally dominant) 
-systems of linear equations (one set per community), which can be done in $O(m \log n)$ time, 
-where~$m$ is the number of edges in the graph. The fact that such systems can be solved in 
-almost linear time was due to work that was spearheaded by Speilman and 
+this paper is to show how this can be reduced to solving a set of symmetric, diagonally dominant
+systems of linear equations (with one set of equations per community), 
+which can be done in $O(m \log n)$ time, where~$m$ is the number of edges 
+in the graph. The fact that such systems can be solved in almost linear time 
+was due to work that was spearheaded by Spielman and 
 Teng~\cite{ST04,EEST05,ST08,KMP10,KMP11,Vis13}. We assume that our networks are 
 sparse in the sense that $m = O(n)$, so that the running time of our algorithm can  
 be bounded by $O(n \log n)$.    
@@ -48,11 +32,11 @@ be bounded by $O(n \log n)$.
 We now provide a formal description of our model. We assume that our network 
 is a simple undirected graph $G = (V,E)$ with~$n$ nodes and~$m$ edges, where $m = O(n)$.
 We also know that there are~$k$ communities which may overlap in an arbitrary fashion.
-In practical situations, we have~$k \ll n$. 
-Moreover, we have some partial information about each community in that we know
-$\log n$ members of each community. Call such members of the network \emph{seed nodes} 
-and the remaining nodes \emph{non-seed nodes}. Together, we know the community information 
-of $k \cdot \log n$ seed nodes. The community information of a node~$u$ is represented 
+In practical situations, we have~$k \ll n$. Moreover, we have some partial information 
+about each community in that we know $t$ members of each community. As already mentioned, 
+we call these the \emph{seed nodes} while the remaining nodes are
+\emph{non-seed nodes}. Together, we know the community information 
+of $s :=  k \cdot t$ seed nodes. The community information of a node~$u$ is represented 
 by a $1 \times k$ vector called the \emph{affinity vector} of~$u$, denoted 
 by 
 \[
@@ -73,11 +57,12 @@ For a non-seed node~$u$:
 \begin{equation}\label{eqn:defining_prob_nonseed}
 	\mat{P}(u, z) = \left \{ 
 							\begin{array}{ll}
-								\frac{1}{\deg (u)} & \mbox{ if } \{u, z\} \in E(G) \\
-								0			& \mbox{ otherwise.}
+								\frac{1}{\deg_G (u)} & \mbox{ if } \{u, z\} \in E(G) \\
+								0			& \mbox{ otherwise,}
 							\end{array}
 						\right.
 \end{equation}
+where $\deg_G (u)$ is the degree of node $u$ in the network~$G$.
 Note that the sum of the entries of row~$u$ is~$1$. 
 For a seed node~$x$, 
 \begin{equation}\label{eqn:defining_prob_seed}
@@ -117,10 +102,10 @@ and~(\ref{eqn:defining_prob_seed}) satisfy these two properties. To see this, no
 the transition matrix implicitly defines an arc-weighted  directed graph on the nodes 
 of the network. Call this directed graph $G_{\mat{P}}$. For non-seed nodes~$u$ and~$v$ that 
 are connected by an edge in the network, there exist two arcs $(u, v)$ and $(v, u)$ 
-in $G_{\mat{P}}$ with weights $1/\deg (u)$ and $1/ \deg (v)$, respectively.
+in $G_{\mat{P}}$ with weights $1/\deg_G (u)$ and $1/ \deg_G (v)$, respectively.
 If $x$ is a seed node with $p$ non-seed neighbors 
 $u_1, \ldots, u_p$, then the edges~$\{u_i, x\}$ in~$G$, for $1 \leq i \leq p$, 
-are represented by arcs~$(u_i, x)$ (with weight $1 / \deg (u_i)$) in $G_{\mat{P}}$. 
+are represented by arcs~$(u_i, x)$ (with weight $1 / \deg_G (u_i)$) in $G_{\mat{P}}$. 
 In addition, $x$ has self-loop with weight~$1$. It is worthwhile to note 
 that if two seed nodes are adjacent in~$G$, then the corresponding edge does not have a 
 directed counterpart in $G_{\mat{P}}$.  
@@ -162,10 +147,10 @@ a community~$j$ can be computed as:
 	\alpha (u, j) = \sum_{i = 1}^{s} (\mat{N} \mat{R}) (u, x_i) \cdot \alpha (x_i, j).
 \end{equation}
 If we compute $\mat{N}$ by first computing the inverse $(\mat{I} - \mat{Q})^{-1}$
-and then multiplying the result by $\mat{R}$, we taken time $O(n^3)$. In the 
+and then multiplying the result by $\mat{R}$, we would have taken time $O(n^3)$. In the 
 next subsection, we show how to reduce this problem to that of solving a 
 system of linear equations of a special type which takes time $O(m \log n)$, where $m$
-is the number of edges. 
+is the number of edges in the network.
 
 \subsection{Symmetric Diagonally Dominant Linear Systems}
 
@@ -175,7 +160,7 @@ An $n \times n$ matrix $\mat{A} = [a_{ij}]$ is \emph{diagonally dominant} if
 \] 
 A matrix is \emph{symmetric diagonally dominant (SDD)} if, in addition to the above, 
 it is symmetric. For more information about matrices and matrix computations, 
-see the texbooks by Golub and Van Loan~\cite{GvL13} and Horn and Johnson~\cite{HJ13}. 
+see the textbooks by Golub and Van Loan~\cite{GvL13} and Horn and Johnson~\cite{HJ13}. 
 
 An example of a symmetric, diagonally dominant matrix is the graph Laplacian. 
 Given an unweighted, undirected graph~$G$, the \emph{Laplacian} of $G$ 
@@ -184,27 +169,29 @@ is defined to be
 \mat{L}_G = \mat{D}_G - \mat{A}_G,
 \] 
 where $\mat{A}_G$ is the adjacency matrix of the graph~$G$ and $\mat{D}_G$ 
-is the diagonal matrix of vertex degrees. This definition extends 
-to weighted graphs. A weighted graph $G = (V, E)$ has an associated weight function 
-$w \colon V \times V \to \R$ which satisfies the conditions: 
-\begin{inparaenum}[(1)]
-	\item $w(u, v) = w(v, u)$;  
-	\item $w(u, v) \geq 0$; and, 
-	\item if $\{u, v\} \notin E$ then $w(u, v) = 0$. 
-\end{inparaenum}
-In the context of weighted graphs, the degree~$\deg_G (u)$ of a vertex~$u$ is defined to be 
-\[\label{eqn:weighted_degree}
-	\deg_G (u) = \sum_{v \in V} w(u, v). 
-\] 
-The adjacency matrix $\mat{A}_{G}$ is defined as:
-\[\label{eqn:weighted_adj_matrix}
-	\mat{A}_{G}(u, v) = w(u, v),
-\]
-and the Laplacian is defined as before as: 
-\[\label{eqn:weighted_laplacian}
-	\mat{L}_G = \mat{D}_G - \mat{A}_G,
-\]
-where $\mat{D}_G$ is the diagonal matrix of vertex degrees in the weighted graph~$G$.
+is the diagonal matrix of vertex degrees. 
+
+%This definition extends 
+%to weighted graphs. A weighted graph $G = (V, E)$ has an associated weight function 
+%$w \colon V \times V \to \R$ which satisfies the conditions: 
+%\begin{inparaenum}[(1)]
+%	\item $w(u, v) = w(v, u)$;  
+%	\item $w(u, v) \geq 0$; and, 
+%	\item if $\{u, v\} \notin E$ then $w(u, v) = 0$. 
+%\end{inparaenum}
+%In the context of weighted graphs, the degree~$\deg_G (u)$ of a vertex~$u$ is defined to be 
+%\[\label{eqn:weighted_degree}
+%	\deg_G (u) = \sum_{v \in V} w(u, v). 
+%\] 
+%The adjacency matrix $\mat{A}_{G}$ is defined as:
+%\[\label{eqn:weighted_adj_matrix}
+%	\mat{A}_{G}(u, v) = w(u, v),
+%\]
+%and the Laplacian is defined as before as: 
+%\[\label{eqn:weighted_laplacian}
+%	\mat{L}_G = \mat{D}_G - \mat{A}_G,
+%\]
+%where $\mat{D}_G$ is the diagonal matrix of vertex degrees in the weighted graph~$G$.
 
 A symmetric, diagonally dominant (SDD) system of linear equations is a system of 
 equations of the form:
@@ -217,10 +204,9 @@ There is near-linear time algorithm for solving such a system of linear equation
 and this result is crucial to the analysis of the running time of our algorithm. 
 
 The solution of $n \times n$ system of linear equations takes $O(n^3)$ time 
-if one uses Gaussian elimination. \texttt{More stuff here on sparse systems ...}
-Speilman and Teng made a seminal contribution in this direction and 
+if one uses Gaussian elimination. Spielman and Teng made a seminal contribution in this direction and 
 showed that SDD linear systems can be solved in nearly-linear 
-time~\cite{ST04,EEST05,ST08}. Speilman and Teng's algorithm (the ST-solver)
+time~\cite{ST04,EEST05,ST08}. Spielman and Teng's algorithm (the ST-solver)
 iteratively produces a sequence of approximate solutions which converge to the 
 actual solution of the system $\mat{A} \vect{x} = \vect{b}$. The performance 
 of such an iterative system is measured in terms of the time taken to reduce 
@@ -232,7 +218,7 @@ $\tilde{O}(m \log n \log (1/\epsilon) )$, where the $\tilde{O}$ notation hides
 a factor that is at most $(\log \log n)^2$. A highly readable account 
 of SDD systems is the monograph by Vishnoi~\cite{Vis13}. We summarize the 
 main result that we use as a black-box.  
-\begin{proposition} \label{prop:SDD_systems} {\textrm{\cite{KMP11,Vis13}}}
+\begin{proposition} \label{prop:SDD_systems} {{\rm \cite{KMP11,Vis13}}}
 	Given a system of linear equations $\mat{A} \vect{x} = \vect{b}$, where $\mat{A}$
 	is an SDD matrix, there exists an algorithm to compute $\tilde{\vect{x}}$  
 	such that:
@@ -269,13 +255,13 @@ main result that we use as a black-box.
 We can use Proposition~\ref{prop:SDD_systems} to upper-bound the time taken to 
 calculate $\mat{N} \mat{R}$, where $\mat{N}$ is the fundamental matrix of the absorbing
 Markov chain and $\mat{R}$ is as in equation~(\ref{eqn:canonical_form_P}).
-\begin{lemma}\label{lemma:computing_NR}
+\begin{theorem}\label{theorem:computing_NR}
 Given a graph~$G$, let $\mat{P}$ be the $n \times n$ transition matrix in canonical form 
 (see equation~(\ref{eqn:canonical_form_P})) defined by equations~(\ref{eqn:defining_prob_nonseed}) 
 and~(\ref{eqn:defining_prob_seed}). Then one can compute 
 the affinity vectors of all non-seed nodes in time $O(m \cdot \log n + ms + n)$ per community, 
-where~$m$ is the number of edges in the graph~$G$ and $s$ is the number of seed nodes.
-\end{lemma}  
+where~$m$ is the number of edges in the graph~$G$ and $s$ is the total number of seed nodes.
+\end{theorem}  
 \begin{proof}
 Recall that we ordered the nodes of $G$ as $\{u_1, \ldots, u_{n - s}, x_1, \ldots, x_s\}$, 
 where $u_1, \ldots, u_{n - s}$ denote the non-seed nodes and $x_1, \ldots, x_s$ denote 
@@ -324,7 +310,7 @@ where we used $\vect{\alpha}_l$ to denote the vector $\trans{\left ( \alpha (u_1
 Note that computing $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ takes time $O(m \cdot s)$, where $m$ 
 denotes the number of non-zero entries in $\mat{P}$. Computing the product of 
 $\mat{D}_1$ and $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ takes time $O(n)$ so that 
-the right hand side of equation~\ref{eqn:final_affinity} can be computed in time $O(ms + n)$.
+the right hand side of equation~(\ref{eqn:final_affinity}) can be computed in time $O(ms + n)$.
 We now have a symmetric diagonally dominant system of linear equations which by 
 Proposition~\ref{prop:SDD_systems} can be solved in time $O(m \cdot \log n)$. Therefore 
 the time taken to compute the affinity to a fixed community is $O(m \cdot \log n + ms + n)$,
@@ -343,191 +329,3 @@ is $O(n \cdot \log n)$ per community.
 %is what was claimed.  
 \end{proof}
 
-\subsection{Some More Intuition}
-
-Before we present our experimental results, it might be 
-worthwhile to study how well our algorithm performs, at least in 
-special cases.
-
-Suppose that one of the communities in the network in question is $C_1$
-which has $n_1$ nodes and $e_1$ internal edges (edges with both end-points within 
-the community). Community $C_1$ is separated from the ``rest of the network,'' 
-denoted $C_2$, by $e_3$ edges; that is, the cut $(C_1, C_2)$ has $e_3$ edges. 
-We assume that $C_2$ has $n_2$ vertices and $e_2$ internal edges. Now $C_2$ 
-could be a community in itself or a collection of communities. We wish to 
-ascertain the probability with which a random walk starting at a randomly 
-chosen node in $C_1$ ends up in a seed node for $C_1$. Assume that we 
-pick a set $S_1$ of $s_1$ seed nodes from $C_1$ and a set $S_2$ of $s_2$ 
-seed nodes from the rest of the graph, uniformly at random. We first want to 
-estimate the probability that a randomly picked node~$u$ from $C_1$ transitions 
-to one of the seed nodes in $S_1$ in \emph{one} step.
-
-This could happen because~$u$ itself is a seed node, which happens with probability $s_1 / n_1$.
-Next suppose that~$u$ does not have any neighbors in~$C_2$. If we denote the nodes 
-of $C_1$ that do have a neighbor in~$C_2$ by $\partial C_1$, then the probability 
-of a non-seed node in $C_1 - \partial C_1$ to transition in one step to a seed 
-node in $S_1$ is:
-\begin{equation}
-    \frac{1}{d(u)} \cdot \sum_{x \in N(u)} \frac{s_1}{n_1} = \frac{s_1}{n_1}.
-\end{equation}
-Finally consider the case where~$u$ has a neighbor in $C_2$. The probability with 
-which a randomly chosen node in $C_1$ transitions to a node in $C_1$ (in one step) is 
-\[
-    \frac{\mbox{average internal degree of a vertex in $C_1$}}
-         {\mbox{total average degree of a vertex in $C_1$}},
-\]
-which works out to be 
-\begin{equation}\label{exp:c1-c1}
-    \frac{2e_1}{n_1} \div \frac{2e_1 + e_3}{n_1} = \frac{2e_1}{2e_1 + e_3}.
-\end{equation}
-The probability with which a randomly chosen node from $C_1$ makes a 
-one-step transition to $C_2$ is 
-\begin{equation}\label{exp:c1-c2}
-    \frac{e_3}{2e_1 + e_3}.
-\end{equation}
-Therefore the probability with which a non-seed node in $\partial C_1$ 
-transitions in one step to a seed node in $S_1$ is:
-\begin{equation}
-    \frac{2e_1 / n_1 }{2e_1 / n_1 + e_3 / |\partial C_1|} \cdot \frac{s_1}{n_1} 
-        = \frac{2e_1}{2e_1 + e_3 \cdot (n_1 / |\partial C_1|)} \cdot \frac{s_1}{n_1}.
-\end{equation}
-
-Now we can write down the probability of a randomly picked 
-node in $C_1$ transitioning in one step to a seed node in $S_1$
-as:
-\begin{equation}\label{exp:c1-s1}
-    \frac{s_1}{n_1} +  \left ( 1 - \frac{|\partial C_1|}{n_1} \right ) \cdot \frac{s_1}{n_1} 
-            + \frac{|\partial C_1|}{n_1} 
-            \cdot \frac{2e_1}{2e_1 +e_3 \cdot ( n_1 /|\partial C_1 |)} 
-            \cdot \frac{s_1}{n_1}.
-\end{equation}
-With a little algebraic manipulation, the above expression simplifies to: 
-\begin{equation}\label{exp:final_c1-s1}
-    \frac{s_1}{n_1} \cdot \left ( 2 - \frac{|\partial C_1|}{n_1} 
-        \cdot \frac{e_3 \cdot 
-        \frac{n_1}{|\partial C_1|}}{2e_1 + e_3 \cdot \frac{n_1}{|\partial C_1|}} \right ).
-\end{equation}
-Now the fractions $|\partial C_1| / n_1$ and 
-$e_3 \cdot (n_1 / |\partial C_1|)/ (2e_1 + e_3 \cdot (n_1 / |\partial C_1|))$ 
-are each at most one, so that their product is also at most one. Therefore, 
-expression~(\ref{exp:final_c1-s1}) is at least $s_1/ n_1$ and 
-at most $2s_1 / n_1$. We wish to keep things simple here and we 
-choose to assign a probability of $s_1 / n_1$ to the event that 
-a randomly chosen non-seed node in $C_1$ transitions to a seed node
-in $S_1$ in one step.
-
-Next note that the probability expression~(\ref{exp:c1-c1}) can be broken down 
-into two events: the probability of transitioning to a seed node 
-in $S_1$ (which is $s_1 / n_1$), and the probability of transitioning 
-to a non-seed node in $C_1$, which then is:
-\begin{equation}\label{exp:non_seed_c1}
-    \frac{2e_1}{2e_1 + e_3} - \frac{s_1}{n_1}.
-\end{equation}
-By symmetry, the transition
-probabilities of randomly picked node from $C_2$ are:
-\begin{align}
-    \mbox{to a seed node in $S_2$}      & = \frac{s_2}{n_2} \\
-    \mbox{to a non-seed node in $C_2$}  & = \frac{2e_2}{2e_2 + e_3} - \frac{s_2}{n_2} \\
-    \mbox{to a node in $C_1$}           & = \frac{e_3}{2e_2 + e_3}.
-\end{align}
-This gives rise to the four-state Markov chain depicted in Figure~\ref{fig:4stateMC}, 
-where we used bars on $C_1$ and $C_2$ to denote the fact that these 
-states represent the non-seed node counterparts of the respective node sets.
-Note that the sum of the above three probabilities sum up to one, as they should.
-
-We can now analyze the transition matrix of this absorbing Markov chain as 
-before:
-\begin{equation}\label{eqn:4-state-matrix}
-    \mat{P} =
-    \bordermatrix{\text{}   & \bar{C}_1 & \bar{C}_2 & S_1 & S_2 \cr
-                  \bar{C}_1 & q_1       &  q_2      & r_1 & 0   \cr
-                  \bar{C}_2 & q_3       &  q_4      &  0  & r_2 \cr
-                        S_1 &  0        &   0       &  1  &  0  \cr
-                        S_2 &  0        &   0       &  0  &  1},
-\end{equation}
-where we used $q_1, q_2, q_3, q_4, r_1, r_2$ to represent the respective 
-probabilities that were calculated before. This matrix is in canonical form 
-(see~\ref{eqn:canonical_form_P}) and the probabilities with which a non-seed 
-node in $C_1$ and $C_2$ is absorbed in a seed node is given by the $2 \times 2$ matrix 
-$\inv{(\mat{I} - \mat{Q})} \cdot \mat{R}$, which is:
-\begin{equation}
-    \inv{(\mat{I} - \mat{Q})} \cdot \mat{R} = \frac{1}{f(q_1, q_2, q_3, q_4)}
-        \cdot \left ( \begin{matrix}
-                            r_1 (1 - q_4) & r_2 q_2         \\  
-                            r_1 q_3       & r_1 (1 - q_1)
-                      \end{matrix} \right ),
-\end{equation}
-where $f(q_1, q_2, q_3, q_4) = (1 - q_1) (1 - q_4) - q_2 q_3$.
-
-\begin{figure}[t]
-\begin{center}
-\begin{tikzpicture}[->,>=stealth',shorten >=1pt,auto,node distance=2.8cm,
-                    semithick]
-  \tikzstyle{every state}=[text=black]
-
-  \node[state]         (S1)               {$S_1$};
-  \node[state]         (C1) [below of=S1] {$\bar{C}_1$};
-  \node[state]         (S2) [right of=S1] {$S_2$};
-  \node[state]         (C2) [below of=S2] {$\bar{C}_2$};
-
-  \path (S1) edge [loop above]  node {$1$}                                        (S1)
-        (C1) edge               node {$\frac{s_1}{n_1}$}                          (S1)
-        (C1) edge [bend left]   node (dummy1) [above] {$\frac{e_3}{2e_1 + e_3}$}  (C2)
-             edge [loop left]   node {$\frac{2e_1}{2e_1 + e_3} - \frac{s_1}{n_1}$} (C1)
-        (C2) edge [bend left]   node (dummy2) [below] {$\frac{e_3}{2e_2 + e_3}$}  (C1)
-             edge [loop right]  node {$\frac{2e_2}{2e_2 + e_3} - \frac{s_2}{n_2}$} (C2)
-        (C2) edge               node {$\frac{s_2}{n_2}$}                          (S2)
-        (S2) edge [loop above]  node {$1$}                                        (S2);
-        
-\end{tikzpicture}
-\end{center}
-\caption{The four-state Markov chain representing transitions for a random node.}
-\label{fig:4stateMC}
-\end{figure}
-
-The probability of a random non-seed node of $C_1$ being absorbed by a 
-seed node of $C_1$ is proportional to $r_1 (1 - q_4)$, which is: 
-\begin{equation}\label{exp:prob_c1-s1}
-    \frac{s_1}{n_1} \left ( \frac{e_3}{2e_2 + e_3} + \frac{s_2}{n_2} \right ).
-\end{equation}
-The probability of a random non-seed node of $C_1$ being absorbed by 
-a seed node of $C_2$ is proportional to $r_2 q_2$, which is: 
-\begin{equation}\label{exp:prob_c1-s2}
-    \frac{s_2}{n_2} \cdot \frac{e_3}{2e_1 + e_3}.
-\end{equation}
-After a little manipulation, the ratio of the first expression~(\ref{exp:prob_c1-s1}) 
-to the second~(\ref{exp:prob_c1-s2}) works out to:
-\begin{equation} \label{exp:final_ratio}
-    \frac{s_1}{n_1} \cdot \frac{2e_1 + e_3}{e_3} + 
-    \frac{s_1}{n_1} \cdot \frac{n_2}{s_2} \cdot 
-            \frac{2e_1 + e_3}{2e_2 + e_3}.
-\end{equation}
-
-Up till now, we have made no assumption about community structure. 
-A commonly assumed structural characteristic is that communities 
-are more dense inside than outside. \texttt{There are quite a few 
-references that we ought to cite here.} We make this 
-assumption now in order to make some sense of expression~(\ref{exp:final_ratio}).
-Let us suppose that $C_1$ is ``clique-like'' so that $e_1 = \Omega(n_1^2)$ and 
-that there are relatively few connections between it and the rest of the 
-graph, which amounts to assuming that $e_3 = O(n_1)$. Then the first term 
-of expression~(\ref{exp:final_ratio}) is $\Omega(s_1)$. The second 
-term of this expression is harder to evaluate. If we assume that $C_2$ 
-is also a clique-like community, then $e_2 = \Omega (n_2^2)$, in which 
-case, the second term is $\Omega(s_1 n_1 /s_2 n_2)$ whose value 
-depends on the relative community sizes. If, on the other hand, $C_2$ 
-is a collection of several communities, we may continue to assume that 
-it is sparse and hence $e_2 = O(n_2)$. The second term now is $\Omega(s_1 n_1 / s_2)$,
-which is certainly large. The point is, irrespective of what $C_2$ constitutes, 
-if $C_1$ is a dense-enough community it's non-seed nodes will tend to be absorbed
-in $S_1$ rather than in $S_2$. We summarize this in the following theorem.
-\begin{theorem}
-    Let $G$ be a network and let $C_1, \ldots, C_k \subseteq G$ be the 
-    communities in the network. For each community~$C_i$, we assume that 
-    $E(C_i) = \Omega (n_i^2)$ and $E(C, G - C) = O(n_i)$, where $n_i := |V(C_i)|$.
-    Further suppose that $s_i$ seed nodes are chosen uniformly at random from each 
-    community $C_i$. Then a non-seed node picked u.a.r from~$C_i$ is absorbed 
-    in a seed node of $C_i$ with a probability that is a factor $\Omega(s_i)$ 
-    larger than the probability with which it is absorbed in the seed nodes 
-    of the remaining communities.
-\end{theorem}

@@ -51,6 +51,13 @@ class Benchmark:
             self.maxc = 100 
             self.on = 0
             self.om = 0
+
+        elif communitySize == "diverse":
+            self.minc = 20 
+            self.maxc = 200 
+            self.on = 0
+            self.om = 0
+
         elif communitySize == "overlap15":
             self.minc = 20 
             self.maxc = 100 
@@ -242,7 +249,7 @@ def commandline_interface():
         help="the folder the json files will be written to")
 
     parser.add_option("-m", dest="mixingRange", type="str",
-        help="start stop step, separated by whitespaces")
+        help="start stop step, separated by whitespaces. if only one entry use this as single mixing parameter")
 
     parser.add_option("-i", dest="iterations", type="int",
         help="number of iterations for the iterative method")
@@ -252,6 +259,9 @@ def commandline_interface():
 
     parser.add_option("--classification_strategy", dest="classification_strategy",
         help="")
+
+    parser.add_option("--overwrite_file", dest="overwrite_file", type="int", default=1,
+        help="if nonzero exit if output file already exists")
 
     
     global options, args
@@ -279,7 +289,10 @@ if commandline_interface():
     samplesPerDatapoint = options.samplesPerDatapoint
 
     tmp                 = [float(x) for x in options.mixingRange.split()]
-    mixingRange         = [x for x in np.arange(tmp[0], tmp[1], tmp[2])]
+    if len(tmp) == 1:
+        mixingRange = tmp
+    else:
+        mixingRange     = [x for x in np.arange(tmp[0], tmp[1], tmp[2])]
 
 
     print "outputfolder:", options.outputfolder
@@ -296,5 +309,8 @@ if commandline_interface():
 
     print "start benchmarks"
     for benchmark in benchmarks:
-        benchmark.run()
-        benchmark.dump()
+        if os.path.isfile(options.outputfolder + "/" + benchmark.filename) and not options.overwrite_file:
+            print "file already exists, abort"
+        else:
+            benchmark.run()
+            benchmark.dump()
