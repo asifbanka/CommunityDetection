@@ -1,0 +1,73 @@
+\usepackage{acrocnym}
+%
+\begin{acronym}
+	\acro{NMI}{normalized mutual information}
+	\acro{LFR}Lancichinetti--Fortunato random graph model}
+\end{acronym}
+%
+\section{Experimental Results}
+Our experimental setup can be roughly divided into five parts (see \cref{fig:}. 
+First, we prompt a benchmark graph generator developed by Lacichinetti and 
+Fortunato which outputs random networks and its communities which are the 
+ground truth. Then we pick a fixed amount of seed nodes and input it together 
+with the other data into our algorithm. Thereafter we obtain the calculated 
+affinities from each vertex to every respective community and start the 
+community classification process. Last but not least, we compare the data by 
+computing the \ac{NMI}\cite{DDDA05}.
+
+The \ac{LFR} is an extension of the configuration graph model and enhances this 
+concept by adding the possibility to have overlapping community vertices in the 
+network. The authors designed their code with the intention to establish 
+a standard benchmark suite for community--detection algorithms. For this reason 
+we choose this benchmark for our experiments and set the parameters in the same 
+fashion.
+
+Once we obtain the ground truth we have to decide for a reasonable seed node 
+picking strategy. Since our premise is that seed nodes are typically well known 
+vertices who have a lot of neighbours i. e. are structurely important, we 
+choose to pick a fixed percentage\footnote{but at least one each.} of nodes per 
+community which have the highest degree.
+
+The coded algorithm itself is a realization of the theoretical formulations we 
+established in \cref{sec:}. Since initial test runs required an unrealistically 
+high amount of seed nodes in order to get satisfying results in the overlaping 
+case, we further enhanced our algorithm by implementing an iterative seed node 
+picking strategy. After one run of the regular algorithm we try to increase the 
+amount of seed nodes per community. We do so by multypling the cardinality of 
+the respective seed set $\left S \right$ by a constant factor 
+$d$\footnote{We typically set this value to $1.1$.} and subtract 
+$\left S \right$ from this. Further, we check the highest affinity value 
+$a < 1$ per vertex and include it to a set of potential new seed nodes for the 
+respective community. After that we establish at most 
+$\left S \right - d * \left S \right$ new seed nodes per community and rerun 
+the algorithm. We repeat this process after we reach a fixed amount of 
+iterations\footnote{Usually the amount of iterations was $10$ or $20$.}.
+
+The algorithm outputs affinity values for every vertex community combination. 
+these values range between zero and one and are the sole factor whether we 
+assign a vertex to a community or not. At this point the strategy for community 
+classification is different depending on whether we deal with overlapping 
+comunities or not. In the latter case we know that a vertex is assigned to 
+exactly one community. thus, we assign the community for which the respective 
+vertex has the highest repsective affinity value. In the overlapping case we 
+apply a slighlty more sophisticated strategy, since a vertex is maybe assigned 
+to not just one but potentially to up to all communities. First, we assume that 
+there are one or more ``high'' affinity values which would correspond to the 
+case that a vertex is in favor to be assigned to a community. On the other hand,
+ there are one or more ``low'' values in the other case. However, we can not 
+make any more qualified statements about the actual values of the affinities, 
+since these numbers differ greatly depending on the structure of the graph and 
+on the amount fo communities a vertex belongs to. Therefore, we can only assume 
+that there is some difference in high and low values. For this reason, we first 
+sort the affinities in descending order. then we compare all subsequent pairs 
+by computing the difference. Then we define the point where we found the 
+largest difference as our border between low and high affinity values. Any 
+asscoiated community left of this border is assigned to the repsective vertex, 
+wheras any affinity value on the right hand side is considered as a low value 
+and thus the repsective community is not assigned.
+
+After we have assigned the communities to our vertices we now want to measure 
+the quality of our predictions. As Lacichinetti and Fortunato 
+suggest\cite{LF09} we determine the \ac{NMI} values of the predicted community 
+assignment and the ground truth. The \ac{NMI} determines how similar the 
+information in bits is
