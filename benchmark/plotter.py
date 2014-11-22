@@ -116,10 +116,10 @@ def getTitleAndLabel(dataList, iterations, mode):
         if(iterations[0] == 0):
             title += ", " + "non-iterative"
         else:
-            title += ", " + "iteration " + str(iterations[0])
+            title += ", " + "iteration " + str(iterations[0]+1)
     else:
         labels = seedStrings
-        labels = ["iteration " + str(x) for x in iterations]
+        labels = ["iteration " + str(x+1) for x in iterations]
 
 
     #add the mixing parameter to the title if in overlap mode
