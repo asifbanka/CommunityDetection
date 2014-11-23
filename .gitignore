@@ -12,9 +12,36 @@ statistics.json
 tmp_*
 
 # generated plots
-
+#################
 paper/plots/nonoverlap*
 paper/plots/overlap*
+
+# latex
+#############
+*.aux
+*.glo
+*.idx
+*.log
+*.toc
+*.ist
+*.acn
+*.acr
+*.alg
+*.bbl
+*.blg
+*.dvi
+*.glg
+*.gls
+*.ilg
+*.ind
+*.lof
+*.lot
+*.maf
+*.mtc
+*.mtc1
+*.out
+*.synctex.gz 
+
 
 # Python #
 ##########
