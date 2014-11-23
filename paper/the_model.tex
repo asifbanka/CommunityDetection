@@ -1,31 +1,28 @@
-We assume that the complex networks that we deal with are modeled as undirected graphs.  
-In broad brush-strokes, this is how our algorithm works.  The algorithm receives 
-as input a network and a set of nodes from each community that we are aiming to 
-discover. We call these nodes \emph{seed nodes}. A seed node can belong to several 
-communities and our algorithm actually finds out overlapping communities in the 
-network. The algorithm uses the partial community information and propagates it 
-to the other nodes of the network by simulating a random walk from non-seed nodes 
-to the set of seed nodes.  
+We assume that the complex networks that we deal with are modeled as connected, undirected graphs.  
+The algorithm receives as input a network and a set of nodes from each community that we are aiming to discover. 
+These nodes are called \emph{seed nodes} and may belong to multiple communities.
 
-Suppose that $x_1, \ldots, x_s$ are the seed nodes in the network and let $u$ 
-be a non-seed node. We consider random walks starting at $u$ and of lengths 1, 2, till 
-infinity and estimate the probability $p_1, \ldots, p_s$ of any such walk ending up at the 
-seed nodes $x_1, \ldots, x_s$, respectively. If out of these~$s$ seed nodes, 
-$x_{i_1}, \ldots, x_{i_r}$ belong to a community~$C$, then the algorithm assigns 
-a probability of $\sum_{j = 1}^r p_{i_j}$ to the event that~$u$ belongs to~$C$. 
-Therefore for each community, we assign a probability for the event that~$u$ belongs 
-to it. \texttt{Reference to the classification strategy used in the experiments}  
+We say a node has \emph{high affinity} to a community if it belongs to it and \emph{low affinity} if it does not.
+Intermediate affinity values are possible and correspond to a partial belonging.
+For each seed node the affinity to each community is given by the user.
+For all other nodes, called \emph{non-seed nodes}, we want deduce the affinity 
+to each community by using information given by the seed nodes' affinities and the network structure.
 
-The random walk can be represented by a transition matrix and the walk itself can be simulated 
-by multiplying this matrix with itself repeatedly. This, however, takes $O(n^3)$
-time, where~$n$ is the number of nodes in the network. One of the contributions of 
-this paper is to show how this can be reduced to solving a set of symmetric, diagonally dominant
-systems of linear equations (with one set of equations per community), 
+The fundamental idea is that non-seed nodes should adopt the affinities of seed nodes within their close proximity.
+We define a proximity measure based on random walks:
+Each random walk starts at a non-seed node, traverses through the graph, and ends as soon as it reaches any seed node.
+The non-seed node then adopts the affinities of the seed nodes such a random walk would be likely to reach first.
+
+Each step of a random walk can be represented by a transition matrix $P$ 
+and the result of the (infinite) walk itself can be expressed as $\lim \limits_{k \rightarrow \infty}{P^k}$.
+One of the contributions of this paper is to show how the calculation
+of these limits can be reduced to solving a symmetric, diagonally dominant
+system of linear equations (with different right-hand-sides per community),
 which can be done in $O(m \log n)$ time, where~$m$ is the number of edges 
 in the graph. The fact that such systems can be solved in almost linear time 
 was due to work that was spearheaded by Spielman and 
-Teng~\cite{ST04,EEST05,ST08,KMP10,KMP11,Vis13}. We assume that our networks are 
-sparse in the sense that $m = O(n)$, so that the running time of our algorithm can  
+Teng~\cite{ST04,EEST05,ST08,KMP10,KMP11,Vis13}. If we assume that our networks are 
+sparse in the sense that $m = O(n)$, the running time of our algorithm can  
 be bounded by $O(n \log n)$.    
         
 \subsection{Absorbing Markov Chains and Random Walks}
