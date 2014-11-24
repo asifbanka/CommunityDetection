@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import json
 from optparse import OptionParser
+import textwrap
 
 ##########################################
 #
@@ -110,13 +111,15 @@ def getTitleAndLabel(dataList, iterations, mode):
     else:
         labels = seedStrings
 
+    titleSecondLine = ""
+
 
     #if we have just one iteration, put it in the title, otherwise in the label
     if(len(iterations) == 1):
         if(iterations[0] == 0):
-            title += ", " + "non-iterative"
+            titleSecondLine += "non-iterative"
         else:
-            title += ", " + "iteration " + str(iterations[0]+1)
+            titleSecondLine += "iteration " + str(iterations[0]+1)
     else:
         labels = seedStrings
         labels = ["iteration " + str(x+1) for x in iterations]
@@ -127,7 +130,12 @@ def getTitleAndLabel(dataList, iterations, mode):
         mus = [(x["_mu"]) for x in dataList]
         if len(set(mus)) != 1:
             raise Exception("there different mu values in these files")
-        title += ", "+ str(mus[0]) + " mixing parameter"
+        if titleSecondLine != "":
+            titleSecondLine += ", "
+        titleSecondLine += str(mus[0]) + " mixing parameter"
+
+    if titleSecondLine != "":
+        title += ",\n" + titleSecondLine
 
 
     #add some space below the title
@@ -157,6 +165,7 @@ if commandline_interface():
 
     #pick title for plot
     title, labels = getTitleAndLabel(dataList, iterations, options.mode)
+    #title = textwrap.fill(title, 55);
 
     lines = []
     i = 0
@@ -164,8 +173,17 @@ if commandline_interface():
         for iteration in iterations:
             xs, ys = getXsYs(data, iteration, options.mode)
             markers = ["o", "v", "^", "s", "d"]
+            colors = ["b", "g", "r", "c", "m"]
             fillstyles = [ u'full', u'none' ] * 5
-            line, = plt.plot(xs, ys, "-o", label=labels[i], marker=markers[i],  fillstyle=fillstyles[i])
+            #mews = [ 0, 3 ] * 5
+            line, = plt.plot(xs, ys, "-o",
+                    label=labels[i],
+                    marker=markers[i],
+                    fillstyle=fillstyles[i],
+                    color=colors[i],
+                    markeredgecolor=colors[i],
+                    markersize=9,
+                    mew=2) #thickness of marker borders
             i = i + 1
             lines.append(line)
 
@@ -181,4 +199,10 @@ if commandline_interface():
         plt.ylabel("Normalized Mutual Information")
     plt.grid(True)
 
-    plt.savefig(options.output)
+    font = {'family' : 'normal',
+            #'weight' : 'bold',
+            'size'   : 16}
+    matplotlib.rc('font', **font)
+
+    #plt.tight_layout()
+    plt.savefig(options.output, bbox_inches='tight')
