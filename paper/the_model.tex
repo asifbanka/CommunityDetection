@@ -13,8 +13,8 @@ We define a proximity measure based on random walks:
 Each random walk starts at a non-seed node, traverses through the graph, and ends as soon as it reaches any seed node.
 The non-seed node then adopts the affinities of the seed nodes the a random walk would be likely to reach first.
 
-Each step of a random walk can be represented by a multiplication with a transition matrix $\mat{P}$ 
-The result of the (infinite) walk itself can be expressed as $\lim \limits_{k \rightarrow \infty}{\mat{P}^k}$.
+Each step of a random walk can be represented by a multiplication with a transition matrix $\mat{P}$.
+The result of the (infinite) walk itself can be expressed as $\lim_{k \rightarrow \infty}{\mat{P}^k}$.
 One of the contributions of this paper is to show how the calculation
 of these limits can be reduced to solving a symmetric, diagonally dominant
 system of linear equations (with different right-hand-sides per community),
@@ -323,8 +323,8 @@ Markov chain and $\mat{R}$ is as in equation~(\ref{eqn:canonical_form_P}).
 Given a graph~$G$, let $\mat{P}$ be the $n \times n$ transition matrix in canonical form 
 (see equation~(\ref{eqn:canonical_form_P})) defined by equations~(\ref{eqn:defining_prob_nonseed}) 
 and~(\ref{eqn:defining_prob_seed}). Then one can compute 
-the affinity vectors of all non-seed nodes in time $O(m \cdot \log n + ms + n)$ per community, 
-where~$m$ is the number of edges in the graph~$G$ and $s$ is the total number of seed nodes.
+the affinity vectors of all non-seed nodes in time $O(m \cdot \log n)$ per community, 
+where~$m$ is the number of edges in the graph~$G$.
 \end{theorem}  
 \begin{proof}
 Recall that we ordered the nodes of $G$ as $\{u_1, \ldots, u_{n - s}, x_1, \ldots, x_s\}$, 
@@ -371,15 +371,18 @@ Finally, multiplying by $\mat{D}_1$ on both sides, we obtain
 \end{equation}
 where we used $\vect{\alpha}_l$ to denote the vector $\trans{\left ( \alpha (u_1, l), \ldots, \alpha (u_{n-s}, l) \right )}$.
 
-Note that computing $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ takes time $O(m \cdot s)$, where $m$ 
-denotes the number of non-zero entries in $\mat{P}$. Computing the product of 
-$\mat{D}_1$ and $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ takes time $O(n)$ so that 
-the right hand side of equation~(\ref{eqn:final_affinity}) can be computed in time $O(ms + n)$.
-We now have a symmetric diagonally dominant system of linear equations which by 
-Proposition~\ref{prop:SDD_systems} can be solved in time $O(m \cdot \log n)$. Therefore 
-the time taken to compute the affinity to a fixed community is $O(m \cdot \log n + ms + n)$,
-which is what was claimed. Since $m = O(n)$ and $s = O(\log n)$, the time taken 
-is $O(n \cdot \log n)$ per community.  
+Note that computing $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ takes time $O(\tilde{m})$, where $\tilde{m}$ 
+denotes the number of non-zero entries\footnote{This is almost the same as the 
+number~$m$ of edges in $G$, but not quite, since while constructing $\mat{P}$ from the graph $G$, 
+we add self-loops on seed nodes and delete edges between adjacent seed nodes, if any. However what is true is 
+that $\tilde{m} \leq m + s \leq m + n$.} in \mat{P}. 
+Computing the product of $\mat{D}_1$ and $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ 
+takes time $O(\tilde{m})$ so that the right hand side of equation~(\ref{eqn:final_affinity}) can 
+be computed in time $O(\tilde{m})$. We now have a symmetric diagonally dominant system of linear equations 
+which by Proposition~\ref{prop:SDD_systems} can be solved in time $O(\tilde{m} \cdot \log n)$. Therefore 
+the time taken to compute the affinity to a fixed community is $O(\tilde{m} \cdot \log n) = O(m \log n)$,
+which is what was claimed. Since we assume our networks to be sparse, $m = O(n)$, and 
+the time taken is $O(n \cdot \log n)$ per community.  
 %
 %Then $(\mat{I} - \mat{Q}) \mat{X} = \mat{R}$, which may be rewritten as
 %$(\mat{D}_1 - \mat{A}_1) \mat{X} = \mat{D}_1 \cdot \mat{R}$. The latter 
