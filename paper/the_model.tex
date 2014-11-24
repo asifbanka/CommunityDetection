@@ -299,17 +299,20 @@ Using equation~(\ref{eqn:I-Q}), we may rewrite equation~(\ref{eqn:affinity}) as:
 	\end{array}	\right ) & = \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j.
 \end{align}
 Finally, multiplying by $\mat{D}_1$ on both sides, we obtain
-\begin{equation}\label{eqn:final_affinity}
+\begin{equation}\label{eqn:final_affinity}Voraussichtlicher Liefertermin: Samstag, 22. November 2014 - Donnerstag, 27. November 2014
 	(\mat{D}_1 - \mat{A}_1) \cdot \vect{\alpha}_l = \mat{D}_1 \cdot \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j,
 \end{equation}
 where we used $\vect{\alpha}_l$ to denote the vector $\trans{\left ( \alpha (u_1, l), \ldots, \alpha (u_{n-s}, l) \right )}$.
 
 Note that computing $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ takes time $O(m)$, where $m$ 
-denotes the number of non-zero entries in $\mat{P}$. Computing the product of 
-$\mat{D}_1$ and $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ takes time $O(m)$ so that 
-the right hand side of equation~(\ref{eqn:final_affinity}) can be computed in time $O(m)$.
-We now have a symmetric diagonally dominant system of linear equations which by 
-Proposition~\ref{prop:SDD_systems} can be solved in time $O(m \cdot \log n)$. Therefore 
+denotes the number of non-zero entries in  $\mat{P}$\footnote{This is almost the same as the 
+number of edges in $G$, but not quite, since while constructing $\mat{P}$ from the graph $G$, 
+we add self-loops on seed nodes and delete edges between adjacent seed nodes, if any. However the number 
+of non-zero entries of \mat{P} is at most $|E(G)| + s \leq |E(G)| + |V(G)|$.}. 
+Computing the product of $\mat{D}_1$ and $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ 
+takes time $O(m)$ so that the right hand side of equation~(\ref{eqn:final_affinity}) can 
+be computed in time $O(m)$. We now have a symmetric diagonally dominant system of linear equations 
+which by Proposition~\ref{prop:SDD_systems} can be solved in time $O(m \cdot \log n)$. Therefore 
 the time taken to compute the affinity to a fixed community is $O(m \cdot \log n)$,
 which is what was claimed. Since we assume our networks to be sparse, $m = O(n)$, and 
 the time taken is $O(n \cdot \log n)$ per community.  
