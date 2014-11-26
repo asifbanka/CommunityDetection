@@ -163,11 +163,9 @@ for all $j \neq i$. Secondly, it must be possible to transition from every state
 some absorbing state in a finite number of steps.
 
 It follows directly from the construction of the graph $G'$ and the fact that the original graph was connected, 
-that random walks in $G'$ define an absorbing markov chain. Here, the absorbing states correspond to the set of seed nodes.
+that random walks in $G'$ define an absorbing Markov chain. Here, the absorbing states correspond to the set of seed nodes.
 
-%%%%%%%%%%%%%%%%%%%
-
-An important property of such absorbing Markov chains is the following:
+Using simple matrix transformations it can be shown that:
 \begin{equation}\label{exp:rth_product_of_P}
 	\mat{P}^r = \left [ \begin{array}{ll}
 						\mat{Q}^r  					& \sum_{i = 0}^{r - 1}\mat{Q}^i \cdot \mat{R} \\
@@ -175,32 +173,39 @@ An important property of such absorbing Markov chains is the following:
 						\end{array}
 				\right ].
 \end{equation}  
-It can be shown that $\lim_{r \to \infty} \mat{Q}^{r} = \mat{0}$ and that 
-the series $\sum_{r = 0}^{\infty} \mat{Q}^{r}$ actually converges to 
-$(\mat{I} - \mat{Q})^{-1}$. This matrix series is called the \emph{fundamental matrix}
-of the absorbing Markov chain and is denoted by $\mat{N}$. 
 
-We summarize some of the properties of an absorbing Markov chain. 
+%%%%%%%%%%%%%%%%%%%
+
+Since we are dealing with infinte random walks we sumarize the following 
+imporatant property of absorbing Markov chains, which can be shown by a geometric argument.
 \begin{proposition}\label{prop:limiting_Q}
 	Let $\mat{P}$ be the $n \times n$ transition matrix that defines an absorbing Markov chain
 	and suppose that $\mat{P}$ is in the canonical form specified by equation~(\ref{eqn:canonical_form_P}). 
 	Then
-	\begin{enumerate}
-		\item $\lim_{r \to \infty} \mat{Q} = \mat{0}_{(n - s) \times (n - s)}$.
-		\item $\sum_{r = 0}^{\infty} \mat{Q}^r \cdot \mat{R} = (\mat{I} - \mat{Q})^{-1} \cdot \mat{R}$.
-	\end{enumerate} 
+    \begin{equation}
+        \lim_{r \to \infty} \mat{P}^r = \left [ \begin{array}{ll}
+            \mat{0}_{(n - s) \times (n - s)} & (\mat{I} - \mat{Q})^{-1} \cdot \mat{R} \\
+            \mat{0}_{s \times (n - s)}       & \mat{I}_{s \times s}
+        \end{array}
+        \right ].
+    \end{equation}  
 \end{proposition}
+This states that random walks in our graph $G'$ actually converge to a meaningful value.
+For normal random walks this is not necesarily the case.
+Also, since $\lim_{r \to \infty} \mat{Q}^r = \mat{0}$, the probability that a random walk starting anywhere in the graph
+eventually gets trapped at one of the sink nodes, i.e., seed nodes is 1.
+Furthermore, the probability that such an infinte random walk starting at non-seed node~$u_i$ ends up at the seed 
+node~$x_j$ is contained in the the entry $(i, j)$ of the submatrix $\mat{X} := (\mat{I} - \mat{Q})^{-1} \cdot \mat{R}$. 
 
-We wish to determine the matrix $\mat{N} \mat{R}$: the entry $(u, x)$ of this 
-matrix is the probability that a random walk starting at~$u$ ends up at the seed 
-node~$x$. Once we have determined this matrix, the affinity of $u$ for 
-a community~$j$ can be computed as:
+Now we can finally define the affinity vectors of non-seed nodes.
+The affinity of non-seed node $u_i$ to a community~$l$ is defined as:
 \begin{equation}\label{eqn:belonging_vector}
-	\alpha (u, j) = \sum_{i = 1}^{s} (\mat{N} \mat{R}) (u, x_i) \cdot \alpha (x_i, j).
+    \alpha (u_i, l) = \sum_{j = 1}^{s} \mat{X} (i, j) \cdot \alpha (x_j, l).
 \end{equation}
-If we compute $\mat{N}$ by first computing the inverse $(\mat{I} - \mat{Q})^{-1}$
-and then multiplying the result by $\mat{R}$, we would have taken time $O(n^3)$. In the 
-next subsection, we show how to reduce this problem to that of solving a 
+
+The computational complexity of calculating these affinity values now 
+depends on how efficient we can calculate the values of $\mat{X}$, i.e., solve $(\mat{I} - \mat{Q})^{-1}$.
+In the next subsection, we show how to reduce this problem to that of solving a 
 system of linear equations of a special type which takes time $O(m \log n)$, where $m$
 is the number of edges in the network.
 
