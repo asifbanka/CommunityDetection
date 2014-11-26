@@ -25,8 +25,8 @@ Teng~\cite{ST04,EEST05,ST08,KMP10,KMP11,Vis13}. If we assume that our networks a
 sparse in the sense that $m = O(n)$, the running time of our algorithm can  
 be bounded by $O(n \log n)$.    
 
-%%%%%%%%%%%%%%%%%%%%
-        
+
+
 \subsection{Absorbing Markov Chains and Random Walks}
 We now provide a formal description of our model. 
 The input is an undirected, connected graph $G=(V,E)$ with nodes $v_i, \dots, v_n$, $m$ edges and a nonempty set of $s$ seed nodes.
@@ -46,9 +46,6 @@ An example of this situation is when~$v$ belongs to multiple
 communities with probability~$1$. 
 The user-chosen affinity vectors of all seed nodes are part of the input.
 The objective is to derive the affinity vectors of all non-seed nodes. 
-
-%%%%%%%%%%%%%%%%%%%%
-
 
 \begin{figure}
 \centering
@@ -134,6 +131,10 @@ Random walks in this graph can be modelled by an $n \times n$ transition matrix 
 					\right.
 \end{equation}
 where $\deg_{G'} (v)$ is the degree of node $v$ in the new network~$G'$.
+Now $\mat{P}(i, j)$ holds the transition-probability from node $v_i$ to $v_j$.
+Additionally, $\mat{P}^r (i, j)$ may be interpreted 
+as the probability that a random walk starting at node~$v_i$ will end up at node~$v_j$ 
+after~$r$ steps. 
 
 Furthermore, can assume that the nodes of~$G'$ to be ordered as 
 $u_1, \ldots, u_{n - s}, x_{1}, \ldots, x_{s}$, where $u_1, \ldots, u_{n - s}$
@@ -153,33 +154,20 @@ matrix $\mat{I}$ represents the fact that once a seed node is reached, one canno
 from it. Here $\mat{0}_{s \times (n - s)}$ represents an $s \times (n - s)$ matrix of zeros. 
 Since each row of $\mat{P}$ sums up to~$1$ and all entries are positive, this matrix is stochastic.
 
-It is well-known that such a stochastic matrix represents, what is known as, an 
-absorbing Markov chain (see, for example, Chapter~11 of Grinstead and Snell~\cite{GS98}).  
-A Markov chain is called \emph{absorbing} if it satisfies two conditions. 
+It is well-known that such a stochastic matrix represents what is known as an 
+\emph{absorbing Markov chain} (see, for example, Chapter~11 of Grinstead and Snell~\cite{GS98}).  
+A Markov chain is called absorbing if it satisfies two conditions: 
 It must have at least one absorbing state~$i$, where state~$i$ is defined 
 to be absorbing if and only if $\mat{P}(i,i) = 1$ and $\mat{P}(i, j) = 0$ 
 for all $j \neq i$. Secondly, it must be possible to transition from every state to 
-    some absorbing state (perhaps in multiple steps). 
+some absorbing state in a finite number of steps.
 
-The transition matrix $\mat{P}$ that we defined via equations~(\ref{eqn:defining_prob_nonseed}) 
-and~(\ref{eqn:defining_prob_seed}) satisfy these two properties. To see this, note that 
-the transition matrix implicitly defines an arc-weighted  directed graph on the nodes 
-of the network. Call this directed graph $G_{\mat{P}}$. For non-seed nodes~$u$ and~$v$ that 
-are connected by an edge in the network, there exist two arcs $(u, v)$ and $(v, u)$ 
-in $G_{\mat{P}}$ with weights $1/\deg_G (u)$ and $1/ \deg_G (v)$, respectively.
-If $x$ is a seed node with $p$ non-seed neighbors 
-$u_1, \ldots, u_p$, then the edges~$\{u_i, x\}$ in~$G$, for $1 \leq i \leq p$, 
-are represented by arcs~$(u_i, x)$ (with weight $1 / \deg_G (u_i)$) in $G_{\mat{P}}$. 
-In addition, $x$ has self-loop with weight~$1$. It is worthwhile to note 
-that if two seed nodes are adjacent in~$G$, then the corresponding edge does not have a 
-directed counterpart in $G_{\mat{P}}$.  
+It follows directly from the construction of the graph $G'$ and the fact that the original graph was connected, 
+that random walks in $G'$ define an absorbing markov chain. Here, the absorbing states correspond to the set of seed nodes.
 
-Now from the theory of Markov chains, the state of the system after a $r$-step transition 
-is given by the matrix product $\mat{P}^r$. Moreover, $\mat{P}^r (u, v)$ may be interpreted 
-as the probability that a random walk starting at node~$u$ will end up at node~$v$ 
-after~$r$ steps. Since the underlying network is connected, every non-seed node can reach a seed
-node by some path and such a dipath continues to exist in $D_{\mat{P}}$. This shows that $D_{\mat{P}}$
-is indeed an absorbing Markov chain. An easy property of such Markov chains is the following:
+%%%%%%%%%%%%%%%%%%%
+
+An important property of such absorbing Markov chains is the following:
 \begin{equation}\label{exp:rth_product_of_P}
 	\mat{P}^r = \left [ \begin{array}{ll}
 						\mat{Q}^r  					& \sum_{i = 0}^{r - 1}\mat{Q}^i \cdot \mat{R} \\
