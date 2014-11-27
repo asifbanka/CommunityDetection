@@ -30,7 +30,7 @@ be bounded by $O(n \log n)$.
 \subsection{Absorbing Markov Chains and Random Walks}
 We now provide a formal description of our model. 
 The input is an undirected, connected graph $G=(V,E)$ with nodes $v_i, \dots, v_n$, $m$ edges and a nonempty set of $s$ seed nodes.
-We also know that there are~$k$ (pssibly overlapping) communities which we want to discover.
+We also know that there are~$k$ (possibly overlapping) communities which we want to discover.
 
 The community information of a node~$v$ is represented 
 by a $1 \times k$ vector called the \emph{affinity vector} of~$v$, denoted 
@@ -176,8 +176,8 @@ Using simple matrix transformations it can be shown that:
 
 %%%%%%%%%%%%%%%%%%%
 
-Since we are dealing with infinte random walks we sumarize the following 
-imporatant property of absorbing Markov chains, which can be shown by a geometric argument.
+Since we are dealing with infinite random walks we summarize the following 
+important property of absorbing Markov chains, which can be shown by a geometric argument.
 \begin{proposition}\label{prop:limiting_Q}
 	Let $\mat{P}$ be the $n \times n$ transition matrix that defines an absorbing Markov chain
 	and suppose that $\mat{P}$ is in the canonical form specified by equation~(\ref{eqn:canonical_form_P}). 
@@ -191,10 +191,10 @@ imporatant property of absorbing Markov chains, which can be shown by a geometri
     \end{equation}  
 \end{proposition}
 This states that random walks in our graph $G'$ actually converge to a meaningful value.
-For normal random walks this is not necesarily the case.
+For normal random walks this is not necessarily the case.
 Also, since $\lim_{r \to \infty} \mat{Q}^r = \mat{0}$, the probability that a random walk starting anywhere in the graph
 eventually gets trapped at one of the sink nodes, i.e., seed nodes is 1.
-Furthermore, the probability that such an infinte random walk starting at non-seed node~$u_i$ ends up at the seed 
+Furthermore, the probability that such an infinite random walk starting at non-seed node~$u_i$ ends up at the seed 
 node~$x_j$ is contained in the the entry $(i, j)$ of the submatrix $\mat{X} := (\mat{I} - \mat{Q})^{-1} \cdot \mat{R}$. 
 
 Now we can finally define the affinity vectors of non-seed nodes.

@@ -28,7 +28,7 @@ represents the expected number of edges between nodes $i$ and $j$ if we consider
 in which each node $i$ has $d_i$ ``stubs'' and we are allowed to connect stubs at random to form edges. 
 This is the null model against which the within-community edges of the partition is compared against.
 The worst-case complexity of the Newman-Girvan algorithm is dominated by the time taken 
-to compute the betweeness scores and is $O(m^2 n)$ for general graphs and $O(n^3)$ for sparse graphs.
+to compute the betweenness scores and is $O(m^2 n)$ for general graphs and $O(n^3)$ for sparse graphs.
 
 \paragraph{The greedy algorithm for modularity optimization by Clauset \etal~\cite{CNM04}.}
 This algorithm starts with each node being the sole member of a community of one, and 
@@ -72,7 +72,7 @@ a $1$. The final step is to find the connected components of the graph represent
 which constitute the communities of the original graph. 
 
 The authors report to have tested the algorithm on various networks including the protein-protein interaction 
-network of \emph{Saccharomyces cerevisiae}\footnote{A species of yeast used in winemaking, baking, and brewing.} 
+network of \emph{Saccharomyces cerevisiae}\footnote{A species of yeast used in wine-making, baking, and brewing.} 
 with $k = 4$; the co-authorship network of the Los Alamos condensed matter archive (with $k = 6$). 
 Lancichinetti and Fortunato report that Cfinder did not perform particularly well on the LFR benchmark and 
 that its performance is sensitive to the sizes of community (but not the network size). For networks will 
