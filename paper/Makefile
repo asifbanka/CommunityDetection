@@ -22,7 +22,7 @@ again:
 	pdflatex $<
 	@pdflatex $< # for references
 
-main.pdf: header.tex the_model.tex major_algorithms.tex intro.tex setup.tex non_overlapping.tex plots.tex overlapping.tex
+main.pdf: header.tex the_model.tex major_algorithms.tex intro.tex setup.tex experimental.tex plots.tex results.tex
 
 %.pdf: %.ps
 	ps2pdf $< 2> /dev/null # Warnings are bad for vim
