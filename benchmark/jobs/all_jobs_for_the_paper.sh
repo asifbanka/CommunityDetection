@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 ### Job name
-#BSUB -J ALL_JOBS_FOR_THE_PAPER[1-96]
+#BSUB -J ALL_JOBS_FOR_THE_PAPER[1-110]
 
 ### File / path where STDOUT & STDERR will be written
 ###    %J is the job ID, %I is the array ID
@@ -69,7 +69,7 @@ seedsIterative=( 0.02 0.04 0.06 0.08 0.10 )
 #use these mixing parameter when doing overlapping detection
 overlapMixing=( 0.1 0.3 )
 #number of iterations for the iterative method
-iterations=20
+iterations=10
 #samples per datapoint
 samples=100
 
