@@ -4,7 +4,7 @@
 
 %\usepackage{authblk}
 \usepackage{lmodern}
-
+%\usepackage{cleveref}
 
 \title{Overlapping Communities in Social Networks}
 \author{Jan Dreier 
@@ -14,7 +14,6 @@
 \and Peter Rossmanith 
 \and Somnath Sikdar}
 \date{}
-
 
 \begin{document}
 \maketitle
@@ -32,17 +31,15 @@ Here goes the abstract.
 \section{The Algorithm} \label{sec:algorithm}
 \input{the_model}
 
-\section{Experimental Results} \label{sec:experiments}
+\section{Experimental Setup} \label{sec:experiment_setup}
+\input{experimental}
+\input{setup}
+
+\section{Experimental Results}\label{sec:experiment_results}
+\input{results}
 \input{plots}
 
 %\subsection{Setup}
-\input{setup}
-
-\subsection{Detecting non overlapping Communities}
-\input{non_overlapping}
-
-\subsection{Detecting overlapping Communities}
-\input{overlapping}
 
 %\subsection{Plots}
 %
@@ -68,6 +65,7 @@ Here goes the abstract.
     \def\LICS##1{Proc. of ##1 LICS}%
 }
 
+%
 \bibliographystyle{abbrv}
 \bibliography{social_net}
 

@@ -18,9 +18,11 @@ in which edges are added at random between the nodes of the network
 so as to preserve the degree sequence of the nodes. 
 
 Formally, the \emph{modularity} of a partition is defined as:
+%
 \begin{equation}\label{eqn:modularity}
 	Q = \frac{1}{2m} \sum_{i, j} \left ( A_{i j} - \frac{d_i d_j}{2m} \right ) \delta(i, j),
 \end{equation}
+%
 where $A_{ij}$ represent the entries of the adjacency matrix of the network; $d_i$ is the 
 degree of node $i$; $m$ is the number of edges in the network; and $\delta(i, j) = 1$ if nodes
 $i$ and $j$ belong to the same set of the partition and $0$ otherwise. The term $d_i d_j / 2m$ 
