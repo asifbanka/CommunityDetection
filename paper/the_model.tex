@@ -309,18 +309,18 @@ main result that we use as a black-box.
 %This result can be generalized to linear systems $\mat{A} \vect{x} = \vect{b}$, where 
 %$\vect{b}$ is a symmetric (weakly) diagonally dominant matrix.
 
-We can use Proposition~\ref{prop:SDD_systems} to upper-bound the time taken to 
-calculate $\mat{N} \mat{R}$, where $\mat{N}$ is the fundamental matrix of the absorbing
-Markov chain and $\mat{R}$ is as in equation~(\ref{eqn:canonical_form_P}).
+We can use Proposition~\ref{prop:SDD_systems} to upper-bound the time taken to solve
+the linear systems, which are needed to calculate the affinity vectors defined in (\ref{eqn:belonging_vector}).
+
 \begin{theorem}\label{theorem:computing_NR}
-Given a graph~$G$, let $\mat{P}$ be the $n \times n$ transition matrix in canonical form 
-(see equation~(\ref{eqn:canonical_form_P})) defined by equations~(\ref{eqn:defining_prob_nonseed}) 
-and~(\ref{eqn:defining_prob_seed}). Then one can compute 
+Given a graph~$G$, let $\mat{P}$ be the $n \times n$ transition matrix 
+defined by equation~(\ref{eqn:defining_prob}) in canonical form 
+(see equation~(\ref{eqn:canonical_form_P})). Then, one can compute 
 the affinity vectors of all non-seed nodes in time $O(m \cdot \log n)$ per community, 
 where~$m$ is the number of edges in the graph~$G$.
 \end{theorem}  
 \begin{proof}
-Recall that we ordered the nodes of $G$ as $\{u_1, \ldots, u_{n - s}, x_1, \ldots, x_s\}$, 
+Recall that we ordered the nodes of $G$ as $u_1, \ldots, u_{n - s}, x_1, \ldots, x_s$, 
 where $u_1, \ldots, u_{n - s}$ denote the non-seed nodes and $x_1, \ldots, x_s$ denote 
 seed nodes. Define $G_1 := G[u_1, \ldots, u_{n - s}]$, the subgraph induced by the non-seed nodes 
 of~$G$. Let $\mat{A}_1$ denote the adjacency matrix of the graph $G_1$; let 
@@ -372,7 +372,7 @@ that $\tilde{m} \leq m + s \leq m + n$.} in \mat{P}.
 Computing the product of $\mat{D}_1$ and $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ 
 takes time $O(\tilde{m})$ so that the right hand side of equation~(\ref{eqn:final_affinity}) can 
 be computed in time $O(\tilde{m})$. We now have a symmetric diagonally dominant system of linear equations 
-which by Proposition~\ref{prop:SDD_systems} can be solved in time $O(\tilde{m} \cdot \log n)$. Therefore 
+which by Proposition~\ref{prop:SDD_systems} can be solved in time $O(\tilde{m} \cdot \log n)$. Therefore,
 the time taken to compute the affinity to a fixed community is $O(\tilde{m} \cdot \log n) = O(m \log n)$,
 which is what was claimed. Since we assume our networks to be sparse, $m = O(n)$, and 
 the time taken is $O(n \cdot \log n)$ per community.  
