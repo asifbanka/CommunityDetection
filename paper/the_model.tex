@@ -1,20 +1,25 @@
 We assume that the complex networks that we deal with are modeled as connected, undirected graphs.  
-The algorithm receives as input a network and a set of nodes from each community that we are aiming to discover. 
-These nodes are called \emph{seed nodes} and may belong to multiple communities.
+The algorithm receives as input a network and a set of nodes such that there is at least one node 
+from each community that we are aiming to discover. These nodes are called \emph{seed nodes} and 
+it is possible that a particular seed node belongs to multiple communities.
 
-We say a node has \emph{high affinity} to a community if it belongs to it and \emph{low affinity} if it does not.
-Intermediate affinity values are possible and correspond to a partial belonging.
-For each seed node the affinity to each community is given by the user.
-For all other nodes, called \emph{non-seed nodes}, we want deduce the affinity 
-to each community by using information given by the seed nodes' affinities and the network structure.
+We say a node has \emph{high affinity} to a community if it belongs to it 
+and \emph{low affinity} if it does not. Intermediate affinity values are 
+possible and correspond to a partial belonging. The user specifies the affinities 
+of the seed nodes for each of the communities. For all other nodes, called 
+\emph{non-seed nodes}, we want deduce the affinity to each community using 
+the information given by the seed nodes' affinities and the network structure. 
+The main idea is that non-seed nodes should adopt the affinities of seed nodes 
+within their close proximity. We define a proximity measure based on random walks: 
+Each random walk starts at a non-seed node, traverses through the graph, and ends 
+as soon as it reaches a seed node. The affinity of a non-seed node~$u$ for a given 
+community is then the weighted sum of the affinities of the seed nodes for 
+that community and reachable by a random walk starting at $u$, the weights 
+being the probabilities that a random walk from $u$ ends up at a certain seed node.
 
-The fundamental idea is that non-seed nodes should adopt the affinities of seed nodes within their close proximity.
-We define a proximity measure based on random walks:
-Each random walk starts at a non-seed node, traverses through the graph, and ends as soon as it reaches any seed node.
-The non-seed node then adopts the affinities of the seed nodes the a random walk would be likely to reach first.
-
-Each step of a random walk can be represented by a multiplication with a transition matrix $\mat{P}$.
-The result of the (infinite) walk itself can be expressed as $\lim_{k \rightarrow \infty}{\mat{P}^k}$.
+Each step of a random walk can be represented as the iterated product of 
+a transition matrix $\mat{P}$. The result of the (infinite) walk itself 
+can be expressed as $\lim_{k \rightarrow \infty}{\mat{P}^k}$.
 One of the contributions of this paper is to show how the calculation
 of these limits can be reduced to solving a symmetric, diagonally dominant
 system of linear equations (with different right-hand-sides per community),
@@ -29,8 +34,9 @@ be bounded by $O(n \log n)$.
 
 \subsection{Absorbing Markov Chains and Random Walks}
 We now provide a formal description of our model. 
-The input is an undirected, connected graph $G=(V,E)$ with nodes $v_i, \dots, v_n$, $m$ edges and a nonempty set of $s$ seed nodes.
-We also know that there are~$k$ (possibly overlapping) communities which we want to discover.
+The input is an undirected, connected graph $G = (V,E)$ with nodes $v_1, \ldots, v_n$, 
+$m$ edges and a nonempty set of $s$ seed nodes. We also know that there are~$k$ 
+(possibly overlapping) communities which we want to discover.
 
 The community information of a node~$v$ is represented 
 by a $1 \times k$ vector called the \emph{affinity vector} of~$v$, denoted 
@@ -38,7 +44,6 @@ by
 \[
 	\bvect (v) = \trans{\left ( \alpha (v, 1), \ldots, \alpha (v, k) \right )}.
 \] 
-
 The entry $\alpha (v, l)$ of the affinity vector represents the affinity of node~$v$ to community~$l$.
 It may be interpreted as the probability that a node belongs to this community.
 We point out that $\sum_{i = 1}^k \alpha (v, l)$ need not be~$1$.
@@ -115,11 +120,11 @@ The objective is to derive the affinity vectors of all non-seed nodes.
 \label{fig:modgraph}.
 \end{figure}
 
-Since random walks should end as soon as they reach a seed node, we transform $G$ into a new graph as follows:
-First, we make the graph directed by replacing each undirected edge with one arc in each direction.
-Then for each seed node, we remove its outgoing arcs and add a self-loop.
-This procedure is illustrated in figure~\ref{fig:modgraph}.
-We call this graph~$G'$.
+Since we require the random walks to end as soon as they reach a seed node, we transform 
+the undirected graph~$G$ into a directed graph $G'$ as follows: replace each undirected 
+edge $\{u, v\}$ by arcs $(u, v)$ and $(v, u)$; then for each seed node, remove its 
+outarcs and add a self-loop. This procedure is illustrated in Figure~\ref{fig:modgraph}.
+
 
 Random walks in this graph can be modelled by an $n \times n$ transition matrix $\mat{P}$, with
 \begin{equation}\label{eqn:defining_prob}
@@ -130,16 +135,15 @@ Random walks in this graph can be modelled by an $n \times n$ transition matrix 
 							\end{array}
 					\right.
 \end{equation}
-where $\deg_{G'} (v)$ is the degree of node $v$ in the new network~$G'$.
-Now $\mat{P}(i, j)$ holds the transition-probability from node $v_i$ to $v_j$.
+where $\deg_{G'} (v)$ is the degree of node $v$ in the directed graph~$G'$.
+The entry $\mat{P}(i, j)$ represents the transition-probability from node $v_i$ to $v_j$.
 Additionally, $\mat{P}^r (i, j)$ may be interpreted 
 as the probability that a random walk starting at node~$v_i$ will end up at node~$v_j$ 
 after~$r$ steps. 
 
-Furthermore, can assume that the nodes of~$G'$ to be ordered as 
-$u_1, \ldots, u_{n - s}, x_{1}, \ldots, x_{s}$, where $u_1, \ldots, u_{n - s}$
-represent the non-seed nodes of the network and $x_1, \ldots, x_s$, the seed nodes.
-This way, we can write the transition matrix $\mat{P}$ in the following canonical form:
+Assume that the nodes of~$G'$ are labeled $u_1, \ldots, u_{n - s}, x_{1}, \ldots, x_{s}$, 
+where $u_1, \ldots, u_{n - s}$ are the non-seed nodes and $x_1, \ldots, x_s$ are the seed nodes. 
+We can now write the transition matrix $\mat{P}$ in the following canonical form:
 \begin{equation}\label{eqn:canonical_form_P}
 	\mat{P} = 	\left [ \begin{array}{ll}
 						\mat{Q}  & \mat{R} \\
@@ -161,11 +165,11 @@ It must have at least one absorbing state~$i$, where state~$i$ is defined
 to be absorbing if and only if $\mat{P}(i,i) = 1$ and $\mat{P}(i, j) = 0$ 
 for all $j \neq i$. Secondly, it must be possible to transition from every state to 
 some absorbing state in a finite number of steps.
+It follows directly from the construction of the graph $G'$ and the fact that the 
+original graph was connected, that random walks in $G'$ define an absorbing Markov chain. 
+Here, the absorbing states correspond to the set of seed nodes.
 
-It follows directly from the construction of the graph $G'$ and the fact that the original graph was connected, 
-that random walks in $G'$ define an absorbing Markov chain. Here, the absorbing states correspond to the set of seed nodes.
-
-Using simple matrix transformations it can be shown that:
+For any non-negative $r$, one can easily show that:
 \begin{equation}\label{exp:rth_product_of_P}
 	\mat{P}^r = \left [ \begin{array}{ll}
 						\mat{Q}^r  					& \sum_{i = 0}^{r - 1}\mat{Q}^i \cdot \mat{R} \\
@@ -173,11 +177,8 @@ Using simple matrix transformations it can be shown that:
 						\end{array}
 				\right ].
 \end{equation}  
-
-%%%%%%%%%%%%%%%%%%%
-
-Since we are dealing with infinite random walks we summarize the following 
-important property of absorbing Markov chains, which can be shown by a geometric argument.
+Since we are dealing with infinite random walks, we are interested in the following 
+property of absorbing Markov chains.
 \begin{proposition}\label{prop:limiting_Q}
 	Let $\mat{P}$ be the $n \times n$ transition matrix that defines an absorbing Markov chain
 	and suppose that $\mat{P}$ is in the canonical form specified by equation~(\ref{eqn:canonical_form_P}). 
@@ -190,12 +191,11 @@ important property of absorbing Markov chains, which can be shown by a geometric
         \right ].
     \end{equation}  
 \end{proposition}
-This states that random walks in our graph $G'$ actually converge to a meaningful value.
-For random walks in other graphs this may not necessarily be the case.
-Also, since $\lim_{r \to \infty} \mat{Q}^r = \mat{0}$, the probability that a random walk starting anywhere in the graph
-eventually gets trapped at one of the sink nodes, i.e., seed nodes is 1.
-Furthermore, the probability that such an infinite random walk starting at non-seed node~$u_i$ ends up at the seed 
-node~$x_j$ is contained in the the entry $(i, j)$ of the submatrix $\mat{X} := (\mat{I} - \mat{Q})^{-1} \cdot \mat{R}$. 
+Intuitively, every random walk starting at a non-seed node eventually 
+reaches some seed node where it is ``absorbed.'' The probability 
+that such an infinite random walk starting at non-seed node~$u_i$ ends 
+up at the seed node~$x_j$ is entry $(i, j)$ of the 
+submatrix $\mat{X} := (\mat{I} - \mat{Q})^{-1} \cdot \mat{R}$. 
 
 Now we can finally define the affinity vectors of non-seed nodes.
 The affinity of non-seed node $u_i$ to a community~$l$ is defined as:
@@ -203,11 +203,12 @@ The affinity of non-seed node $u_i$ to a community~$l$ is defined as:
     \alpha (u_i, l) = \sum_{j = 1}^{s} \mat{X} (i, j) \cdot \alpha (x_j, l).
 \end{equation}
 
-The computational complexity of calculating these affinity values now 
-depends on how efficient we can calculate the values of $\mat{X}$, i.e., solve $(\mat{I} - \mat{Q})^{-1}$.
-In the next subsection, we show how to reduce this problem to that of solving a 
-system of linear equations of a special type which takes time $O(m \log n)$, where $m$
-is the number of edges in the network.
+The computational complexity of calculating these affinity values  
+depends on how efficiently we can calculate the entries of $\mat{X}$, 
+i.e., solve $(\mat{I} - \mat{Q})^{-1}$. In the next subsection, we show 
+how to reduce this problem to that of solving a system of linear equations 
+of a special type which takes time $O(\tilde{m} \log n)$, where $\tilde{m}$
+is the number of arcs in $G'$.
 
 \subsection{Symmetric Diagonally Dominant Linear Systems}
 
