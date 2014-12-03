@@ -1,8 +1,11 @@
-Our experimental setup can be roughly divided into five parts (see Figure~\ref{fig:pipeline}) but the respective parts slightly differ depending on the case whether we test overlapping or non--overlapping community networks. First, we prompt a benchmark graph generator developed by Lacichinetti and Fortunato (LFR)~\cite{LFR08}~\cite{LFR09} which outputs a random network and its communities which are the ground truth . Then we pick a fixed amount of seed nodes obtained from the ground truth and input it together 
-with the other data into our algorithm. Thereafter we obtain the calculated 
-affinities from each vertex to every respective community and start the 
-community classification process. Last but not least, we compare the data by 
-computing the Normalized Mutual Information (NMI)~\cite{DDDA05}.
+Our experimental setup can be roughly divided into five parts (see Figure~\ref{fig:pipeline}) but the 
+respective parts differ slightly depending on the case whether we test overlapping or non-overlapping 
+communities. First, we use the benchmark graph generator developed by Lacichinetti and Fortunato 
+(LFR)~\cite{LFR08, LF09} which outputs graphs where the community information of each node 
+is known. Then from each community in our input graph, we pick a fixed number of seed nodes, 
+calculate their affinitites and feed it to our algorithm. Once the algorithm outputs the 
+affinities, we classify the nodes into communitites and finally compare the output 
+with the ground truth using normalized mutual information (NMI) as a metric~\cite{DDDA05}.
 
 
 \paragraph{LFR.}
