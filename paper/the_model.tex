@@ -202,13 +202,12 @@ The affinity of non-seed node $u_i$ to a community~$l$ is defined as:
 \begin{equation}\label{eqn:belonging_vector}
     \alpha (u_i, l) = \sum_{j = 1}^{s} \mat{X} (i, j) \cdot \alpha (x_j, l).
 \end{equation}
-
 The computational complexity of calculating these affinity values  
 depends on how efficiently we can calculate the entries of $\mat{X}$, 
 i.e., solve $(\mat{I} - \mat{Q})^{-1}$. In the next subsection, we show 
 how to reduce this problem to that of solving a system of linear equations 
-of a special type which takes time $O(\tilde{m} \log n)$, where $\tilde{m}$
-is the number of arcs in $G'$.
+of a special type which takes time $O(m \cdot \log n)$, where $m$
+is the number of edges in $G$.
 
 \subsection{Symmetric Diagonally Dominant Linear Systems}
 
