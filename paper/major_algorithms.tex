@@ -1,21 +1,21 @@
-In what follows, we briefly describe the more important algorithms 
+In what follows, we briefly describe some common algorithms 
 for community detection. We are particularly interested in the performance 
 of these algorithms as reported in the study by Lancichinetti and 
 Fortunato~\cite{LF09} on their LFR benchmark graphs. 
 
 \paragraph{The Girvan-Newman algorithm.} 
 One of the very first algorithms for detecting disjoint communities 
-was due to Girvan and Newman~\cite{GN02, GN04}. Their 
+was invented by Girvan and Newman~\cite{GN02, GN04}. Their 
 algorithm starts with a network and iteratively removes edges based 
 on a metric called \emph{edge betweenness}. The betweenness of an 
 edge is defined as the number of shortest paths between vertex pairs 
 that pass through that edge. After an edge is removed, betweenness 
-scores are recalculated and an edge with the highest score is deleted. 
+scores are recalculated and an edge with maximal score is deleted. 
 This procedure ends when the modularity of the resulting partition
 reaches a maximum. Modularity is a measure that estimates the goodness 
 of a partition by comparing the network with a so-called ``null model''
-in which edges are added at random between the nodes of the network 
-so as to preserve the degree sequence of the nodes. 
+in which edges are rewired at random between the nodes of the network 
+while each node keeps its original degree.
 
 Formally, the \emph{modularity} of a partition is defined as:
 %
