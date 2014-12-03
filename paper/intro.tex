@@ -55,17 +55,18 @@ into communities (which is typically 2\% of the nodes of each community in
 the disjoint communities case). Obviously this is possible only when the user has some 
 information about the network, such as, what it represents, which nodes 
 are the important ones and into which communities they are classified. 
-In reality, such a situation is not unlikely. The user 
-might have data only on the leading scientific authors in a co-authorship network 
+Such situations are actually quite likely. The user might have data only 
+on the leading scientific authors in a co-authorship network 
 and would like to find out the research areas of the remaining members of the network. 
 Consider the case where one knows the political affiliations of some people in 
 a social network and aims to discover political spectrum of the whole network, 
-for example, to predict the outcome of an election. Another scenario where 
-this may be applicable is in recommendation systems. One might know the 
-preferences of some of the users of an online retail merchant possibly because
-they purchase items much more frequently than others. One could then use this 
-in the network whose nodes consist of users, with two nodes connected by an 
-edge if they represent users that had purchased similar products in the past. 
+for example, to predict the outcome of an election. 
+
+Another scenario where this may be applicable is in recommendation systems. 
+One might know the preferences of some of the users of an online retail 
+merchant possibly because they purchase items much more frequently than others. 
+One could then use this in the network whose nodes consist of users, with two 
+nodes connected by an edge if they represent users that had purchased similar products in the past. 
 The idea now would be to use the knowledge of the prefererences of a few to 
 discover the preferences of everyone on the network. 
 
@@ -92,14 +93,14 @@ is the best one can hope for.
 Finally, we provide an extensive experimental evaluation of our algorithm on the LFR benchmark
 introduced by Lancichinetti, Fortunato and Radicchi in~\cite{LFR08, LF09}. In order to ensure 
 a fair comparison with other algorithms reviewed in~\cite{LF09}, we used the same parameters 
-to generate the benchmark graphs. \texttt{Briefly mention which parameters are relevant?}
+to generate the benchmark graphs. 
 
 
 This paper is organized as follows. In Section~\ref{sec:major_algorithms}, we review some 
 of the more influential algorithms in community detection. In Section~\ref{sec:algorithm}, we 
-describe our algorithm and analyze its running time. In Section~\ref{sec:experiments}, we present 
-the experimental results. Finally we conclude in Section~\ref{sec:conclusions} with possibilities
-of how our approach might be extended. 
+describe our algorithm and analyze its running time. In Sections~\ref{sec:experiment_setup} 
+and~\ref{sec:experiment_results}, we present our experimental results. Finally we conclude 
+in Section~\ref{sec:conclusions} with possibilities of how our approach might be extended. 
 
 
 
