@@ -9,20 +9,81 @@ with the ground truth using normalized mutual information (NMI) as a metric~\cit
 
 
 \paragraph{LFR.}
-The LFR benchmark is a tool to generate random graphs with community structure that obey a power law distribution in both the node degrees and community sizes. The authors designed their code with the intention to establish a standard benchmark suite for community--detection algorithms. Using this benchmark they did a comparative analysis between a selection of algorithms~\cite{LF09}. For this reason, we chose this benchmark for our experiments and set the parameters in the same fashion. 
+The LFR benchmark (designed by Lancichinetti, Fortunato and Radicci~\cite{LFR08}) 
+generates random graphs with community structure that obey a power law 
+distribution in both the node degrees and community sizes. The authors designed it 
+with the intention to establish a standard benchmark suite for community detection 
+algorithms. Using this benchmark they did a comparative analysis of several well-known algorithms
+for community detection~\cite{LF09}. To the best of our knowledge, this study seems to be the 
+only one where standardized tests were carried out on such a range of community detection algorithms. 
+As such, we chose this benchmark for our experiments and set the parameters in the same fashion. 
 
-In the experiments with non--overlapping networks, the average degree of the networks is $20$, the maximum degree $50$, the minus exponent of the degree distribution is $2$, and that of the community size distribution is $1$. Further, we distinguish between \textit{small} and \textit{big} community sizes, which vary between $10$--$50$ and $20$--$100$ nodes respectively. We have two network sizes that we investigate: $1000$ and $5000$ nodes. We have one setup for every of the four combinations of network and community sizes. For every setup we create graphs with those parameters and a varying mixing factor $\mu$ (the percentage of edges that are leaving the communities) and compare the results from our algorithm with the ground truth given by the benchmark using NMI. Every point in the plot is the average over $100$ iterations using the same parameters.
+In what follows, we describe tests for non-overlapping and overlapping communities separately, since 
+there are several small differences in out setup for these two cases. 
 
-For the overlapping networks, we do not vary the mixing factor $\mu$ but the fraction of nodes that lie in more than one community and fix the mixing parameter to either $0.1$ or $0.3$. The parameters are set the same way as in the non--overlapping case.
+\subsection{Non-overlapping communities}
+The networks we test have either 1000 nodes or 5000 nodes. The average node degree
+was set at 20 and the maximum node degree set at 50. The parameter controlling the 
+distribution of node degrees was set at~2 and that for the community size distribution was 
+set at~1. Moreover, we distinguished between big and small communities: small communities have 
+10-50 nodes and large communities have 20-100 nodes. An important parameter 
+for the LFR benchmark is the mixing parameter which is the fraction of neighbors 
+of a node that do not belong to any community that the node belongs in, averaged over all nodes.
+For each of the four combinations of network and community size, we generated graphs with the 
+above parameters and with varying mixing parameters. For each of these graphs, we tested the 
+community information output by our algorithm and compared it against the ground truth 
+using the normalized mutual information as a metric. The plots in the next section 
+show how the performance varies as the mixing parameter was changed. Each data point in 
+these plots is the average over 100 iterations using the same parameters. 
+
+\paragraph{Seed node generation.} 
+To use our algorithm, we expect that users pick seed nodes from 
+every community that they wish to identify in the network. One of our assumptions is that
+the user knows the more important members of each community. To replicate 
+this phenomenon in our experiments, we picked out seed nodes from each community 
+with a probability that is proportional to the degree of the node. That is, nodes
+with a higher degree were picked in preference to those with a lower degree reflecting the 
+fact that ``importance'' in a social network often varies in proportion to the number of 
+connections a person has. We note that the actual manner of picking seed nodes did not 
+affect the results too much. If we picked seed nodes uniformly at random from each community, 
+our results are marginally worse. 
+
+In our experiments, we first selected four values for the percentage of seed nodes 
+per community: 5, 10, 15, and 20$\%$. While this gave us decent results, we modified our 
+approach slightly so that the algorithm can work with a much smaller set of seed nodes. 
+The modified algorithm starts out with an initial set of seed nodes and identifies 
+communities but, in particular, it also identifies those non-seed nodes that have the 
+greatest affinity to their respective communitites. These non-seed nodes are then promoted 
+to the seed node set in the next round. This process is then iterated so that at the end of each 
+round the algorithm collects a larger set of seed nodes per community. We tested this approach with 
+2, 4, 6, 8, and 10~$\%$ seed nodes and 
+
+
+For the overlapping networks, we do not vary the mixing factor $\mu$ but the fraction of nodes 
+that lie in more than one community and fix the mixing parameter to either $0.1$ or $0.3$. 
+The parameters are set the same way as in the non--overlapping case.
 
 
 \paragraph{Seed Generation.}
 Once we obtain the ground truth we have to decide on a reasonable seed node 
-picking strategy. Since our premise is that seed nodes are typically well known vertices who have a lot of neighbors i. e. are structurally important, we choose to pick a fixed percentage of nodes per community, whose probability to be picked is proportional to their degree. This means nodes with high degree are more likely to be picked than others. In our experiments, we first decided to pick $5$, $10$, $15$ and $20$ percent as seed nodes. As this numbers were already quite high, we decided to improve this method so that we could use smaller values. For our improved (iterative) method we chose $2$, $4$, $6$, $8$ and $10$ percent seed nodes.
+picking strategy. Since our premise is that seed nodes are typically well known vertices 
+who have a lot of neighbors i.e. are structurally important, we choose to pick a fixed 
+percentage of nodes per community, whose probability to be picked is proportional to their degree. 
+This means nodes with high degree are more likely to be picked than others. In our experiments, 
+we first decided to pick $5$, $10$, $15$ and $20$ percent as seed nodes. As this numbers were 
+already quite high, we decided to improve this method so that we could use smaller values. 
+For our improved (iterative) method we chose $2$, $4$, $6$, $8$ and $10$ percent seed nodes.
 
 \paragraph{Random Walk.}
 The coded algorithm itself is a realization of the theoretical formulations we 
-established in Chapter~\ref{sec:algorithm}. Since initial test runs required a high amount of seed nodes $S$ in order to get satisfying results, we further enhanced our algorithm by implementing an iterative computation method. After one run of the regular algorithm we try to increase the amount of seed nodes per community. We do so by checking the highest affinity value $a < 1$ per vertex and include it to a set of potential new seed nodes for the respective community. After we established at most $d * \left| S \right|$ new seed nodes per community, we rerun the algorithm. The parameter $d$ sets the desired enlargement of $S$ and was set to $0.1$ in our experiments. We repeat this process for $10$ iterations.
+established in Chapter~\ref{sec:algorithm}. Since initial test runs required a high amount
+of seed nodes $S$ in order to get satisfying results, we further enhanced our algorithm by implementing 
+an iterative computation method. After one run of the regular algorithm we try to increase the amount of 
+seed nodes per community. We do so by checking the highest affinity value $a < 1$ per vertex and include 
+it to a set of potential new seed nodes for the respective community. After we established at most 
+$d * \left| S \right|$ new seed nodes per community, we rerun the algorithm. The parameter $d$ sets 
+the desired enlargement of $S$ and was set to $0.1$ in our experiments. We repeat this process for 
+$10$ iterations.
 
 \paragraph{Classification.}
 The algorithm outputs affinity values for every vertex community combination. 

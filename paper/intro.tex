@@ -88,13 +88,12 @@ does not need any major changes and we view this is as an aesthetically pleasing
 feature of our approach. 
 
 Thirdly, in many other approaches, the worst-case running time of the algorithms 
-is neither stated nor analyzed. We show that our algorithm runs in time $O(k m \log n)$, 
+is neither stated nor analyzed. We show that our algorithm runs in time $O(k \cdot m \cdot \log n)$, 
 where $k$ is the number of communities to be discovered (which is supplied by the user), 
 $n$ and $m$ are the number of nodes and edges in the network. In the case of sparse graphs 
-and a constant number of communities, the running time is $O(n \log n)$. Given that even 
+and a constant number of communities, the running time is $O(n \cdot \log n)$. Given that even 
 an $O(n^2)$ time algorithm is too computationally expensive on many real world graphs, 
-a nearly linear time algorithm often is the only feasible solution.
-\texttt{jan: do we just skip the fact, that k may be linear in n, which puts our algorithm in the $O(n^2)$ liege?}
+a nearly linear time algorithm often is the only feasible solution.   
 
 Finally, we provide an extensive experimental evaluation of our algorithm on the LFR benchmark
 introduced by Lancichinetti, Fortunato and Radicchi in~\cite{LFR08, LF09}. In order to ensure 
