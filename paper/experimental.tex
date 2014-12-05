@@ -58,7 +58,7 @@ to the seed node set in the next round. This process is then iterated so that at
 round the algorithm collects a larger set of seed nodes per community. We tested this approach with 
 2, 4, 6, 8, and 10$\%$ seed nodes and fixed the number of iterations to 10. 
 
-\paragraph{Deciphering community structure from node affinities.}
+\paragraph{Classification into communities.}
 The algorithm outputs the affinity vectors of all non-seed nodes. The procedure 
 used to classify nodes into communitites consists of identifing for each non-seed 
 node the community for which it has the highest affinity, with ties broken arbitrarily. 
@@ -81,14 +81,21 @@ The plots in this case compared the algorithm output as against the ground truth
 the NMI) for varying fractions of overlapping nodes. 
 
 \paragraph{Seed Generation.}
-Once we obtain the ground truth we have to decide on a reasonable seed node 
-picking strategy. Since our premise is that seed nodes are typically well known vertices 
-who have a lot of neighbors i.e. are structurally important, we choose to pick a fixed 
-percentage of nodes per community, whose probability to be picked is proportional to their degree. 
-This means nodes with high degree are more likely to be picked than others. In our experiments, 
-we first decided to pick $5$, $10$, $15$ and $20$ percent as seed nodes. As this numbers were 
-already quite high, we decided to improve this method so that we could use smaller values. 
-For our improved (iterative) method we chose $2$, $4$, $6$, $8$ and $10$ percent seed nodes.
+As in the case for non-overlapping communities, we experimented with a non-iterative 
+and an iterative version of our approach. For the non-iterative version, the percentage 
+of seed nodes that we picked were 5, 10, 15 and 20$\%$ per community, with the probability
+of picking a node being proportional to its degree. For the iterative version, we used 
+2, 4, 6, 8 and 10$\%$ seed nodes per community. 
+
+\paragraph{Classification into communitites.} For the overlapping case, we simply 
+cannot use a naive strategy of classifying a node to the community for which it has 
+the highest affinity. A node can potentially belong to multiple communities and yet 
+the affinitites to these communities, as output by our algorithm, can vary quite a lot. 
+This variation occurs partly due to the manner in which seed nodes are chosen. A node $u$ might 
+belong to two communities $A$ and $B$, but the seed nodes of $A$ might lie closer to $u$ than the 
+seed nodes of $B$. This would skew the affinity of $u$ in $A$'s favor. \texttt{What are the other reasons 
+as to why affinities vary??}
+
 
 \paragraph{Random Walk.}
 The coded algorithm itself is a realization of the theoretical formulations we 
