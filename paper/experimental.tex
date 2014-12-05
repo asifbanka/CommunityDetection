@@ -157,6 +157,15 @@ two \emph{partitions} and hence cannot be used for overlapping community detecti
 Lancichinetti, Fortunato, and Kert\'{e}sz~\cite{LFK09} proposed a definition of the measure for 
 evaluating the similarity of covers, where a \emph{cover} of the node set of a graph 
 is a collection of node subsets such that every node of the graph is in at least one set. 
+Their definition of normalized mutual information is:
+\begin{equation} \label{eqn:nmi_LFK}
+\NMI_{\mathrm{LFK}} := 1 - \frac{1}{2} 
+		\left ( \frac{H(\mathcal{A} | \mathcal{B})}{H(\mathcal{A})} + \frac{H(\mathcal{B}
+				| \mathcal{A})}{H(\mathcal{B})}\right ).
+\end{equation}
 This definition is not exactly an extension of normalized mutual information in that the values
 obtained by evaluating it on two partitions is different from what is given by normalized mutual 
 information evaluated on the same pair of partitions.
+
+\texttt{Extension by McDaid et al. Should point out the criticism of using the LFK NMI measure 
+to evaluate overlapping community structure.}
