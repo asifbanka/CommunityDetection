@@ -26,7 +26,7 @@ The networks we test have either 1000 nodes or 5000 nodes. The average node degr
 was set at 20 and the maximum node degree set at 50. The parameter controlling the 
 distribution of node degrees was set at~2 and that for the community size distribution was 
 set at~1. Moreover, we distinguished between big and small communities: small communities have 
-10-50 nodes and large communities have 20-100 nodes. An important parameter 
+10--50 nodes and large communities have 20--100 nodes. An important parameter 
 for the LFR benchmark is the mixing parameter which is the fraction of neighbors 
 of a node that do not belong to any community that the node belongs in, averaged over all nodes.
 For each of the four combinations of network and community size, we generated graphs with the 
@@ -52,17 +52,33 @@ In our experiments, we first selected four values for the percentage of seed nod
 per community: 5, 10, 15, and 20$\%$. While this gave us decent results, we modified our 
 approach slightly so that the algorithm can work with a much smaller set of seed nodes. 
 The modified algorithm starts out with an initial set of seed nodes and identifies 
-communities but, in particular, it also identifies those non-seed nodes that have the 
+communities but, in addition, also identifies those non-seed nodes that have the 
 greatest affinity to their respective communitites. These non-seed nodes are then promoted 
 to the seed node set in the next round. This process is then iterated so that at the end of each 
 round the algorithm collects a larger set of seed nodes per community. We tested this approach with 
-2, 4, 6, 8, and 10~$\%$ seed nodes and 
+2, 4, 6, 8, and 10$\%$ seed nodes and fixed the number of iterations to 10. 
 
+\paragraph{Deciphering community structure from node affinities.}
+The algorithm outputs the affinity vectors of all non-seed nodes. The procedure 
+used to classify nodes into communitites consists of identifing for each non-seed 
+node the community for which it has the highest affinity, with ties broken arbitrarily. 
+For each round of the modified iterated algorithm, we simply identify all those nodes 
+whose highest affinity exceeds a given threshold. \texttt{Correct???} These nodes are then 
+promoted into the seed node set for the next round. The number of rounds can be specified by 
+the user and in the final round, we simply classify the remaining non-seed nodes into the community
+for which they have maximum affinity. \texttt{Looks like this can be stated more simply.}
 
-For the overlapping networks, we do not vary the mixing factor $\mu$ but the fraction of nodes 
-that lie in more than one community and fix the mixing parameter to either $0.1$ or $0.3$. 
-The parameters are set the same way as in the non--overlapping case.
-
+\subsection{Overlapping Communities.}
+\texttt{Please verify whether the parameter values mentioned are correct!!!!}
+The LFR benchmark suite can generate networks with an overlapping community structure. 
+In addition to the parameters mentioned for the non-overlapping case, there is an additional 
+parameter that controls what fraction of nodes of the network are in multiple communities. 
+As in the non-overlapping case, we generated graphs with 1000 and 5000 nodes with the average
+node degree set at 20 and maximum node degree set at 50. We generated graphs with two types 
+of community sizes: small communitites with 10--50 nodes and large communities with 20--100 nodes.
+Moreover, as in~\cite{LF09}, we chose two values for the maxing factor: $0.1$ and $0.3$. 
+The plots in this case compared the algorithm output as against the ground truth (measure by 
+the NMI) for varying fractions of overlapping nodes. 
 
 \paragraph{Seed Generation.}
 Once we obtain the ground truth we have to decide on a reasonable seed node 
@@ -88,10 +104,24 @@ $10$ iterations.
 \paragraph{Classification.}
 The algorithm outputs affinity values for every vertex community combination. 
 these values range between zero and one and are the sole factor whether we 
-assign a vertex to a community or not. At this point the strategy for community classification is different depending on whether we deal with overlapping communities or not. In the latter case we know that a vertex is assigned to exactly one community. thus, we assign the community for which the respective vertex has the highest respective affinity value. 
+assign a vertex to a community or not. At this point the strategy for community classification is 
+different depending on whether we deal with overlapping communities or not. In the latter case we 
+know that a vertex is assigned to exactly one community. thus, we assign the community for which 
+the respective vertex has the highest respective affinity value. 
 
-In the overlapping case we apply a slightly more sophisticated strategy, since a vertex is maybe assigned to not just one but potentially all communities. First, we assume that there are one or more ``high'' affinity values which would correspond to the 
-case that a vertex is in favor to be assigned to a community. On the other hand, there are one or more ``low'' values in the other case. However, we can not make any more qualified statements about the actual values of the affinities, since these numbers differ greatly depending on the structure of the graph and on the amount of communities a vertex belongs to. Therefore, we can only assume that there is some difference in high and low values. For this reason, we first sort the affinities in descending order. then we compare all subsequent pairs by computing the difference. Then we define the point where we found the largest difference as our border between low and high affinity values. Any associated community left of this border is assigned to the respective vertex, whereas any affinity value on the right hand side is considered as a low value and thus the respective community is not assigned.
+In the overlapping case we apply a slightly more sophisticated strategy, since a vertex is maybe 
+assigned to not just one but potentially all communities. First, we assume that there are one 
+or more ``high'' affinity values which would correspond to the 
+case that a vertex is in favor to be assigned to a community. On the other hand, there are one or 
+more ``low'' values in the other case. However, we can not make any more qualified statements 
+about the actual values of the affinities, since these numbers differ greatly depending on the 
+structure of the graph and on the amount of communities a vertex belongs to. Therefore, we can 
+only assume that there is some difference in high and low values. For this reason, we first 
+sort the affinities in descending order. then we compare all subsequent pairs by computing 
+the difference. Then we define the point where we found the largest difference as our border 
+between low and high affinity values. Any associated community left of this border is 
+assigned to the respective vertex, whereas any affinity value on the right hand side is considered 
+as a low value and thus the respective community is not assigned.
 
 \paragraph{NMI.}
 After we have assigned the communities to our vertices we now want to measure 
