@@ -3,8 +3,8 @@ respective parts differ slightly depending on the case whether we test overlappi
 communities. First, we use the benchmark graph generator developed by Lacichinetti and Fortunato 
 (LFR)~\cite{LFR08, LF09} which outputs graphs where the community information of each node 
 is known. Then from each community in our input graph, we pick a fixed number of seed nodes, 
-calculate their affinitites and feed it to our algorithm. Once the algorithm outputs the 
-affinities, we classify the nodes into communitites and finally compare the output 
+calculate their affinities and feed it to our algorithm. Once the algorithm outputs the 
+affinities, we classify the nodes into communities and finally compare the output 
 with the ground truth using normalized mutual information (NMI) as a metric~\cite{DDDA05}.
 
 
@@ -53,14 +53,14 @@ per community: 5, 10, 15, and 20$\%$. While this gave us decent results, we modi
 approach slightly so that the algorithm can work with a much smaller set of seed nodes. 
 The modified algorithm starts out with an initial set of seed nodes and identifies 
 communities but, in addition, also identifies those non-seed nodes that have the 
-greatest affinity to their respective communitites. These non-seed nodes are then promoted 
+greatest affinity to their respective communities. These non-seed nodes are then promoted 
 to the seed node set in the next round. This process is then iterated so that at the end of each 
 round the algorithm collects a larger set of seed nodes per community. We tested this approach with 
 2, 4, 6, 8, and 10$\%$ seed nodes and fixed the number of iterations to 10. 
 
 \paragraph{Classification into communities.}
 The algorithm outputs the affinity vectors of all non-seed nodes. The procedure 
-used to classify nodes into communitites consists of identifing for each non-seed 
+used to classify nodes into communities consists of identifying for each non-seed 
 node the community for which it has the highest affinity, with ties broken arbitrarily. 
 For each round of the modified iterated algorithm, we simply identify all those nodes 
 whose highest affinity exceeds a given threshold. \texttt{Correct???} These nodes are then 
@@ -75,7 +75,7 @@ In addition to the parameters mentioned for the non-overlapping case, there is a
 parameter that controls what fraction of nodes of the network are in multiple communities. 
 As in the non-overlapping case, we generated graphs with 1000 and 5000 nodes with the average
 node degree set at 20 and maximum node degree set at 50. We generated graphs with two types 
-of community sizes: small communitites with 10--50 nodes and large communities with 20--100 nodes.
+of community sizes: small communities with 10--50 nodes and large communities with 20--100 nodes.
 Moreover, as in~\cite{LF09}, we chose two values for the maxing factor: $0.1$ and $0.3$. 
 The plots in this case compared the algorithm output as against the ground truth (measure by 
 the NMI) for varying fractions of overlapping nodes. 
@@ -87,10 +87,10 @@ of seed nodes that we picked were 5, 10, 15 and 20$\%$ per community, with the p
 of picking a node being proportional to its degree. For the iterative version, we used 
 2, 4, 6, 8 and 10$\%$ seed nodes per community. 
 
-\paragraph{Classification into communitites.} For the overlapping case, we simply 
+\paragraph{Classification into communities.} For the overlapping case, we simply 
 cannot use a naive strategy of classifying a node to the community for which it has 
 the highest affinity. A node can potentially belong to multiple communities and yet 
-the affinitites to these communities, as output by our algorithm, can vary quite a lot. 
+the affinities to these communities, as output by our algorithm, can vary quite a lot. 
 This variation occurs partly due to the manner in which seed nodes are chosen. A node $u$ might 
 belong to two communities $A$ and $B$, but the seed nodes of $A$ might lie closer to $u$ than the 
 seed nodes of $B$. This would skew the affinity of $u$ in $A$'s favor. \texttt{What are the other reasons 
@@ -98,21 +98,16 @@ as to why affinities vary??}
 
 We could have chosen a threshold value and placed a node to all those communities for which 
 it has an affinity that exceeds that threshold. We suspect that there is no one threshold 
-which we can use and this would necessiate choosing different ``magic numbers'' for every network 
+which we can use and this would necessitate choosing different ``magic numbers'' for every network 
 that we experiment on. The affinity vector for a node calculated by the 
 algorithm might assign varying affinities for each of the communities that it belongs to, but we expect 
 that the algorithm assigns very low affinities to the communities that the node does \emph{not} belong to. 
-This suggests the following srategy. Sort the affinities of a node in non-increasing order and let this 
+This suggests the following strategy. Sort the affinities of a node in non-increasing order and let this 
 sequence be $a_1, \ldots, a_k$. Calculate the differences $\Delta_{1} := a_1 - a_2, \ldots, 
 \Delta_{k-1} := a_{k - 1} - a_k$ and let $i$ be the smallest index for which the difference $\Delta_i$ is 
 a maximum. We then associate the node with the communities to which it the affinities $a_1, \ldots, a_i$. 
 The intuition is that, while the node can have a varying affinity to the communities it belongs to, 
-there is a likely to be a sharp decrease in affinitites for the communitites that the node does 
-not belong in. This is what is captured by the computing the difference in affinitites.
+there is a likely to be a sharp decrease in affinities for the communities that the node does 
+not belong in. This is what is captured by the computing the difference in affinities.
 
 \paragraph{Normalized Mutual Information.}
-After we have assigned the communities to our vertices we now want to measure 
-the quality of our predictions. As Lacichinetti and Fortunato 
-suggest~\cite{LF09} we determine the NMI values of the predicted community 
-assignment and the ground truth. The NMI determines how similar the 
-information in bits is. \texttt{This section could have a little more text, as to what NMI is}
