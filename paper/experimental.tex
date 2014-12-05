@@ -104,10 +104,59 @@ algorithm might assign varying affinities for each of the communities that it be
 that the algorithm assigns very low affinities to the communities that the node does \emph{not} belong to. 
 This suggests the following strategy. Sort the affinities of a node in non-increasing order and let this 
 sequence be $a_1, \ldots, a_k$. Calculate the differences $\Delta_{1} := a_1 - a_2, \ldots, 
-\Delta_{k-1} := a_{k - 1} - a_k$ and let $i$ be the smallest index for which the difference $\Delta_i$ is 
-a maximum. We then associate the node with the communities to which it the affinities $a_1, \ldots, a_i$. 
+\Delta_{k-1} := a_{k - 1} - a_k$; let $\Delta_{\mathrm{max}}$ denote the maximum difference 
+and let $i$ be the smallest index for which $\Delta_i = \Delta_{\mathrm{max}}$. We then associate 
+the node with the communities to which it has the affinities $a_1, \ldots, a_i$. 
 The intuition is that, while the node can have a varying affinity to the communities it belongs to, 
 there is a likely to be a sharp decrease in affinities for the communities that the node does 
-not belong in. This is what is captured by the computing the difference in affinities.
+not belong in. This is what is captured by the computing the difference in affinities and then finding 
+out the first large decrease in affinities.
 
 \paragraph{Normalized Mutual Information.}
+This is an information-theoretic measure that allows us the 
+compare the ``distance'' between two partitions of a finite set. Let $V$ be a finite set 
+with $n$ elements and let $\mathcal{A}$ and $\mathcal{B}$ be two partitions of $V$. The probability that an 
+element chosen uniformly at random belongs to a partite set $A \in \mathcal{A}$ is $n_A/n$, where $n_A$ 
+is the number of elements in $A$. The Shannon entropy of the partition $\mathcal{A}$ 
+is defined as:
+\begin{equation}\label{eqn:shannon_entropy}
+H(\mathcal{A}) = - \sum_{A \in \mathcal{A}} \frac{n_A}{n} \log_2 \frac{n_A}{n}.
+\end{equation}
+
+The mutual information of two random variables is a measure of their mutual dependence. For random 
+variables $X$ and $Y$ with probability mass functions $p(x)$ and $p(y)$, respectively, and 
+with a joint probability mass function $p(x, y)$, the \emph{mutual information $I(X, Y)$} 
+is defined as:
+\begin{equation}\label{eqn:mutual_information_rv}
+I(X, Y) = \sum_{x \Omega(X)} \sum_{y \in \Omega(Y)} p(x, y) \log \frac{p(x, y)}{p(x) p(y)},
+\end{equation}
+where $\Omega(X)$ is the event space of the random variable $X$.
+The mutual information of two partitions $\mathcal{A}$ and $\mathcal{B}$ 
+of the node set of a graph is calculated by using the so-called ``confusion matrix'' 
+$\mat{N}$ whose rows correspond to ``real'' communities and whose columns correspond 
+to ``found'' communities. The entry $\mat{N}(A, B)$ is the number of nodes of community 
+$A$ in partition $\mathcal{A}$ that are classified into community $B$ in partition $\mathcal{B}$. 
+The mutual information is defined as:
+\begin{equation}\label{eqn:mutual_information_graphs}
+I(\mathcal{A}, \mathcal{B}) = 
+	\sum_{A \in \mathcal{A}} \sum_{B \in \mathcal{B}} \frac{n_{A, B}}{n} 
+		\log \frac{n_{A, B} / n}{ (n_A / n) \cdot (n_B / n) }.  
+\end{equation}
+
+Danon \etal~\cite{DDDA05} suggested to use a normalized variant of this measure. The 
+normalized mutual information $I_N(\mathcal{A}, \mathcal{B})$ between partitions 
+$\mathcal{A}$ and $\mathcal{B}$ is defined as:
+\begin{equation} \label{eqn:normalized_mutual_information}
+I_N(\mathcal{A}, \mathcal{B}) =  \frac{2 I(\mathcal{A}, \mathcal{B})}{H(\mathcal{A}) + H(\mathcal{B})}.
+\end{equation}
+The normalized mutual information takes the value~1 when both partitions are identical. If both partitions 
+are independent of each other, then $I_N(\mathcal{A}, \mathcal{B}) = 0$. 
+
+The classical notion of normalized mutual information measures the distance  between 
+two \emph{partitions} and hence cannot be used for overlapping community detection. 
+Lancichinetti, Fortunato, and Kert\'{e}sz~\cite{LFK09} proposed a definition of the measure for 
+evaluating the similarity of covers, where a \emph{cover} of the node set of a graph 
+is a collection of node subsets such that every node of the graph is in at least one set. 
+This definition is not exactly an extension of normalized mutual information in that the values
+obtained by evaluating it on two partitions is different from what is given by normalized mutual 
+information evaluated on the same pair of partitions.
