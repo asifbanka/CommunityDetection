@@ -96,41 +96,21 @@ belong to two communities $A$ and $B$, but the seed nodes of $A$ might lie close
 seed nodes of $B$. This would skew the affinity of $u$ in $A$'s favor. \texttt{What are the other reasons 
 as to why affinities vary??}
 
+We could have chosen a threshold value and placed a node to all those communities for which 
+it has an affinity that exceeds that threshold. We suspect that there is no one threshold 
+which we can use and this would necessiate choosing different ``magic numbers'' for every network 
+that we experiment on. The affinity vector for a node calculated by the 
+algorithm might assign varying affinities for each of the communities that it belongs to, but we expect 
+that the algorithm assigns very low affinities to the communities that the node does \emph{not} belong to. 
+This suggests the following srategy. Sort the affinities of a node in non-increasing order and let this 
+sequence be $a_1, \ldots, a_k$. Calculate the differences $\Delta_{1} := a_1 - a_2, \ldots, 
+\Delta_{k-1} := a_{k - 1} - a_k$ and let $i$ be the smallest index for which the difference $\Delta_i$ is 
+a maximum. We then associate the node with the communities to which it the affinities $a_1, \ldots, a_i$. 
+The intuition is that, while the node can have a varying affinity to the communities it belongs to, 
+there is a likely to be a sharp decrease in affinitites for the communitites that the node does 
+not belong in. This is what is captured by the computing the difference in affinitites.
 
-\paragraph{Random Walk.}
-The coded algorithm itself is a realization of the theoretical formulations we 
-established in Chapter~\ref{sec:algorithm}. Since initial test runs required a high amount
-of seed nodes $S$ in order to get satisfying results, we further enhanced our algorithm by implementing 
-an iterative computation method. After one run of the regular algorithm we try to increase the amount of 
-seed nodes per community. We do so by checking the highest affinity value $a < 1$ per vertex and include 
-it to a set of potential new seed nodes for the respective community. After we established at most 
-$d * \left| S \right|$ new seed nodes per community, we rerun the algorithm. The parameter $d$ sets 
-the desired enlargement of $S$ and was set to $0.1$ in our experiments. We repeat this process for 
-$10$ iterations.
-
-\paragraph{Classification.}
-The algorithm outputs affinity values for every vertex community combination. 
-these values range between zero and one and are the sole factor whether we 
-assign a vertex to a community or not. At this point the strategy for community classification is 
-different depending on whether we deal with overlapping communities or not. In the latter case we 
-know that a vertex is assigned to exactly one community. thus, we assign the community for which 
-the respective vertex has the highest respective affinity value. 
-
-In the overlapping case we apply a slightly more sophisticated strategy, since a vertex is maybe 
-assigned to not just one but potentially all communities. First, we assume that there are one 
-or more ``high'' affinity values which would correspond to the 
-case that a vertex is in favor to be assigned to a community. On the other hand, there are one or 
-more ``low'' values in the other case. However, we can not make any more qualified statements 
-about the actual values of the affinities, since these numbers differ greatly depending on the 
-structure of the graph and on the amount of communities a vertex belongs to. Therefore, we can 
-only assume that there is some difference in high and low values. For this reason, we first 
-sort the affinities in descending order. then we compare all subsequent pairs by computing 
-the difference. Then we define the point where we found the largest difference as our border 
-between low and high affinity values. Any associated community left of this border is 
-assigned to the respective vertex, whereas any affinity value on the right hand side is considered 
-as a low value and thus the respective community is not assigned.
-
-\paragraph{NMI.}
+\paragraph{Normalized Mutual Information.}
 After we have assigned the communities to our vertices we now want to measure 
 the quality of our predictions. As Lacichinetti and Fortunato 
 suggest~\cite{LF09} we determine the NMI values of the predicted community 
