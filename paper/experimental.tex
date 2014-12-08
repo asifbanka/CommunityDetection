@@ -1,12 +1,13 @@
 Our experimental setup can be roughly divided into five parts (see Figure~\ref{fig:pipeline}) but the 
-respective parts differ slightly depending on the case whether we test overlapping or non-overlapping 
+respective parts differ slightly depending on whether we test overlapping or non-overlapping 
 communities. First, we use the benchmark graph generator developed by Lacichinetti and Fortunato 
-(LFR)~\cite{LFR08, LF09} which outputs graphs where the community information of each node 
+(LFR)~\cite{LFR08, LF09}, which outputs graphs where the community information of each node 
 is known. Then from each community in our input graph, we pick a fixed number of seed nodes, 
 calculate their affinities and feed it to our algorithm. Once the algorithm outputs the 
 affinities, we classify the nodes into communities and finally compare the output 
 with the ground truth using normalized mutual information (NMI) as a metric~\cite{DDDA05}.
 
+\texttt{General question: should we use present tense or past to describe our setup?}
 
 \paragraph{LFR.}
 The LFR benchmark (designed by Lancichinetti, Fortunato and Radicci~\cite{LFR08}) 
@@ -16,6 +17,8 @@ with the intention to establish a standard benchmark suite for community detecti
 algorithms. Using this benchmark they did a comparative analysis of several well-known algorithms
 for community detection~\cite{LF09}. To the best of our knowledge, this study seems to be the 
 only one where standardized tests were carried out on such a range of community detection algorithms. 
+\texttt{jan: first google result for "comparision overlapping community detection":
+http://arxiv.org/abs/1110.5813 However, they also use LFR.}
 As such, we chose this benchmark for our experiments and set the parameters in the same fashion. 
 
 In what follows, we describe tests for non-overlapping and overlapping communities separately, since 
@@ -28,7 +31,7 @@ distribution of node degrees was set at~2 and that for the community size distri
 set at~1. Moreover, we distinguished between big and small communities: small communities have 
 10--50 nodes and large communities have 20--100 nodes. An important parameter 
 for the LFR benchmark is the mixing parameter which is the fraction of neighbors 
-of a node that do not belong to any community that the node belongs in, averaged over all nodes.
+of a node that do not belong to any community that the node belongs to, averaged over all nodes.
 For each of the four combinations of network and community size, we generated graphs with the 
 above parameters and with varying mixing parameters. For each of these graphs, we tested the 
 community information output by our algorithm and compared it against the ground truth 
@@ -38,35 +41,57 @@ these plots is the average over 100 iterations using the same parameters.
 
 \paragraph{Seed node generation.} 
 To use our algorithm, we expect that users pick seed nodes from 
-every community that they wish to identify in the network. One of our assumptions is that
-the user knows the more important members of each community. To replicate 
-this phenomenon in our experiments, we picked out seed nodes from each community 
-with a probability that is proportional to the degree of the node. That is, nodes
-with a higher degree were picked in preference to those with a lower degree reflecting the 
-fact that ``importance'' in a social network often varies in proportion to the number of 
-connections a person has. We note that the actual manner of picking seed nodes did not 
-affect the results too much. If we picked seed nodes uniformly at random from each community, 
-our results are marginally worse. 
-
-In our experiments, we first selected four values for the percentage of seed nodes 
-per community: 5, 10, 15, and 20$\%$. While this gave us decent results, we modified our 
-approach slightly so that the algorithm can work with a much smaller set of seed nodes. 
-The modified algorithm starts out with an initial set of seed nodes and identifies 
-communities but, in addition, also identifies those non-seed nodes that have the 
-greatest affinity to their respective communities. These non-seed nodes are then promoted 
-to the seed node set in the next round. This process is then iterated so that at the end of each 
-round the algorithm collects a larger set of seed nodes per community. We tested this approach with 
-2, 4, 6, 8, and 10$\%$ seed nodes and fixed the number of iterations to 10. 
+every community that they wish to identify in the network. 
+We simulate this by picking a fixed fraction of nodes from each community as seed nodes.
+One of our assumptions is that the user knows the more important members of each community. 
+To replicate this phenomenon in our experiments, we picked a node as seed node
+with a probability that is proportional to the degree of the node.
+That is, nodes with a higher degree were picked in preference to those with a lower degree.
+For those nodes which were picked as seed nodes we set the affinity to a community to 1 iff
+the node belongs to this community, otherwise 0.
+%We note that the actual manner of picking seed nodes did not 
+%affect the results too much. 
+%If we picked seed nodes uniformly at random from each community, our results are marginally worse.
 
 \paragraph{Classification into communities.}
-The algorithm outputs the affinity vectors of all non-seed nodes. The procedure 
-used to classify nodes into communities consists of identifying for each non-seed 
-node the community for which it has the highest affinity, with ties broken arbitrarily. 
-For each round of the modified iterated algorithm, we simply identify all those nodes 
-whose highest affinity exceeds a given threshold. \texttt{Correct???} These nodes are then 
-promoted into the seed node set for the next round. The number of rounds can be specified by 
-the user and in the final round, we simply classify the remaining non-seed nodes into the community
-for which they have maximum affinity. \texttt{Looks like this can be stated more simply.}
+Next, the algorithm is run on the network together with the affinity information of the seed nodes.
+Afterwards, we need to assign the nodes into communities, 
+based on the affinity vectors the algorithm assigned to each node.
+When detecting non-overlapping communities, we know that each vetex is in exactly one community,
+thus we assign each node to the community to which it has the highest affinity.
+
+\paragraph{Iteration.}
+We extended the algorithm to iteratively improve the goodness of the community detection.
+The idea is, that after running the algorithm once, there are
+certain nodes, for which we are quite certain which community they belong to.
+We add these nodes to the seed node set of the respective community
+and perform another round of community detection.
+To be precise, in the $k\th$ round, let $C^k_i$ be the set of nodes which were classified to be in community $i$ and $S^k_i$ be the seed nodes of community $i$.
+While $| S^{k+1}_i | \le f \cdot | S^{k}_i |$, we add those nodes from $C^k_i$ to $S^{k+1}_i$ which have the hightest affinity to this community.
+The factor $f$ declares be how much the set of seed nodes is allowed to grow in each iteration. 
+Chosing $f$ to be 1.1 gives good results.
+Repeating this procedure a couple times significantly improves the community detection.
+
+
+%In our experiments, we first selected four values for the percentage of seed nodes 
+%per community: 5, 10, 15, and 20$\%$. While this gave us decent results, we modified our 
+%approach slightly so that the algorithm can work with a much smaller set of seed nodes. 
+%The modified algorithm starts out with an initial set of seed nodes and identifies 
+%communities but, in addition, also identifies those non-seed nodes that have the 
+%greatest affinity to their respective communities. These non-seed nodes are then promoted 
+%to the seed node set in the next round. This process is then iterated so that at the end of each 
+%round the algorithm collects a larger set of seed nodes per community. We tested this approach with 
+%2, 4, 6, 8, and 10$\%$ seed nodes and fixed the number of iterations to 10. 
+
+%\paragraph{Classification into communities.}
+%The algorithm outputs the affinity vectors of all non-seed nodes. The procedure 
+%used to classify nodes into communities consists of identifying for each non-seed 
+%node the community for which it has the highest affinity, with ties broken arbitrarily. 
+%For each round of the modified iterated algorithm, we simply identify all those nodes 
+%whose highest affinity exceeds a given threshold. \texttt{Correct???} These nodes are then 
+%promoted into the seed node set for the next round. The number of rounds can be specified by 
+%the user and in the final round, we simply classify the remaining non-seed nodes into the community
+%for which they have maximum affinity. \texttt{Looks like this can be stated more simply.}
 
 \subsection{Overlapping Communities.}
 \texttt{Please verify whether the parameter values mentioned are correct!!!!}
