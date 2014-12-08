@@ -1,0 +1,24 @@
+Our algorithm seems to work very well with around 6$\%$ seed nodes for the 
+non-overlapping case and around 8$\%$ seed nodes for the overlapping case. 
+For the non-overlapping case, we can work with a mixing factor of up 
+to~$0.5$, whereas in the overlapping case a mixing factor of $0.3$ 
+and with the overlapping fraction of around $30\%$. This of course 
+suggests that our algorithm has a higher tolerance while detecting 
+non-overlapping communities and needs either a ``well-structured''
+network or a high seed node percentage for overlapping communities. 
+None of this is really surprising. What is mildly surprising is that such 
+a simple algorithm manages to do so well at all.
+
+We wish to point out that while the running time of our algorithm is 
+$O(k \cdot m \cdot \log n)$, we do not know of any commercial solvers 
+for SDD systems that run in $O(m \log n)$ time. Since we use the Cholesky 
+factorization method from the C++ Eigen Library, it is unlikely that our 
+implementation would be able to handle very large networks. This is 
+not a serious disadvantage since we expect that in the near future 
+we would have commercial SDD solvers implementing the Speilman-Teng 
+algorithm. 
+
+An obvious question is whether it is possible to avoid the semi-supervised 
+step completely, that is, avoid having the user to specify seed nodes 
+for every community. 
+
