@@ -5,39 +5,51 @@ the ones for the overlapping case.
 Figures~\ref{fig:no_iter_no_overlap}, \ref{fig:iter_no_overlap}, and~\ref{fig:compare_iter_no_overlap}
 show the plots that we obtained for non-overlapping communities. Figure~\ref{fig:no_iter_no_overlap}
 shows tests for the non-iterative method of our algorithm with 5, 10, 15, and 20$\%$ seed nodes per 
-community. The first observation here is that with 5$\%$ seed nodes will probably not give good results.  
-With a seed node percentage of 10$\%$ or more and a mixing factor of at most~$0.4$, we can compete 
-with \textit{Infomap}, which was deemed to be one the best performing algorithms on the 
-LFR benchmark~\cite{LF09}. The NMI in this case is $0.9$ or above \texttt{Check!}. 
-Above a mixing factor of $0.4$, our algorithm has a worse performance than \textit{Infomod}. 
+community. The first observation here is that anything less than 10$\%$ seed nodes per community 
+will probably not give good results. With a seed node percentage of 10$\%$ or more and 
+a mixing factor of at most~$0.4$ we acheive an NMI above $0.9$ and can compete with \textit{Infomap}, 
+which was deemed to be one the best performing algorithms on the LFR benchmark~\cite{LF09}. 
+Above a mixing factor of $0.4$, our algorithm has a worse performance than \textit{Infomap} 
+which, curiously enough, achieves an NMI of around 1 till a mixing factor of around 
+$0.6$ after which its performance drops steeply. The drop in the pereformance of our algorithm 
+begins earlier but is not as steep.\texttt{having a comparative plot for Infomap would be nice at this point.}
 
-\texttt{Is this really required? Without a graphic about Infomod, this doesn't make much sense.}
-Curiously enough, \textit{Infomod} achieves an NMI of around 1 till a mixing factor of around 
-$0.6$ but then its performance drops steeply. Our drop begins more early but is not 
-as steep.\texttt{having a comparative plot for Infomod would be nice at this point.}
+Figure~\ref{fig:iter_no_overlap} shows the results for the iterative approach of 
+our algorithm in the non-overlapping case. When compared with the non-iterative approach, 
+one can see that even after ten iterations there is a significant improvement in 
+performance (See Figure~\ref{fig:compare_iter_no_overlap}). As can be seen, typically 
+with 6$\%$ seed nodes per community we obtain acceptable performance (an NMI value of 
+over $0.9$ with the mixing factor of up to $0.5$).  
 
-In Figure~\ref{fig:iter_no_overlap} we show benchmarks for the iterative approach of 
-our algorithm. When compared with the non-iterative results, we can see that after 
-ten iterations we already get a huge improvement (See Figure~\ref{fig:compare_iter_no_overlap}). 
-We can cut the amount of seed nodes in half and still get better results, if we use 
-the iterative method. By using the same number of seed nodes we can get NMI 
-improvements as high as $60$ percent.\\ \\ In Figure~\ref{fig:no_iter_overlap_1000N} 
-and~\ref{fig:no_iter_overlap_5000N} we show our benchmark results for the overlapping 
-case. In~\cite{LF09} only one algorithm was able to detect overlapping communities, 
-and for that reason we only compare our results wit \textit{CFinder}~\cite{PDFV05}. 
-The main thing that can be noticed is, that we perform a lot better on LFR graphs for 
-a mixing factor of $0.3$. In the most extreme case of $1000$ nodes, big communities 
-and a mixing factor of $0.3$ the \textit{CFinder} algorithm has $60$ percent NMI as 
-its best result at zero percent overlapping nodes, and goes only down if one increases 
-the fraction of overlapping nodes, whereas our algorithm starts at $80$ percent NMI 
-even for $5$ percent seed nodes. If we use at least $10$ percent we can go up to 
-an overlap of $0.3$ before we reach $60$ percent NMI.
+\subsection{Overlapping communities}
+Figures~\ref{fig:no_iter_overlap_1000N} and~\ref{fig:no_iter_overlap_5000N} 
+show our results for the overlapping case. In the study of Lacichinetti and Fortunato~\cite{LF09}, 
+only one algorithm (\emph{Cfinder}~\cite{PDFV05}) for overlapping communities was benchmarked. 
+The main difference with the non-overlapping case is that typically our algorithm needs a larger 
+seed node percentage per community. This is not surprising since in the overlapping case, we would 
+need seed nodes from the various overlaps as well as from the non-overlapping portions of communities 
+to make a good-enough calculation of the affinities. 
 
-For $5000$ nodes the results are similar but not as extreme. In conclusion we can 
-say that our algorithm seems to perform better on LFR graphs and offers a better runtime 
-compared to that of the exponential worst-case runtime of \textit{CFinder}.
+For graphs of both 1000 and 5000 nodes, our algorithm performs better 
+than Cfinder upto an overlapping fraction of $0.4$. We stress that Cfinder 
+has an exponential worst-case running time and would be infeasible on larger graphs. 
+%
+%The best case scenario for Cfinder The important fact is that our algorithm performs 
+%a lot better on LFR benchmark graphs for 
+%a mixing factor of $0.3$. In the most extreme case of $1000$ nodes, big communities 
+%and a mixing factor of $0.3$ the \textit{CFinder} algorithm has $60$ percent NMI as 
+%its best result at zero percent overlapping nodes, and goes only down if one increases 
+%the fraction of overlapping nodes, whereas our algorithm starts at $80$ percent NMI 
+%even for $5$ percent seed nodes. If we use at least $10$ percent we can go up to 
+%an overlap of $0.3$ before we reach $60$ percent NMI.
+%
+%For $5000$ nodes the results are similar but not as extreme. In conclusion we can 
+%say that our algorithm seems to perform better on LFR graphs and offers a better runtime 
+%compared to that of the exponential worst-case runtime of \textit{CFinder}.
 
-In Figure~\ref{fig:iter_overlap_1000N} and~\ref{fig:iter_overlap_5000N} we 
-have provided plots for the iterative method and a improvement plot 
-in~\ref{fig:compare_iter_overlap}. Iteration yields an improvement, 
-but it is not as drastic as in the non overlapping case, around $10$ percent at best.
+Figures~\ref{fig:iter_overlap_1000N} and~\ref{fig:iter_overlap_5000N} show the 
+plots for the iterative method. A comparison of the non-iteratve and iterative method 
+is shown in Figure~\ref{fig:compare_iter_overlap}. Iteration yields an improvement in performance,
+as measured by the NMI, but it is not as dramatic as in the non-overlapping case 
+with the NMI increase being at most $10\%$ at best. The percentage of seed nodes per community required in the iterative 
+approach with a mixing factor of $0.3$ is around 8$\%$. 
