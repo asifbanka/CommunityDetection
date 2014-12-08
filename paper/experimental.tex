@@ -73,30 +73,9 @@ We add these nodes to the seed node set of the respective community
 and perform another round of community detection.
 To be precise, in the $k\th$ round, let $C^k_i$ be the set of nodes which were classified to be in community $i$ and $S^k_i$ be the seed nodes of community $i$.
 While $| S^{k+1}_i | \le f \cdot | S^{k}_i |$, we add those nodes from $C^k_i$ to $S^{k+1}_i$ which have the hightest affinity to this community.
-The factor $f$ declares be how much the set of seed nodes is allowed to grow in each iteration. 
+The factor $f$ declares by how much the set of seed nodes is allowed to grow in each iteration. 
 Chosing $f$ to be 1.1 gives good results.
 Repeating this procedure a couple times significantly improves the community detection.
-
-
-%In our experiments, we first selected four values for the percentage of seed nodes 
-%per community: 5, 10, 15, and 20$\%$. While this gave us decent results, we modified our 
-%approach slightly so that the algorithm can work with a much smaller set of seed nodes. 
-%The modified algorithm starts out with an initial set of seed nodes and identifies 
-%communities but, in addition, also identifies those non-seed nodes that have the 
-%greatest affinity to their respective communities. These non-seed nodes are then promoted 
-%to the seed node set in the next round. This process is then iterated so that at the end of each 
-%round the algorithm collects a larger set of seed nodes per community. We tested this approach with 
-%2, 4, 6, 8, and 10$\%$ seed nodes and fixed the number of iterations to 10. 
-
-%\paragraph{Classification into communities.}
-%The algorithm outputs the affinity vectors of all non-seed nodes. The procedure 
-%used to classify nodes into communities consists of identifying for each non-seed 
-%node the community for which it has the highest affinity, with ties broken arbitrarily. 
-%For each round of the modified iterated algorithm, we simply identify all those nodes 
-%whose highest affinity exceeds a given threshold. \texttt{Correct???} These nodes are then 
-%promoted into the seed node set for the next round. The number of rounds can be specified by 
-%the user and in the final round, we simply classify the remaining non-seed nodes into the community
-%for which they have maximum affinity. \texttt{Looks like this can be stated more simply.}
 
 \subsection{Overlapping Communities.}
 \texttt{Please verify whether the parameter values mentioned are correct!!!!}
@@ -117,8 +96,8 @@ of seed nodes that we picked were 5, 10, 15 and 20$\%$ per community, with the p
 of picking a node being proportional to its degree. For the iterative version, we used 
 2, 4, 6, 8 and 10$\%$ seed nodes per community. 
 
-\paragraph{Classification into communities.} For the overlapping case, we simply 
-cannot use a naive strategy of classifying a node to the community for which it has 
+\paragraph{Classification into communities.} For the overlapping case, we cannot
+simply use a naive strategy of classifying a node to the community for which it has 
 the highest affinity. A node can potentially belong to multiple communities and yet 
 the affinities to these communities, as output by our algorithm, can vary quite a lot. 
 This variation occurs partly due to the manner in which seed nodes are chosen. A node $u$ might 
@@ -141,6 +120,17 @@ The intuition is that, while the node can have a varying affinity to the communi
 there is a likely to be a sharp decrease in affinities for the communities that the node does 
 not belong in. This is what is captured by the computing the difference in affinities and then finding 
 out the first large decrease in affinities.
+
+\paragraph{Iteration.}
+The iterative method works slightly diffretent when detecting overlapping communities.
+Like in the non-overlapping case, after $k$ rounds, we increase the seed node set of community $i$ by a factor $f$ 
+by adding those nodes which were classified to be in community $i$ and have the highest affinity to this community.
+Let $v$ be a such a node.
+By using the classifcation strategy which is explained above, $v$ might have been classified to be in multiple other communities $c_1, \dots, c_j$.
+So not only do we set $v$ to be seed node of community $i$, but also of communities $c_1, \dots, c_j$.
+This accounts for the fact that we cannot assign a node to be seed node of one community, but non-seed node of another community.
+By putting a node into the set of seed nodes, we have to fully specify which communities it belongs to and the current classifcation is the best we know.
+
 
 \paragraph{Normalized Mutual Information.}
 This is an information-theoretic measure that allows us the 
