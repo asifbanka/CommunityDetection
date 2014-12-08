@@ -6,12 +6,12 @@ Fortunato~\cite{LF09} on their LFR benchmark graphs.
 \paragraph{The Girvan-Newman algorithm.} 
 One of the very first algorithms for detecting disjoint communities 
 was invented by Girvan and Newman~\cite{GN02, GN04}. Their 
-algorithm starts with a network and iteratively removes edges based 
+algorithm takes a network and iteratively removes edges based 
 on a metric called \emph{edge betweenness}. The betweenness of an 
 edge is defined as the number of shortest paths between vertex pairs 
 that pass through that edge. After an edge is removed, betweenness 
 scores are recalculated and an edge with maximal score is deleted. 
-This procedure ends when the modularity of the resulting partition
+This procedure ends when the \textit{modularity} of the resulting partition
 reaches a maximum. Modularity is a measure that estimates the goodness 
 of a partition by comparing the network with a so-called ``null model''
 in which edges are rewired at random between the nodes of the network 
@@ -60,15 +60,15 @@ community detection algorithms~\cite{LF09}:
 \end{quote}
 
 \paragraph{The CFinder algorithm of Palla \etal} One of the first algorithms that dealt with overlapping 
-communities was proposed by Palla \etal~\cite{PDFV05}. A community, in this case, is defined to be a set of nodes 
+communities was proposed by Palla \etal~\cite{PDFV05}. They define a community to be a set of nodes 
 that are the union of $k$-cliques such that any one clique can be reached from another via a series of 
 adjacent $k$-cliques, where two $k$-cliques are defined to be adjacent if they 
 share $k - 1$ nodes. 
 
 The algorithm first finds out all maximal cliques in the graph, which takes exponential-time
 in the worst case. It then creates a symmetric clique-clique overlap matrix $\mat{C}$ which is a square matrix whose 
-rows and columns are indexed by the set of maximal cliques in the graph and whose $(i, j)\th$ 
-is the number of vertices that are in both the $i\th$ and $j\th$ cliques. This matrix is then modified into 
+rows and columns are indexed by the set of maximal cliques in the graph and whose $(i, j)\th$ entry
+is the number of vertices that are in both the $i\th$ and $j\th$ clique. This matrix is then modified into 
 a binary matrix by replacing all those entries with value less than $k - 1$ by a $0$ and the remaining entries by 
 a $1$. The final step is to find the connected components of the graph represented by this binary symmetric matrix
 which constitute the communities of the original graph. 
@@ -84,12 +84,12 @@ small communities it has a decent performance, but has a worse performance on th
 problem of finding communities from an information-theoretic angle. They transform the problem 
 into one of finding an optimal description of an infinite random walk in the network.  Given a fixed 
 partition $M$ of $n$ nodes into $k$ clusters, Rosvall and Bergman use a two-level code where each 
-cluster is assigned a unique codeword but the codewords assigned to individual nodes within a 
-cluster repeat between clusters. One can now define the average number of bits per step that is 
+cluster is assigned a unique codeword and each node is assigned a codeword which is unique per community.
+One can now define the average number of bits per step that it 
 takes to describe an infinite random walk on the network partitioned according to $M$. The intuition 
 is that a random walker is statistically likely to spend more time within clusters than between clusters
 and therefore the ``best'' partition corresponds to the one which has the shortest possible description.
-The best partition is found out using a combination of a greedy search heuristic followed by simulated 
+An approximation of the best partition is found out using a combination of a greedy search heuristic followed by simulated 
 annealing. Lancichinetti and Fortunato report that this algorithm (dubbed Infomap) was the best-performing 
 among all other community detection algorithms on their benchmark.  
 
