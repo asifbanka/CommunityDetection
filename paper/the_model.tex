@@ -3,11 +3,9 @@ The algorithm receives as input a network and a set of nodes such that there is 
 from each community that we are aiming to discover. These nodes are called \emph{seed nodes} and 
 it is possible that a particular seed node belongs to multiple communities.
 
-We say a node has \emph{high affinity} to a community if it belongs to it 
-and \emph{low affinity} if it does not. \texttt{Where are we using these definitions? 
-if not, I suggest removing them as they do not serve to explain anything.--Somnath} 
-Intermediate affinity values are 
-possible and correspond to a partial belonging. The user specifies the affinities 
+The affinity of a node in the network to a community is 1 if it belongs to it; 
+if it does not belong to it, it has an affinity of 0. We allow intermediate affinity 
+values and view these as specifying a \emph{partial belonging}. The user specifies the affinities 
 of the seed nodes for each of the communities. For all other nodes, called 
 \emph{non-seed nodes}, we want deduce the affinity to each community using 
 the information given by the seed nodes' affinities and the network structure. 
