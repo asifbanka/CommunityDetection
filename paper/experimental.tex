@@ -69,16 +69,19 @@ When detecting non-overlapping communities, we know that each vetex is in exactl
 thus we assign each node to the community to which it has the highest affinity.
 
 \paragraph{Iteration.}
-We extended the algorithm to iteratively improve the goodness of the community detection.
-The idea is, that after running the algorithm once, there are
-certain nodes, for which we are quite certain which community they belong to.
-We add these nodes to the seed node set of the respective community
-and perform another round of community detection.
-To be precise, in the $k\th$ round, let $C^k_i$ be the set of nodes which were classified to be in community $i$ and $S^k_i$ be the seed nodes of community $i$.
-While $| S^{k+1}_i | \le f \cdot | S^{k}_i |$, we add those nodes from $C^k_i$ to $S^{k+1}_i$ which have the hightest affinity to this community.
-The factor $f$ declares by how much the set of seed nodes is allowed to grow in each iteration. 
-Chosing $f$ to be 1.1 gives good results.
-Repeating this procedure a couple times significantly improves the community detection.
+We extended the algorithm to iteratively improve the goodness of the detected communities.
+The idea is, that after running the algorithm once, there are certain nodes which can be classified 
+into their communities with a high degree of certitude. We add these nodes to the seed node 
+set of the respective community and iterate the procedure. To be precise, in the $j\th$ round, 
+let $C^j_A$ be the set of nodes that was classified as community $A$ and $S^j_A$ 
+be the seed nodes of community $A$. We create $S^{j+1}_A$ as follows: For a fixed $\varepsilon > 0$, 
+choose $\varepsilon \cdot |C^j_A|$ nodes of $C^j_A$ that have the highest affinity to community $A$, 
+and add them to $S^j_A$ to obtain $S^{j + 1}_A$. 
+%While $| S^{j+1}_A | \le f \cdot | S^{j}_A |$, we 
+%add those nodes from $C^j_A$ to $S^{j+1}_A$ which have the highest affinity to this community.
+The factor $\varepsilon$ declares by how much the set of seed nodes is allowed to grow in each iteration. 
+Choosing $\varepsilon = 1.1$ gives good results. Repeating this procedure several times significantly 
+improves the quality of the communities detected as measured by the NMI.
 
 \subsection{Overlapping Communities.}
 \texttt{Please verify whether the parameter values mentioned are correct!!!!}
@@ -135,7 +138,7 @@ This accounts for the fact that we cannot assign a node to be seed node of one c
 By putting a node into the set of seed nodes, we have to fully specify which communities it belongs to and the current classifcation is the best we know.
 
 
-\paragraph{Normalized Mutual Information.}
+\subsection{Normalized Mutual Information}
 This is an information-theoretic measure that allows us the 
 compare the ``distance'' between two partitions of a finite set. Let $V$ be a finite set 
 with $n$ elements and let $\mathcal{A}$ and $\mathcal{B}$ be two partitions of $V$. The probability that an 
