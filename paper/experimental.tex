@@ -9,14 +9,20 @@ with the ground truth using normalized mutual information (NMI) as a metric~\cit
 
 
 \paragraph{LFR.}
-The LFR benchmark (designed by Lancichinetti, Fortunato and Radicci~\cite{LFR08}) 
-generates random graphs with community structure that obey a power law 
-distribution in both the node degrees and community sizes. The authors designed it 
-with the intention to establish a standard benchmark suite for community detection 
-algorithms. Using this benchmark they did a comparative analysis of several well-known algorithms
+The LFR benchmark was designed by Lancichinetti, Fortunato and Radicci~\cite{LFR08}
+generates random graphs with community structure. The intention was to establish a 
+standard benchmark suite for community detection algorithms. Using this benchmark they 
+did a comparative analysis of several well-known algorithms
 for community detection~\cite{LF09}. To the best of our knowledge, this study seems to be the 
 only one where standardized tests were carried out on such a range of community detection algorithms. 
 As such, we chose this benchmark for our experiments and set the parameters in the same fashion. 
+
+The node degrees and the community sizes are distributed according to power law, with 
+different exponents. An important parameter for the LFR benchmark is the 
+\emph{mixing parameter~$\mu$} which is the fraction of neighbors 
+of a node that do not belong to any community that the node belongs in, averaged over all nodes.
+In the benchmark graphs, the mixing parameter is set by the user and every node has the same 
+mixing parameter~$\mu$.
 
 In what follows, we describe tests for non-overlapping and overlapping communities separately, since 
 there are several small differences in out setup for these two cases. 
@@ -26,9 +32,7 @@ The networks we test have either 1000 nodes or 5000 nodes. The average node degr
 was set at 20 and the maximum node degree set at 50. The parameter controlling the 
 distribution of node degrees was set at~2 and that for the community size distribution was 
 set at~1. Moreover, we distinguished between big and small communities: small communities have 
-10--50 nodes and large communities have 20--100 nodes. An important parameter 
-for the LFR benchmark is the mixing parameter which is the fraction of neighbors 
-of a node that do not belong to any community that the node belongs in, averaged over all nodes.
+10--50 nodes and large communities have 20--100 nodes. 
 For each of the four combinations of network and community size, we generated graphs with the 
 above parameters and with varying mixing parameters. For each of these graphs, we tested the 
 community information output by our algorithm and compared it against the ground truth 
