@@ -23,5 +23,6 @@ we would have commercial SDD solvers implementing the Speilman-Teng algorithm.
 
 An obvious question is whether it is possible to avoid the semi-supervised 
 step completely, that is, avoid having the user to specify seed nodes 
-for every community. 
-
+for every community. One possibility is the following: the algorithm starts 
+with a certain fraction of the highest degree nodes of the network, implicitly 
+classifying them as seed nodes for individual communities.  
