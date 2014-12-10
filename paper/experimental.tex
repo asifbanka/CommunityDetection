@@ -26,9 +26,10 @@ We briefly describe the major parameters that the user has to supply
 for generating benchmark graphs in the LFR suite. The node degrees and the 
 community sizes are distributed according to power law, with different exponents. 
 An important parameter is the \emph{mixing parameter~$\mu$} which is the fraction of neighbors 
-of a node that do not belong to any community that the node belongs in, averaged over all nodes.
-In the benchmark graphs, the mixing parameter is set by the user and this is the same for each 
-node of the network. The other parameters include maximum node degree, average node degree, 
+of a node that do not belong to any community that the node belongs to, averaged over all nodes.
+%In the benchmark graphs, the mixing parameter is set by the user and this is the same for each 
+%node of the network. 
+The other parameters include maximum node degree, average node degree, 
 minimum and maximum community sizes. For generating networks with overlapping communities, 
 one can specify what fraction of nodes are present in multiple communities.
 
@@ -82,11 +83,10 @@ and add them to $S^j_A$ to obtain $S^{j + 1}_A$.
 %While $| S^{j+1}_A | \le f \cdot | S^{j}_A |$, we 
 %add those nodes from $C^j_A$ to $S^{j+1}_A$ which have the highest affinity to this community.
 The factor $\varepsilon$ declares by how much the set of seed nodes is allowed to grow in each iteration. 
-Choosing $\varepsilon = 1.1$ gives good results. Repeating this procedure several times significantly 
+Choosing $\varepsilon = 0.1$ gives good results. Repeating this procedure several times significantly 
 		improves the quality of the communities detected as measured by the NMI.
 
 \subsection{Overlapping Communities.}
-\texttt{Please verify whether the parameter values mentioned are correct!!!!}
 The LFR benchmark suite can generate networks with an overlapping community structure. 
 In addition to the parameters mentioned for the non-overlapping case, there is an additional 
 parameter that controls what fraction of nodes of the network are in multiple communities. 
@@ -94,8 +94,8 @@ As in the non-overlapping case, we generated graphs with 1000 and 5000 nodes wit
 node degree set at 20 and maximum node degree set at 50. We generated graphs with two types 
 of community sizes: small communities with 10--50 nodes and large communities with 20--100 nodes.
 Moreover, as in~\cite{LF09}, we chose two values for the maxing factor: $0.1$ and $0.3$. 
-The plots in this case compared the algorithm output as against the ground truth (measure by 
-the NMI) for varying fractions of overlapping nodes. 
+In this case, we plot different fraction of overlapping nodes against
+the quality of the algorithm output (measure by the NMI).
 
 \paragraph{Seed Generation.}
 As in the case for non-overlapping communities, we experimented with a non-iterative 
@@ -105,44 +105,33 @@ of picking a node being proportional to its degree. For the iterative version, w
 2, 4, 6, 8 and 10$\%$ seed nodes per community. 
 
 \paragraph{Classification into communities.} For the overlapping case, we cannot
-simply use a naive strategy of classifying a node to the community for which it has 
-the highest affinity. A node can potentially belong to multiple communities and yet 
-the affinities to these communities, as output by our algorithm, can vary quite a lot. 
-This variation occurs partly due to the manner in which seed nodes are chosen. A node $u$ might 
-belong to two communities $A$ and $B$, but the seed nodes of $A$ might lie closer to $u$ than the 
-seed nodes of $B$. This would skew the affinity of $u$ in $A$'s favor. \texttt{What are the other reasons 
-as to why affinities vary??}
-
-We could have chosen a threshold value and placed a node to all those communities for which 
-it has an affinity that exceeds that threshold. We suspect that there is no one threshold 
-which we can use and this would necessitate choosing different ``magic numbers'' for every network 
-that we experiment on. The affinity vector for a node calculated by the 
-algorithm might assign varying affinities for each of the communities that it belongs to, but we expect 
-that the algorithm assigns very low affinities to the communities that the node does \emph{not} belong to. 
-This suggests the following strategy. Sort the affinities of a node in non-increasing order and let this 
-sequence be $a_1, \ldots, a_k$. Calculate the differences $\Delta_{1} := a_1 - a_2, \ldots, 
-\Delta_{k-1} := a_{k - 1} - a_k$; let $\Delta_{\mathrm{max}}$ denote the maximum difference 
+the naive strategy of classifying a node to the community to which it has 
+the highest affinity, since we do not know the number of communities a node belongs to. 
+We need a way to infer this information from a node's affinity vector.
+For each node we expect the algorithm to assign high affinities 
+to the communities it belongs to and lower affinities to the communities it does not belong to. 
+We tried assigning a node to all communities to which it has an affinity that exceeds a certain threshold.
+This, however, did not give pleasing results.
+The following strategy worked better.
+Sort the affinities of a node in descending order and let this 
+sequence be $a_1, \ldots, a_k$. Calculate the differences 
+$\Delta_{1}, \ldots, \Delta_{k-1}$ with $\Delta_{j-1} := a_{j - 1} - a_j$;
+let $\Delta_{\mathrm{max}}$ denote the maximum difference 
 and let $i$ be the smallest index for which $\Delta_i = \Delta_{\mathrm{max}}$. We then associate 
 the node with the communities to which it has the affinities $a_1, \ldots, a_i$. 
 The intuition is that, while the node can have a varying affinity to the communities it belongs to, 
-there is a likely to be a sharp decrease in affinities for the communities that the node does 
-not belong in. This is what is captured by the computing the difference in affinities and then finding 
-out the first large decrease in affinities.
+there is likely to be a sharp decrease in affinities for the communities that the node does 
+not belong to. This is what is captured by computing the difference in affinities and then finding 
+out the first large decrease.
 
 \paragraph{Iteration.}
-For overlapping communities, we use a different strategy for iteratively improving the quality 
+For overlapping communities, we need to extend our strategy for iteratively improving the quality 
 of the communities found. As in the non-overlapping case, after $j$ rounds, we increase the 
 size of the seed node set of community~$A$ by a factor~$\varepsilon$ by adding those nodes 
 which were classified to be in community~$A$ and have the highest affinity to this community. 
 Let $v$ be a such a node. The classification strategy explained above might have classified~$v$ 
 to be in multiple communities, say, $A_1, \dots, A_l$. In this case, we assign $v$ 
 to be a seed node for communities $A, A_1, \ldots, A_l$. 
-\texttt{Not clear what the following means.}
-This accounts for the fact 
-that we cannot assign a node to be seed node of one community, but non-seed node of another community. By putting a node into the 
-set of seed nodes, we have to fully specify which communities it belongs to and the 
-current classification is the best we know.
-
 
 \subsection{Normalized Mutual Information}
 This is an information-theoretic measure that allows us the 
