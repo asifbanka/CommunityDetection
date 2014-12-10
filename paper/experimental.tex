@@ -6,7 +6,7 @@ is known. Then from each community in our input graph, we pick a fixed number of
 calculate their affinities and feed it to our algorithm. Once the algorithm outputs the 
 affinities, we classify the nodes into communities and finally compare the output 
 with the ground truth using normalized mutual information (NMI) as a metric~\cite{DDDA05}.
-Our implemenation is in \CPP\ and Python and is available at: 
+Our implementation is in \CPP\ and Python and is available at: 
 \texttt{https://github.com/somnath1077/CommunityDetection}
 
 \texttt{General question: should we use present tense or past to describe our setup?}
@@ -67,7 +67,7 @@ the node belongs to this community, otherwise 0.
 Next, the algorithm is run on the network together with the affinity information of the seed nodes.
 Afterwards, we need to assign the nodes into communities, 
 based on the affinity vectors the algorithm assigned to each node.
-When detecting non-overlapping communities, we know that each vetex is in exactly one community,
+When detecting non-overlapping communities, we know that each node is in exactly one community,
 thus we assign each node to the community to which it has the highest affinity.
 
 \paragraph{Iteration.}
@@ -130,11 +130,11 @@ not belong in. This is what is captured by the computing the difference in affin
 out the first large decrease in affinities.
 
 \paragraph{Iteration.}
-The iterative method works differently for overlapping communities.
-As in the non-overlapping case, after $j$ rounds, we increase the size of the seed node set of 
-community~$A$ by a factor~$\varepsilon$ by adding those nodes which were classified 
-to be in community~$A$ and have the highest affinity to this community. Let $v$ be a such a node. 
-The classification strategy explained above might have classified~$v$ 
+For overlapping communities, we use a different strategy for iterating improving the quality 
+of the communities found. As in the non-overlapping case, after $j$ rounds, we increase the 
+size of the seed node set of community~$A$ by a factor~$\varepsilon$ by adding those nodes 
+which were classified to be in community~$A$ and have the highest affinity to this community. 
+Let $v$ be a such a node. The classification strategy explained above might have classified~$v$ 
 to be in multiple communities, say, $A_1, \dots, A_l$. In this case, we assign $v$ 
 to be a seed node for communities $A, A_1, \ldots, A_l$. 
 \texttt{Not clear what the following means.}
