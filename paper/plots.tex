@@ -157,12 +157,37 @@
 \end{figure}
 
 
+\newcommand{\foowidth}{0.76\linewidth}
 \begin{figure}
     \centering
-    \texttt{TODO: add plots}
-    %\includegraphics{}
+    \begin{subfigure}{0.33\textwidth}
+    \centering
+    \includegraphics[width=\foowidth]{lfrpaper/1_split_kropped.pdf}
+    \end{subfigure}%
+    \begin{subfigure}{0.33\textwidth}
+    \centering
+    \includegraphics[width=\foowidth]{lfrpaper/2_split_kropped.pdf}
+    \end{subfigure}%
+    \begin{subfigure}{0.33\textwidth}
+    \centering
+    \includegraphics[width=\foowidth]{lfrpaper/3_split_kropped.pdf}
+    \end{subfigure}
+    \begin{subfigure}{0.33\textwidth}
+    \centering
+    \includegraphics[width=\foowidth]{lfrpaper/4_split_kropped.pdf}
+    \end{subfigure}%
+    \begin{subfigure}{0.33\textwidth}
+    \centering
+    \includegraphics[width=\foowidth]{lfrpaper/5_split_kropped.pdf}
+    \end{subfigure}%
+    \begin{subfigure}{0.33\textwidth}
+    \centering
+    \includegraphics[width=\foowidth]{lfrpaper/6_split_kropped.pdf}
+    \end{subfigure}%
     \caption{
-        Test of Infomap, CFinder, Clauset et al, Girvan Newman (GN) and Blonel et al on the LFR benchmark for the nonoverlapping communities. 
+        Test of Infomap, CFinder, Clauset et al, Girvan Newman (GN) and Blonel et al 
+        and the potts model by Ronhovde and Nussinov (RN) on the LFR benchmark for the nonoverlapping communities. 
+        As usual, the NMI-value (y-axis) is plotted against the mixing factor (x-axis).
         Tests were performed on graphs with 1000 and 5000 nodes with big (B) and small (S) communities.
         These figures are taken from \texttt{name of the paper}.
     }
