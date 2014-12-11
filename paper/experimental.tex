@@ -102,14 +102,16 @@ of picking a node being proportional to its degree. For the iterative version, w
 2, 4, 6, 8 and 10$\%$ seed nodes per community. 
 
 \paragraph{Classification into communities.} For the overlapping case, we cannot
-the naive strategy of classifying a node to the community to which it has 
-the highest affinity, since we do not know the number of communities a node belongs to. 
+use the naive strategy of classifying a node to a community to which it has 
+maximum affinity, since we do not even know the \emph{number} of communities a node belongs to. 
 We need a way to infer this information from a node's affinity vector.
-For each node we expect the algorithm to assign high affinities 
-to the communities it belongs to and lower affinities to the communities it does not belong to. 
-We tried assigning a node to all communities to which it has an affinity that exceeds a certain threshold.
-This, however, did not give pleasing results.
-The following strategy worked better.
+
+For each node, we expect the algorithm to assign high affinities to the communities 
+it belongs to and lower affinities to the communities it does not belong to. 
+We tried assigning a node to all communities to which it has an affinity that 
+exceeds a certain threshold. This, however, did not give good results.
+The following strategy worked better. 
+
 Sort the affinities of a node in descending order and let this 
 sequence be $a_1, \ldots, a_k$. Calculate the differences 
 $\Delta_{1}, \ldots, \Delta_{k-1}$ with $\Delta_{j-1} := a_{j - 1} - a_j$;
@@ -119,7 +121,7 @@ the node with the communities to which it has the affinities $a_1, \ldots, a_i$.
 The intuition is that, while the node can have a varying affinity to the communities it belongs to, 
 there is likely to be a sharp decrease in affinities for the communities that the node does 
 not belong to. This is what is captured by computing the difference in affinities and then finding 
-out the first large decrease.
+out where the first big drop in affinities occurs.
 
 \paragraph{Iteration.}
 For overlapping communities, we need to extend our strategy for iteratively improving the quality 
