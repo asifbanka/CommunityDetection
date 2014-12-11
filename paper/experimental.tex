@@ -54,7 +54,7 @@ every community that they wish to identify in the network.
 We simulate this by picking a fixed fraction of nodes from each community as seed nodes.
 One of our assumptions is that the user knows the more important members of each community. 
 To replicate this phenomenon in our experiments, we picked a node as seed node
-with a probability that is proportional to the degree of the node.
+with a probability that is proportional to its degree.
 That is, nodes with a higher degree were picked in preference to those with a lower degree.
 For those nodes which were picked as seed nodes we set the affinity to a community to 1 iff
 the node belongs to this community, otherwise 0.
@@ -71,10 +71,10 @@ thus we assign each node to the community to which it has the highest affinity.
 
 \paragraph{Iteration.}
 We extended the algorithm to iteratively improve the goodness of the detected communities.
-The idea is, that after running the algorithm once, there are certain nodes which can be classified 
+The idea is that after running the algorithm once, there are certain nodes which can be classified 
 into their communities with a high degree of certitude. We add these nodes to the seed node 
 set of the respective community and iterate the procedure. To be precise, in the $j\th$ round, 
-let $C^j_A$ be the set of nodes that was classified as community $A$ and $S^j_A$ 
+let $C^j_A$ be the set of nodes that were classified as community $A$ and $S^j_A$ 
 be the seed nodes of community $A$. We create $S^{j+1}_A$ as follows: For a fixed $\varepsilon > 0$, 
 choose $\varepsilon \cdot |C^j_A|$ nodes of $C^j_A$ that have the highest affinity to community $A$, 
 and add them to $S^j_A$ to obtain $S^{j + 1}_A$. 
