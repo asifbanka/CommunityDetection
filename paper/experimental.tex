@@ -63,11 +63,11 @@ and only if the node belongs to that community and 0~otherwise.
 %If we picked seed nodes uniformly at random from each community, our results are marginally worse.
 
 \paragraph{Classification into communities.}
-Next, the algorithm is run on the network together with the affinity information of the seed nodes.
-Afterwards, we need to assign the nodes into communities, 
-based on the affinity vectors the algorithm assigned to each node.
-When detecting non-overlapping communities, we know that each node is in exactly one community,
-thus we assign each node to the community to which it has the highest affinity.
+The input to the algorithm consists of the network, the set of seed nodes together with their 
+affinities. Once the algorithm calculates the affinities of all non-seed nodes, we classify 
+them into their respective communities. This is quite easy for non-overlapping 
+communities where we simply assign each node to the community to which it has the 
+highest affinity, breaking ties arbitrarily.
 
 \paragraph{Iteration.}
 We extended the algorithm to iteratively improve the goodness of the detected communities.
