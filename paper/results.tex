@@ -10,14 +10,17 @@ the ones for the overlapping case.
 Figures~\ref{fig:no_iter_no_overlap}, \ref{fig:iter_no_overlap}, and~\ref{fig:compare_iter_no_overlap}
 show the plots that we obtained for non-overlapping communities. Figure~\ref{fig:no_iter_no_overlap}
 shows tests for the non-iterative method of our algorithm with 5, 10, 15, and 20$\%$ seed nodes per 
-community. The first observation here is that anything less than 10$\%$ seed nodes per community 
-will probably not give good results. With a seed node percentage of 10$\%$ or more and 
+community. 
+
+The first observation here is that anything less than 10$\%$ seed nodes per community 
+do not give good results. With a seed node percentage of 10$\%$ or more and 
 a mixing factor of at most~$0.4$ we acheive an NMI above $0.9$ and can compete with \textit{Infomap}, 
 which was deemed to be one the best performing algorithms on the LFR benchmark~\cite{LF09}. 
 Above a mixing factor of $0.4$, our algorithm has a worse performance than \textit{Infomap} 
 which, curiously enough, achieves an NMI of around 1 till a mixing factor of around 
 $0.6$ after which its performance drops steeply. The drop in the pereformance of our algorithm 
-begins earlier but is not as steep.\texttt{having a comparative plot for Infomap would be nice at this point.}
+begins earlier but is not as steep. See Figure~\ref{fig:Infomap_etal} for the performance 
+of Infomap and other algorithms that were studied in~\cite{LF09}. 
 
 Figure~\ref{fig:iter_no_overlap} shows the results for the iterative approach of 
 our algorithm in the non-overlapping case. When compared with the non-iterative approach, 
@@ -114,7 +117,7 @@ over $0.9$ with the mixing factor of up to $0.5$).
 		communities. As usual, the NMI-value ($y$-axis) is plotted against the mixing factor ($x$-axis).
         Tests were performed on graphs with 1000 and 5000 nodes with big (B) and small (S) communities.
         These figures are taken from~\cite{LF09}.
-    }
+    }\label{fig:Infomap_etal}
 \end{figure}
 
 
