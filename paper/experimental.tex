@@ -56,8 +56,8 @@ One of our assumptions is that the user knows the more important members of each
 To replicate this phenomenon in our experiments, we picked a node as seed node
 with a probability that is proportional to its degree.
 That is, nodes with a higher degree were picked in preference to those with a lower degree.
-For those nodes which were picked as seed nodes we set the affinity to a community to 1 iff
-the node belongs to this community, otherwise 0.
+For those nodes which were picked as seed nodes, we set the affinity to a community to be 1 if 
+and only if the node belongs to this community and 0~otherwise.
 %We note that the actual manner of picking seed nodes did not 
 %affect the results too much. 
 %If we picked seed nodes uniformly at random from each community, our results are marginally worse.
@@ -78,11 +78,9 @@ let $C^j_A$ be the set of nodes that were classified as community $A$ and $S^j_A
 be the seed nodes of community $A$. We create $S^{j+1}_A$ as follows: For a fixed $\varepsilon > 0$, 
 choose $\varepsilon \cdot |C^j_A|$ nodes of $C^j_A$ that have the highest affinity to community $A$, 
 and add them to $S^j_A$ to obtain $S^{j + 1}_A$. 
-%While $| S^{j+1}_A | \le f \cdot | S^{j}_A |$, we 
-%add those nodes from $C^j_A$ to $S^{j+1}_A$ which have the highest affinity to this community.
 The factor $\varepsilon$ declares by how much the set of seed nodes is allowed to grow in each iteration. 
 Choosing $\varepsilon = 0.1$ gives good results. Repeating this procedure several times significantly 
-		improves the quality of the communities detected as measured by the NMI.
+improves the quality of the communities detected as measured by the NMI.
 
 \subsection{Overlapping Communities.}
 The LFR benchmark suite can generate networks with an overlapping community structure. 
