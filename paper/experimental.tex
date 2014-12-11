@@ -1,15 +1,15 @@
-Our experimental setup can be roughly divided into five parts (see Figure~\ref{fig:pipeline}) but the 
-respective parts differ slightly depending on whether we test overlapping or non-overlapping 
-communities. First, we use the benchmark graph generator developed by Lacichinetti and Fortunato 
-(LFR)~\cite{LFR08, LF09}, which outputs graphs where the community information of each node 
-is known. Then from each community in our input graph, we pick a fixed number of seed nodes, 
-calculate their affinities and feed it to our algorithm. Once the algorithm outputs the 
-affinities, we classify the nodes into communities and finally compare the output 
-with the ground truth using normalized mutual information (NMI) as a metric~\cite{DDDA05}.
+Our experimental setup consists of five parts (see Figure~\ref{fig:pipeline}) but the 
+respective parts differ slightly depending on whether we test non-overlapping or overlapping 
+communities. We use the LFR benchmark graph generator developed by Lancichinetti, 
+Fortunato, and Radicchi~\cite{LFR08, LF09}, which outputs graphs where the community 
+information of each node is known. From each community in the graph thus generated, 
+we pick a fixed number of seed nodes per community and give these as input to our algorithm. 
+Once the algorithm outputs the affinities of all non-seed nodes, we classify them into 
+communities and finally compare the output with the ground truth using 
+normalized mutual information (NMI) as a metric~\cite{DDDA05}.
 Our implementation is in \CPP\ and Python and is available at: 
 \texttt{https://github.com/somnath1077/CommunityDetection}
 
-\texttt{General question: should we use present tense or past to describe our setup?}
 
 \paragraph{LFR.}
 The LFR benchmark was designed by Lancichinetti, Fortunato and Radicci~\cite{LFR08}
@@ -27,8 +27,6 @@ for generating benchmark graphs in the LFR suite. The node degrees and the
 community sizes are distributed according to power law, with different exponents. 
 An important parameter is the \emph{mixing parameter~$\mu$} which is the fraction of neighbors 
 of a node that do not belong to any community that the node belongs to, averaged over all nodes.
-%In the benchmark graphs, the mixing parameter is set by the user and this is the same for each 
-%node of the network. 
 The other parameters include maximum node degree, average node degree, 
 minimum and maximum community sizes. For generating networks with overlapping communities, 
 one can specify what fraction of nodes are present in multiple communities.
