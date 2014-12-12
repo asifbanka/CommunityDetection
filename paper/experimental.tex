@@ -6,9 +6,9 @@ information of each node is known. From each community in the graph thus generat
 we pick a fixed number of seed nodes per community and give these as input to our algorithm. 
 Once the algorithm outputs the affinities of all non-seed nodes, we classify them into 
 communities and finally compare the output with the ground truth using 
-normalized mutual information (NMI) as a metric~\cite{DDDA05}.
-Our implementation is in \CPP\ and Python and is available at: 
-\texttt{https://github.com/somnath1077/CommunityDetection}
+normalized mutual information (NMI) as a metric~\cite{DDDA05}. We implemented 
+our algorithm in \CPP\ and Python and the code is available online.\footnote{At 
+\texttt{https://github.com/somnath1077/CommunityDetection}}
 
 
 \paragraph{LFR.}
@@ -80,7 +80,9 @@ choose $\varepsilon \cdot |C^j_A|$ nodes of $C^j_A$ that have the highest affini
 and add them to $S^j_A$ to obtain $S^{j + 1}_A$. 
 The factor $\varepsilon$ declares by how much the set of seed nodes is allowed to grow in each iteration. 
 Choosing $\varepsilon = 0.1$ gives good results. Repeating this procedure several times significantly 
-improves the quality of the communities detected as measured by the NMI.
+improves the quality of the communities detected as measured by the NMI. Each iteration takes 
+$O(k \cdot m \cdot \log n)$ time and hence the cost of running the iterative algorithm is 
+the number of iterations times the cost of running it once. 
 
 \subsection{Overlapping Communities.}
 The LFR benchmark suite can generate networks with an overlapping community structure. 
@@ -130,7 +132,8 @@ size of the seed node set of community~$A$ by a factor~$\varepsilon$ by adding t
 which were classified to be in community~$A$ and have the highest affinity to this community. 
 Let $v$ be a such a node. The classification strategy explained above might have classified~$v$ 
 to be in multiple communities, say, $A_1, \dots, A_l$. In this case, we assign $v$ 
-to be a seed node for communities $A, A_1, \ldots, A_l$. 
+to be a seed node for communities $A, A_1, \ldots, A_l$. The running time is the number of 
+iterations times the cost of running the algorithm once.
 
 \subsection{Normalized Mutual Information}
 This is an information-theoretic measure that allows us the 
@@ -148,7 +151,7 @@ variables $X$ and $Y$ with probability mass functions $p(x)$ and $p(y)$, respect
 with a joint probability mass function $p(x, y)$, the \emph{mutual information $I(X, Y)$} 
 is defined as:
 \begin{equation}\label{eqn:mutual_information_rv}
-I(X, Y) = \sum_{x \Omega(X)} \sum_{y \in \Omega(Y)} p(x, y) \log \frac{p(x, y)}{p(x) p(y)},
+I(X, Y) = \sum_{x \in \Omega(X)} \sum_{y \in \Omega(Y)} p(x, y) \log \frac{p(x, y)}{p(x) p(y)},
 \end{equation}
 where $\Omega(X)$ is the event space of the random variable $X$.
 The mutual information of two partitions $\mathcal{A}$ and $\mathcal{B}$ 
