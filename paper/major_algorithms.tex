@@ -12,7 +12,7 @@ edge is defined as the number of shortest paths between vertex pairs
 that pass through that edge. After an edge is removed, betweenness 
 scores are recalculated and an edge with maximal score is deleted. 
 This procedure ends when the \textit{modularity} of the resulting partition
-reaches a maximum. Modularity is a measure that estimates the goodness 
+reaches a maximum. Modularity is a measure that estimates the quality 
 of a partition by comparing the network with a so-called ``null model''
 in which edges are rewired at random between the nodes of the network 
 while each node keeps its original degree.
@@ -30,7 +30,8 @@ represents the expected number of edges between nodes $i$ and $j$ if we consider
 in which each node $i$ has $d_i$ ``stubs'' and we are allowed to connect stubs at random to form edges. 
 This is the null model against which the within-community edges of the partition is compared against.
 The worst-case complexity of the Newman-Girvan algorithm is dominated by the time taken 
-to compute the betweenness scores and is $O(m^2 n)$ for general graphs and $O(n^3)$ for sparse graphs.
+to compute the betweenness scores and is $O(m n)$ for general graphs and $O(n^2)$ for sparse 
+graphs~\cite{Bra01}.
 
 \paragraph{The greedy algorithm for modularity optimization by Clauset \etal~\cite{CNM04}.}
 This algorithm starts with each node being the sole member of a community of one, and 
@@ -50,20 +51,23 @@ Once the second phase is complete, the entire procedure is repeated until the mo
 increase any further. The algorithm is efficient due to the fact that one can quickly compute the 
 change in modularity obtained by moving an isolated node into a community.
 
-This is what Lancichinetti and Fortunato state about modularity-based techniques in their analysis of 
-community detection algorithms~\cite{LF09}: 
-\begin{quote}
-	\emph{Modularity-based methods have a rather poor performance, which worsens for larger systems and smaller 
-	communities due to the well-known resolution limit of the measure. The only exception is represented 
-	by the algorithm of Blondel \emph{\etal}, whose performance is very good probably because the estimated modularity 
-	is not a very good approximation of the real one $\ldots$} 
-\end{quote}
+Lancichinetti and Fortunato opine that modularity-based methods in general have a rather poor 
+performance, which worsens for larger networks. The algorithm due to Blondel \etal\ performs well 
+probably due to the fact that the estimated modularity is not a good approximation of the real one~\cite{LF09}.  
+
+%This is what Lancichinetti and Fortunato state about modularity-based techniques in their analysis of 
+%community detection algorithms~\cite{LF09}: 
+%\begin{quote}
+%	\emph{Modularity-based methods have a rather poor performance, which worsens for larger systems and smaller 
+%	communities due to the well-known resolution limit of the measure. The only exception is represented 
+%	by the algorithm of Blondel \emph{\etal}, whose performance is very good probably because the estimated modularity 
+%	is not a very good approximation of the real one $\ldots$} 
+%\end{quote}
 
 \paragraph{The CFinder algorithm of Palla \etal} One of the first algorithms that dealt with overlapping 
 communities was proposed by Palla \etal~\cite{PDFV05}. They define a community to be a set of nodes 
 that are the union of $k$-cliques such that any one clique can be reached from another via a series of 
-adjacent $k$-cliques, where two $k$-cliques are defined to be adjacent if they 
-share $k - 1$ nodes. 
+adjacent $k$-cliques. Two $k$-cliques are defined to be adjacent if they share $k - 1$ nodes. 
 
 The algorithm first finds out all maximal cliques in the graph, which takes exponential-time
 in the worst case. It then creates a symmetric clique-clique overlap matrix $\mat{C}$ which is a square matrix whose 
@@ -71,7 +75,7 @@ rows and columns are indexed by the set of maximal cliques in the graph and whos
 is the number of vertices that are in both the $i\th$ and $j\th$ clique. This matrix is then modified into 
 a binary matrix by replacing all those entries with value less than $k - 1$ by a $0$ and the remaining entries by 
 a $1$. The final step is to find the connected components of the graph represented by this binary symmetric matrix
-which constitute the communities of the original graph. 
+which the algorithm reports as the communities of the network. 
 
 The authors report to have tested the algorithm on various networks including the protein-protein interaction 
 network of \emph{Saccharomyces cerevisiae}\footnote{A species of yeast used in wine-making, baking, and brewing.} 
