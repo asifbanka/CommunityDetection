@@ -20,11 +20,13 @@ in~\cite{LF09}. In this paper we closely follow their test framework,
 also called the LFR-benchmark.
 
 The notion of a community is a loose one and currently there is no 
-well-accepted definition of this concept. A typical approach is to consider 
-a partition of the node set such that the density of the edges within a partite 
-set (intra-community edges) is greater than the density of edges across partitions 
-(inter community edges). Various community detection algorithms formalize this
-idea differently. One of the very first algorithms by
+well-accepted definition of this concept. A typical approach is to define an 
+objective function on the partitions of the node set of the network 
+in terms of two sets of edge densities: the density of the 
+edges within a partite set (intra-community edges) and the density of edges across partitions 
+(inter-community edges). The ``correct'' partition is the one that maximizes this 
+function. Various community detection algorithms formalize this
+informal idea differently. One of the very first algorithms by
 Girvan and Newman~\cite{GN02} introduced a measure known as \textit{modularity}
 which, given a partition of the nodes of the network, compares the fraction of 
 inter-community edges with the edges that would be present had they been 
@@ -46,16 +48,16 @@ In other cases, derivation of worst-case running time bounds are ignored.
 \paragraph{Our contribution.}
 Given that it is unlikely that users of community detection algorithms 
 would unanimously settle on one definition of what constitutes a community, 
-we feel that existing algorithms ignore the \emph{user perspective}.
-To this end, we chose to design an algorithm that takes the network structure, 
+we feel that existing approaches ignore the \emph{user perspective}.
+To this end, we chose to design an algorithm that takes the network structure 
 as well as user preferences into account. 
 The user is expected to classify a small set of nodes of the network 
 into communities (which may be 6--8\% of the nodes of each community).
 Obviously this is possible only when the user has some 
-information about the network, such as, what it represents, which nodes 
-are the important ones and into which communities they are classified. 
+information about the network, such as its semantics, which nodes 
+are important and into which communities they are classified. 
 
-Such situations are actually quite likely. The user might have data only 
+Such situations are actually quite common. The user might have data only 
 on the leading scientific authors in a co-authorship network 
 and would like to find out the research areas of the remaining members of the network. 
 He may either be interested in a broad partition of the network into into its main fields
@@ -73,9 +75,9 @@ One might know the preferences of some of the users of an online retail
 merchant possibly because they purchase items much more frequently than others. 
 One could then use this in the network whose nodes consist of users, with two 
 nodes connected by an edge if they represent users that had purchased similar products in the past. 
-The idea now would be to use the knowledge of the prefererences of a few to 
+The idea now would be to use the knowledge of the preferences of a few to 
 predict the preferences of everyone in the network. 
-\texttt{Movie database example?}
+
 
 
 An important characteristic of algorithms surveyed in~\cite{LF09} 
@@ -97,10 +99,9 @@ and a constant number of communities, the running time is $O(n \cdot \log n)$. G
 an $O(n^2)$ time algorithm is too computationally expensive on many real world graphs, 
 a nearly linear time algorithm often is the only feasible solution.   
 
-Finally, we provide an extensive experimental evaluation of our algorithm on the LFR benchmark
-introduced by Lancichinetti, Fortunato and Radicchi in~\cite{LFR08, LF09}. In order to ensure 
-a fair comparison with other algorithms reviewed in~\cite{LF09}, 
-we choose all parameters of the benchmark as in the original paper.
+Finally, we provide an extensive experimental evaluation of our algorithm on the 
+LFR benchmark. In order to ensure a fair comparison with other algorithms 
+reviewed in~\cite{LF09}, we choose all parameters of the benchmark as in the original paper.
 
 
 This paper is organized as follows. In Section~\ref{sec:major_algorithms}, we review some 
