@@ -39,12 +39,6 @@ that in a ``correct'' partition, a random walker is likely to spend more time
 within communities rather than between communities, thereby decreasing the 
 description of the walk.  
 
-A severe restriction of many existing community detection algorithms 
-is that they are too slow. Algorithms that optimize modularity typically 
-take $O(n^2)$, even on sparse networks. The overlapping clique finding 
-algorithm of Palla \etal~\cite{PDFV05} take exponential time in the worst case.
-In other cases, derivation of worst-case running time bounds are ignored. 
-
 \paragraph{Our contribution.}
 Given that it is unlikely that users of community detection algorithms 
 would unanimously settle on one definition of what constitutes a community, 
@@ -68,21 +62,23 @@ network.  Consider the case where one knows the political affiliations of some
 people and aims to discover political spectrum of the whole network, for
 example, to predict the outcome of an election. 
 
-There are two main advantages of our approach: it can be used to find not only
-non-overlapping communities, but overlapping communities too. Of course, there 
-is a higher price that has to be paid in that the number of nodes that need 
-to be classified by the user typically is larger (5\% to 10\% of the nodes 
-per community). The algorithm, however, does not need any major changes and 
-we view this is as an aesthetically pleasing feature of our approach.  
-While rigorous running time analyses do not seem to be a hallmark
-of many of the heuristics designed to tackle this problem, our algorithm runs in
+There are two main advantages of our approach: Firstly, it can be used to find
+not only non-overlapping communities, but overlapping communities as well. Of
+course, there is a higher price that has to be paid in the overlapping
+communities case in that the number of nodes that need to be classified by the
+user is typically larger (5\% to 10\% of the nodes per community). The
+algorithm, however, does not need any major changes and we view this is as an
+aesthetically pleasing feature of our approach.  Secondly, our algorithm runs in
 time $O(k \cdot m \cdot \log n)$, where $k$ is the number of communities to be
 discovered (supplied by the user), $n$ and $m$ are the number of nodes and edges
 in the network. In the case of sparse graphs and a constant number of
-communities, the running time is $O(n \cdot \log n)$.  We evaluate our
-algorithms on the LFR benchmark and in order to ensure a fair comparison with
-other algorithms reviewed in~\cite{LF09}, we choose all parameters of the
-benchmark as in the original paper.
+communities, the running time is $O(n \cdot \log n)$.  Compare this with
+algorithms that optimize modularity which take $O(n^2)$ even on sparse
+networks. The overlapping clique finding algorithm of Palla \etal~\cite{PDFV05}
+takes exponential time in the worst case. We evaluate our algorithms on the LFR
+benchmark and in order to ensure a fair comparison with other algorithms
+reviewed in~\cite{LF09}, we choose all parameters of the benchmark as in the
+original paper.
 
 This paper is organized as follows. In Section~\ref{sec:algorithm}, we 
 describe our algorithm and analyze its running time. In Sections~\ref{sec:experiment_setup} 
