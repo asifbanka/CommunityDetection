@@ -1,0 +1,184 @@
+\section{Symmetric Diagonally Dominant Linear Systems}
+
+An $n \times n$ matrix $\mat{A} = [a_{ij}]$ is \emph{diagonally dominant} if 
+\[
+	|a_{ii}| \geq \sum_{j \neq i} {|a_{ij}|} \mbox{ for all } i = 1, \ldots, n.
+\] 
+A matrix is \emph{symmetric diagonally dominant (SDD)} if, in addition to the above, 
+it is symmetric. For more information about matrices and matrix computations, 
+see the textbooks by Golub and Van Loan~\cite{GvL13} and Horn and Johnson~\cite{HJ13}. 
+
+An example of a symmetric, diagonally dominant matrix is the graph Laplacian. 
+Given an unweighted, undirected graph~$G$, the \emph{Laplacian} of $G$ 
+is defined to be 
+\[
+\mat{L}_G = \mat{D}_G - \mat{A}_G,
+\] 
+where $\mat{A}_G$ is the adjacency matrix of the graph~$G$ and $\mat{D}_G$ 
+is the diagonal matrix of vertex degrees. 
+
+A symmetric, diagonally dominant (SDD) system of linear equations is a system of 
+equations of the form:
+\[
+	\mat{A} \cdot \vect{x} = \vect{b},
+\]
+where $\mat{A}$ is an SDD matrix, $\vect{x} = \trans{(x_1, \ldots, x_n)}$ 
+is a vector of unknowns, and $\vect{b} = \trans{(b_1, \ldots, b_n)}$ is a vector of constants. 
+There is near-linear time algorithm for solving such a system of linear equations 
+and this result is crucial to the analysis of the running time of our algorithm. 
+
+The solution of $n \times n$ system of linear equations takes $O(n^3)$ time 
+if one uses Gaussian elimination. Spielman and Teng made a seminal contribution in this direction and 
+showed that SDD linear systems can be solved in nearly-linear 
+time~\cite{ST04,EEST05,ST08}. Spielman and Teng's algorithm (the ST-solver)
+iteratively produces a sequence of approximate solutions which converge to the 
+actual solution of the system $\mat{A} \vect{x} = \vect{b}$. The performance 
+of such an iterative system is measured in terms of the time taken to reduce 
+an appropriately defined approximation error by a constant factor. The time 
+complexity of the ST-solver was reported to be at least $O(m \log^{15} n)$~\cite{KMP11}.  
+Koutis, Miller and Peng~\cite{KMP10,KMP11} developed a simpler and faster algorithm 
+for finding $\epsilon$-approximate solutions to SDD systems in time 
+$\tilde{O}(m \log n \log (1/\epsilon) )$, where the $\tilde{O}$ notation hides 
+a factor that is at most $(\log \log n)^2$. A highly readable account 
+of SDD systems is the monograph by Vishnoi~\cite{Vis13}. We summarize the 
+main result that we use as a black-box.  
+\begin{proposition} \label{prop:SDD_systems} {{\rm \cite{KMP11,Vis13}}}
+	Given a system of linear equations $\mat{A} \vect{x} = \vect{b}$, where $\mat{A}$
+	is an SDD matrix, there exists an algorithm to compute $\tilde{\vect{x}}$  
+	such that:
+		\[
+			\norm{\tilde{\vect{x}} - \vect{x}}_{\mat{A}} \leq \epsilon \norm{\vect{x}}_{\mat{A}}, 
+		\]
+	where $\norm{\vect{y}}_{\mat{A}} := \sqrt{\trans{\vect{y}} \mat{A} \vect{y}}$. The algorithm runs in 
+	time $\tilde{O}(m \cdot \log n \cdot \log (1 / \epsilon) )$ time, where $m$ is the number of non-zero 
+	entries in $\mat{A}$. The $\tilde{O}$ notation hides a factor of at most $(\log \log n)^2$.
+\end{proposition} 
+
+We can use Proposition~\ref{prop:SDD_systems} to upper-bound the time taken to solve
+the linear systems, which are needed to calculate the affinity vectors defined in (\ref{eqn:belonging_vector}).
+
+\begin{theorem}\label{theorem:computing_NR}
+Given a graph~$G$, let $\mat{P}$ be the $n \times n$ transition matrix 
+defined by equation~(\ref{eqn:defining_prob}) in canonical form 
+(see equation~(\ref{eqn:canonical_form_P})). Then, one can compute 
+the affinity vectors of all non-seed nodes in time $O(m \cdot \log n)$ per community, 
+where~$m$ is the number of edges in the graph~$G$.
+\end{theorem}  
+\begin{proof}
+Recall that we ordered the nodes of $G$ as $u_1, \ldots, u_{n - s}, x_1, \ldots, x_s$, 
+where $u_1, \ldots, u_{n - s}$ denote the non-seed nodes and $x_1, \ldots, x_s$ denote 
+seed nodes. Define $G_1 := G[u_1, \ldots, u_{n - s}]$, the subgraph induced by the non-seed nodes 
+of~$G$. Let $\mat{A}_1$ denote the adjacency matrix of the graph $G_1$; let 
+$\mat{D}_1$ denote the $(n - s) \times (n - s)$ diagonal matrix satisfying 
+$\mat{D}_1(u_i, u_i) = \deg_{G}(u_i)$ for all $1 \leq i \leq n - s$.  That is, the 
+entries of $\mat{D}_1$ are not the degrees of the vertices in the induced subgraph~$G_1$ 
+but in the graph~$G$. We can then express 
+$\mat{I} - \mat{Q}$ as 
+\begin{equation} \label{eqn:I-Q}
+	\mat{I}  - \mat{Q} = \inv{\mat{D}_1} (\mat{D}_1 - \mat{A}_1).
+\end{equation}
+Note that $\mat{D}_1 - \mat{A}_1$ is a symmetric and diagonally dominant matrix. 
+Let us suppose that $\mat{X}$ is an $(n - s) \times s$ matrix such that 
+\[
+	\mat{X} = (\mat{I} - \mat{Q})^{-1} \cdot \mat{R}.
+\]
+
+Fix a community~$l$. Then the affinities of the non-seed nodes 
+for community~$l$ may be written as:
+\begin{align} \label{eqn:affinity}
+	\left ( \begin{array}{c}
+		\alpha (u_1, l) \\
+		\vdots			\\
+		\alpha (u_{n - s}, l)
+	\end{array}	\right ) & = \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{X}_j \nonumber \\ 
+						 & = \sum_{j = 1}^{s} \alpha (x_j, l) \inv{(\mat{I} - \mat{Q})} \cdot \mat{R}_j \nonumber \\ 
+						 & = \inv{(\mat{I} - \mat{Q})} \cdot \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j,
+\end{align}
+where $\mat{X}_j$ and $\mat{R}_j$ denote the $j\th$ columns of $\mat{X}$ and $\mat{R}$, respectively. 
+Using equation~(\ref{eqn:I-Q}), we may rewrite equation~(\ref{eqn:affinity}) as:
+\begin{align}
+	\inv{\mat{D}_1} (\mat{D}_1 - \mat{A}_1) \cdot \left ( \begin{array}{c}
+		\alpha (u_1, l) \\
+		\vdots			\\
+		\alpha (u_{n - s}, l)
+	\end{array}	\right ) & = \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j.
+\end{align}
+Finally, multiplying by $\mat{D}_1$ on both sides, we obtain
+\begin{equation}\label{eqn:final_affinity}
+	(\mat{D}_1 - \mat{A}_1) \cdot \vect{\alpha}_l = \mat{D}_1 \cdot \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j,
+\end{equation}
+where we used $\vect{\alpha}_l$ to denote the vector $\trans{\left ( \alpha (u_1, l), \ldots, \alpha (u_{n-s}, l) \right )}$.
+
+Note that computing $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ takes time $O(\tilde{m})$, where $\tilde{m}$ 
+denotes the number of non-zero entries\footnote{This is almost the same as the 
+number~$m$ of edges in $G$, but not quite, since while constructing $\mat{P}$ from the graph $G$, 
+we add self-loops on seed nodes and delete edges between adjacent seed nodes, if any. However what is true is 
+that $\tilde{m} \leq m + s \leq m + n$.} in \mat{P}. 
+Computing the product of $\mat{D}_1$ and $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ 
+takes time $O(\tilde{m})$ so that the right hand side of equation~(\ref{eqn:final_affinity}) can 
+be computed in time $O(\tilde{m})$. We now have a symmetric diagonally dominant system of linear equations 
+which by Proposition~\ref{prop:SDD_systems} can be solved in time $O(\tilde{m} \cdot \log n)$. Therefore,
+the time taken to compute the affinity to a fixed community is $O(\tilde{m} \cdot \log n) = O(m \log n)$,
+which is what was claimed. Since we assume our networks to be sparse, $m = O(n)$, and 
+the time taken is $O(n \cdot \log n)$ per community.  
+\end{proof}
+
+\section{Normalized Mutual Information}
+This is an information-theoretic measure that allows us the 
+compare the ``distance'' between two partitions of a finite set. Let $V$ be a finite set 
+with $n$ elements and let $\mathcal{A}$ and $\mathcal{B}$ be two partitions of $V$. The probability that an 
+element chosen uniformly at random belongs to a partite set $A \in \mathcal{A}$ is $n_A/n$, where $n_A$ 
+is the number of elements in $A$. The Shannon entropy of the partition $\mathcal{A}$ 
+is defined as:
+\begin{equation}\label{eqn:shannon_entropy}
+H(\mathcal{A}) = - \sum_{A \in \mathcal{A}} \frac{n_A}{n} \log_2 \frac{n_A}{n}.
+\end{equation}
+
+The mutual information of two random variables is a measure of their mutual dependence. For random 
+variables $X$ and $Y$ with probability mass functions $p(x)$ and $p(y)$, respectively, and 
+with a joint probability mass function $p(x, y)$, the \emph{mutual information $I(X, Y)$} 
+is defined as:
+\begin{equation}\label{eqn:mutual_information_rv}
+I(X, Y) = \sum_{x \in \Omega(X)} \sum_{y \in \Omega(Y)} p(x, y) \log \frac{p(x, y)}{p(x) p(y)},
+\end{equation}
+where $\Omega(X)$ is the event space of the random variable $X$.
+The mutual information of two partitions $\mathcal{A}$ and $\mathcal{B}$ 
+of the node set of a graph is calculated by using the so-called ``confusion matrix'' 
+$\mat{N}$ whose rows correspond to ``real'' communities and whose columns correspond 
+to ``found'' communities. The entry $\mat{N}(A, B)$ is the number of nodes of community 
+$A$ in partition $\mathcal{A}$ that are classified into community $B$ in partition $\mathcal{B}$. 
+The mutual information is defined as:
+\begin{equation}\label{eqn:mutual_information_graphs}
+I(\mathcal{A}, \mathcal{B}) = 
+	\sum_{A \in \mathcal{A}} \sum_{B \in \mathcal{B}} \frac{n_{A, B}}{n} 
+		\log \frac{n_{A, B} / n}{ (n_A / n) \cdot (n_B / n) }.  
+\end{equation}
+
+Danon \etal~\cite{DDDA05} suggested to use a normalized variant of this measure. The 
+normalized mutual information $I_N(\mathcal{A}, \mathcal{B})$ between partitions 
+$\mathcal{A}$ and $\mathcal{B}$ is defined as:
+\begin{equation} \label{eqn:normalized_mutual_information}
+I_N(\mathcal{A}, \mathcal{B}) =  \frac{2 I(\mathcal{A}, \mathcal{B})}{H(\mathcal{A}) + H(\mathcal{B})}.
+\end{equation}
+The normalized mutual information takes the value~1 when both partitions are identical. If both partitions 
+are independent of each other, then $I_N(\mathcal{A}, \mathcal{B}) = 0$. 
+
+The classical notion of normalized mutual information measures the distance  between 
+two \emph{partitions} and hence cannot be used for overlapping community detection. 
+Lancichinetti, Fortunato, and Kert\'{e}sz~\cite{LFK09} proposed a definition of the measure for 
+evaluating the similarity of covers, where a \emph{cover} of the node set of a graph 
+is a collection of node subsets such that every node of the graph is in at least one set. 
+Their definition of normalized mutual information is:
+\begin{equation} \label{eqn:nmi_LFK}
+\NMI_{\mathrm{LFK}} := 1 - \frac{1}{2} 
+		\left ( \frac{H(\mathcal{A} | \mathcal{B})}{H(\mathcal{A})} + \frac{H(\mathcal{B}
+				| \mathcal{A})}{H(\mathcal{B})}\right ).
+\end{equation}
+This definition is not exactly an extension of normalized mutual information in that the values
+obtained by evaluating it on two partitions is different from what is given by normalized mutual 
+information evaluated on the same pair of partitions. However in this paper we use this definition 
+of NMI to evaluate the quality of the overlapping communities discovered by our algorithm. 
+
+We note that McDaid \etal~\cite{MGH11} have extended the definition of normalized mutual 
+information to covers and that for partitions, their definition corresponds to the usual definition of NMI. 
+
