@@ -1,40 +1,3 @@
-We assume that the complex networks that we deal with are modeled as connected,
-undirected graphs.  The algorithm receives as input a network $G = (V,E)$ and a
-set $S \subseteq V$ of nodes such that there is at least one node from each
-community that we are aiming to discover. These nodes are called \emph{seed
-nodes} and it is possible that a particular seed node belongs to multiple
-communities.
-
-The affinity of a node in the network to a community is 1 if it belongs to it;
-if it does not belong to it, it has an affinity of 0. We allow intermediate
-affinity values and view these as specifying a \emph{partial belonging}. The
-user specifies the affinities of the seed nodes for each of the communities. For
-all other nodes, called \emph{non-seed nodes}, we want deduce the affinity to
-each community using the information given by the seed nodes' affinities and the
-network structure.  The main idea is that non-seed nodes should adopt the
-affinities of seed nodes within their close proximity. We define a proximity
-measure based on random walks: Each random walk starts at a non-seed node,
-traverses through the graph, and ends as soon as it reaches a seed node. The
-affinity of a non-seed node~$u$ for a given community is then the weighted sum
-of the affinities of the seed nodes for that community and reachable by a random
-walk starting at $u$, the weights being the probabilities that a random walk
-from $u$ ends up at a certain seed node.
-
-Each step of a random walk can be represented as the iterated product of a
-transition matrix $\mat{P}$. The result of the (infinite) walk itself can be
-expressed as $\lim_{k \rightarrow \infty}{\mat{P}^k}$.  One of the contributions
-of this paper is to show how the calculation of these limits can be reduced to
-solving a symmetric, diagonally dominant system of linear equations (with
-different right-hand-sides per community), which can be done in $O(m \log n)$
-time, where~$m$ is the number of edges in the graph. The fact that such systems
-can be solved in almost linear time was discovered by Spielman and
-Teng~\cite{ST04,EEST05,ST08,KMP10,KMP11,Vis13}. If we assume that our networks
-are sparse in the sense that $m = O(n)$, the running time of our algorithm can
-be bounded by $O(n \log n)$.    
-
-
-
-\subsection{Absorbing Markov Chains and Random Walks}
 We now provide a formal description of our model.  The input is an undirected,
 connected graph $G = (V,E)$ with nodes $v_1, \ldots, v_n$, $m$ edges and a
 nonempty set $S$ of $s$ seed nodes. We also know that there are~$k$ (possibly
@@ -122,6 +85,10 @@ all non-seed nodes.
 \label{fig:modgraph}.
 \end{figure}
 
+The main idea is that non-seed nodes should adopt the
+affinities of seed nodes within their close proximity. We define a proximity
+measure based on random walks: Each random walk starts at a non-seed node,
+traverses through the graph, and ends as soon as it reaches a seed node. 
 Since we require the random walks to end as soon as they reach a seed node, we transform 
 the undirected graph~$G$ into a directed graph $G'$ as follows: first replace each undirected 
 edge $\{u, v\}$ by arcs $(u, v)$ and $(v, u)$; then for each seed node, remove its 
