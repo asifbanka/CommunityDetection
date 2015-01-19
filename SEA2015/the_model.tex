@@ -1,42 +1,44 @@
-We assume that the complex networks that we deal with are modeled as connected, undirected graphs.  
-The algorithm receives as input a network and a set of nodes such that there is at least one node 
-from each community that we are aiming to discover. These nodes are called \emph{seed nodes} and 
-it is possible that a particular seed node belongs to multiple communities.
+We assume that the complex networks that we deal with are modeled as connected,
+undirected graphs.  The algorithm receives as input a network $G = (V,E)$ and a
+set $S \subseteq V$ of nodes such that there is at least one node from each
+community that we are aiming to discover. These nodes are called \emph{seed
+nodes} and it is possible that a particular seed node belongs to multiple
+communities.
 
-The affinity of a node in the network to a community is 1 if it belongs to it; 
-if it does not belong to it, it has an affinity of 0. We allow intermediate affinity 
-values and view these as specifying a \emph{partial belonging}. The user specifies the affinities 
-of the seed nodes for each of the communities. For all other nodes, called 
-\emph{non-seed nodes}, we want deduce the affinity to each community using 
-the information given by the seed nodes' affinities and the network structure. 
-The main idea is that non-seed nodes should adopt the affinities of seed nodes 
-within their close proximity. We define a proximity measure based on random walks: 
-Each random walk starts at a non-seed node, traverses through the graph, and ends 
-as soon as it reaches a seed node. The affinity of a non-seed node~$u$ for a given 
-community is then the weighted sum of the affinities of the seed nodes for 
-that community and reachable by a random walk starting at $u$, the weights 
-being the probabilities that a random walk from $u$ ends up at a certain seed node.
+The affinity of a node in the network to a community is 1 if it belongs to it;
+if it does not belong to it, it has an affinity of 0. We allow intermediate
+affinity values and view these as specifying a \emph{partial belonging}. The
+user specifies the affinities of the seed nodes for each of the communities. For
+all other nodes, called \emph{non-seed nodes}, we want deduce the affinity to
+each community using the information given by the seed nodes' affinities and the
+network structure.  The main idea is that non-seed nodes should adopt the
+affinities of seed nodes within their close proximity. We define a proximity
+measure based on random walks: Each random walk starts at a non-seed node,
+traverses through the graph, and ends as soon as it reaches a seed node. The
+affinity of a non-seed node~$u$ for a given community is then the weighted sum
+of the affinities of the seed nodes for that community and reachable by a random
+walk starting at $u$, the weights being the probabilities that a random walk
+from $u$ ends up at a certain seed node.
 
-Each step of a random walk can be represented as the iterated product of 
-a transition matrix $\mat{P}$. The result of the (infinite) walk itself 
-can be expressed as $\lim_{k \rightarrow \infty}{\mat{P}^k}$.
-One of the contributions of this paper is to show how the calculation
-of these limits can be reduced to solving a symmetric, diagonally dominant
-system of linear equations (with different right-hand-sides per community),
-which can be done in $O(m \log n)$ time, where~$m$ is the number of edges 
-in the graph. The fact that such systems can be solved in almost linear time 
-was discovered by Spielman and 
-Teng~\cite{ST04,EEST05,ST08,KMP10,KMP11,Vis13}. If we assume that our networks are 
-sparse in the sense that $m = O(n)$, the running time of our algorithm can  
+Each step of a random walk can be represented as the iterated product of a
+transition matrix $\mat{P}$. The result of the (infinite) walk itself can be
+expressed as $\lim_{k \rightarrow \infty}{\mat{P}^k}$.  One of the contributions
+of this paper is to show how the calculation of these limits can be reduced to
+solving a symmetric, diagonally dominant system of linear equations (with
+different right-hand-sides per community), which can be done in $O(m \log n)$
+time, where~$m$ is the number of edges in the graph. The fact that such systems
+can be solved in almost linear time was discovered by Spielman and
+Teng~\cite{ST04,EEST05,ST08,KMP10,KMP11,Vis13}. If we assume that our networks
+are sparse in the sense that $m = O(n)$, the running time of our algorithm can
 be bounded by $O(n \log n)$.    
 
 
 
 \subsection{Absorbing Markov Chains and Random Walks}
-We now provide a formal description of our model. 
-The input is an undirected, connected graph $G = (V,E)$ with nodes $v_1, \ldots, v_n$, 
-$m$ edges and a nonempty set of $s$ seed nodes. We also know that there are~$k$ 
-(possibly overlapping) communities which we want to discover.
+We now provide a formal description of our model.  The input is an undirected,
+connected graph $G = (V,E)$ with nodes $v_1, \ldots, v_n$, $m$ edges and a
+nonempty set $S$ of $s$ seed nodes. We also know that there are~$k$ (possibly
+overlapping) communities that we aim to discover.
 
 The community information of a node~$v$ is represented 
 by a $1 \times k$ vector called the \emph{affinity vector} of~$v$, denoted 
@@ -44,13 +46,13 @@ by
 \[
 	\bvect (v) = \trans{\left ( \alpha (v, 1), \ldots, \alpha (v, k) \right )}.
 \] 
-The entry $\alpha (v, l)$ of the affinity vector represents the affinity of node~$v$ to community~$l$.
-It may be interpreted as the probability that a node belongs to this community.
-We point out that $\sum_{i = 1}^k \alpha (v, l)$ need not be~$1$.
-An example of this situation is when~$v$ belongs to multiple 
-communities with probability~$1$. 
-The user-chosen affinity vectors of all seed nodes are part of the input.
-The objective is to derive the affinity vectors of all non-seed nodes. 
+The entry $\alpha (v, l)$ of the affinity vector represents the affinity of
+node~$v$ to community~$l$.  It may be interpreted as the probability that a node
+belongs to this community.  We point out that $\sum_{i = 1}^k \alpha (v, l)$
+need not be~$1$.  An example of this situation is when~$v$ belongs to multiple
+communities with probability~$1$.  The user-chosen affinity vectors of all seed
+nodes are part of the input.  The objective is to derive the affinity vectors of
+all non-seed nodes. 
 
 \begin{figure}
 \centering
@@ -121,11 +123,9 @@ The objective is to derive the affinity vectors of all non-seed nodes.
 \end{figure}
 
 Since we require the random walks to end as soon as they reach a seed node, we transform 
-the undirected graph~$G$ into a directed graph $G'$ as follows: replace each undirected 
+the undirected graph~$G$ into a directed graph $G'$ as follows: first replace each undirected 
 edge $\{u, v\}$ by arcs $(u, v)$ and $(v, u)$; then for each seed node, remove its 
 outarcs and add a self-loop. This procedure is illustrated in Figure~\ref{fig:modgraph}.
-
-
 Random walks in this graph can be modelled by an $n \times n$ transition matrix $\mat{P}$, with
 \begin{equation}\label{eqn:defining_prob}
 	\mat{P}(i, j) = \left \{ 
@@ -137,9 +137,8 @@ Random walks in this graph can be modelled by an $n \times n$ transition matrix 
 \end{equation}
 where $\deg_{G'} (v)$ is the degree of node $v$ in the directed graph~$G'$.
 The entry $\mat{P}(i, j)$ represents the transition-probability from node $v_i$ to $v_j$.
-Additionally, $\mat{P}^r (i, j)$ may be interpreted 
-as the probability that a random walk starting at node~$v_i$ will end up at node~$v_j$ 
-after~$r$ steps. 
+Additionally, $\mat{P}^r (i, j)$ may be interpreted as the probability that a random 
+walk starting at node~$v_i$ will end up at node~$v_j$ after~$r$ steps. 
 
 Assume that the nodes of~$G'$ are labeled $u_1, \ldots, u_{n - s}, x_{1}, \ldots, x_{s}$, 
 where $u_1, \ldots, u_{n - s}$ are the non-seed nodes and $x_1, \ldots, x_s$ are the seed nodes. 
@@ -204,114 +203,16 @@ The affinity of non-seed node $u_i$ to a community~$l$ is defined as:
 \end{equation}
 The computational complexity of calculating these affinity values  
 depends on how efficiently we can calculate the entries of $\mat{X}$, 
-i.e., solve $(\mat{I} - \mat{Q})^{-1}$. In the next subsection, we show 
+i.e., solve $(\mat{I} - \mat{Q})^{-1}$. 
+
+We can reduce this problem to that of solving a system of linear equations 
+of a special type which takes time $O(m \cdot \log n)$, where $m$
+is the number of edges in $G$. For a proof of this see Appendix.  
+ 
+In the next subsection, we show 
 how to reduce this problem to that of solving a system of linear equations 
 of a special type which takes time $O(m \cdot \log n)$, where $m$
 is the number of edges in $G$.
-
-\subsection{Symmetric Diagonally Dominant Linear Systems}
-
-An $n \times n$ matrix $\mat{A} = [a_{ij}]$ is \emph{diagonally dominant} if 
-\[
-	|a_{ii}| \geq \sum_{j \neq i} {|a_{ij}|} \mbox{ for all } i = 1, \ldots, n.
-\] 
-A matrix is \emph{symmetric diagonally dominant (SDD)} if, in addition to the above, 
-it is symmetric. For more information about matrices and matrix computations, 
-see the textbooks by Golub and Van Loan~\cite{GvL13} and Horn and Johnson~\cite{HJ13}. 
-
-An example of a symmetric, diagonally dominant matrix is the graph Laplacian. 
-Given an unweighted, undirected graph~$G$, the \emph{Laplacian} of $G$ 
-is defined to be 
-\[
-\mat{L}_G = \mat{D}_G - \mat{A}_G,
-\] 
-where $\mat{A}_G$ is the adjacency matrix of the graph~$G$ and $\mat{D}_G$ 
-is the diagonal matrix of vertex degrees. 
-
-%This definition extends 
-%to weighted graphs. A weighted graph $G = (V, E)$ has an associated weight function 
-%$w \colon V \times V \to \R$ which satisfies the conditions: 
-%\begin{inparaenum}[(1)]
-%	\item $w(u, v) = w(v, u)$;  
-%	\item $w(u, v) \geq 0$; and, 
-%	\item if $\{u, v\} \notin E$ then $w(u, v) = 0$. 
-%\end{inparaenum}
-%In the context of weighted graphs, the degree~$\deg_G (u)$ of a vertex~$u$ is defined to be 
-%\[\label{eqn:weighted_degree}
-%	\deg_G (u) = \sum_{v \in V} w(u, v). 
-%\] 
-%The adjacency matrix $\mat{A}_{G}$ is defined as:
-%\[\label{eqn:weighted_adj_matrix}
-%	\mat{A}_{G}(u, v) = w(u, v),
-%\]
-%and the Laplacian is defined as before as: 
-%\[\label{eqn:weighted_laplacian}
-%	\mat{L}_G = \mat{D}_G - \mat{A}_G,
-%\]
-%where $\mat{D}_G$ is the diagonal matrix of vertex degrees in the weighted graph~$G$.
-
-A symmetric, diagonally dominant (SDD) system of linear equations is a system of 
-equations of the form:
-\[
-	\mat{A} \cdot \vect{x} = \vect{b},
-\]
-where $\mat{A}$ is an SDD matrix, $\vect{x} = \trans{(x_1, \ldots, x_n)}$ 
-is a vector of unknowns, and $\vect{b} = \trans{(b_1, \ldots, b_n)}$ is a vector of constants. 
-There is near-linear time algorithm for solving such a system of linear equations 
-and this result is crucial to the analysis of the running time of our algorithm. 
-
-The solution of $n \times n$ system of linear equations takes $O(n^3)$ time 
-if one uses Gaussian elimination. Spielman and Teng made a seminal contribution in this direction and 
-showed that SDD linear systems can be solved in nearly-linear 
-time~\cite{ST04,EEST05,ST08}. Spielman and Teng's algorithm (the ST-solver)
-iteratively produces a sequence of approximate solutions which converge to the 
-actual solution of the system $\mat{A} \vect{x} = \vect{b}$. The performance 
-of such an iterative system is measured in terms of the time taken to reduce 
-an appropriately defined approximation error by a constant factor. The time 
-complexity of the ST-solver was reported to be at least $O(m \log^{15} n)$~\cite{KMP11}.  
-Koutis, Miller and Peng~\cite{KMP10,KMP11} developed a simpler and faster algorithm 
-for finding $\epsilon$-approximate solutions to SDD systems in time 
-$\tilde{O}(m \log n \log (1/\epsilon) )$, where the $\tilde{O}$ notation hides 
-a factor that is at most $(\log \log n)^2$. A highly readable account 
-of SDD systems is the monograph by Vishnoi~\cite{Vis13}. We summarize the 
-main result that we use as a black-box.  
-\begin{proposition} \label{prop:SDD_systems} {{\rm \cite{KMP11,Vis13}}}
-	Given a system of linear equations $\mat{A} \vect{x} = \vect{b}$, where $\mat{A}$
-	is an SDD matrix, there exists an algorithm to compute $\tilde{\vect{x}}$  
-	such that:
-		\[
-			\norm{\tilde{\vect{x}} - \vect{x}}_{\mat{A}} \leq \epsilon \norm{\vect{x}}_{\mat{A}}, 
-		\]
-	where $\norm{\vect{y}}_{\mat{A}} := \sqrt{\trans{\vect{y}} \mat{A} \vect{y}}$. The algorithm runs in 
-	time $\tilde{O}(m \cdot \log n \cdot \log (1 / \epsilon) )$ time, where $m$ is the number of non-zero 
-	entries in $\mat{A}$. The $\tilde{O}$ notation hides a factor of at most $(\log \log n)^2$.
-\end{proposition} 
-
-%Given an $n \times n$ matrix~$\mat{A}$ and $\vect{b} \in \R^{n}$, consider the 
-%system of linear equations $\mat{A} \vect{x} = \vect{b}$, with variables
-%$\vect{x} = \trans{(x_1, \ldots, x_n)}$. Such a system has a solution if and only if
-%$\vect{b}$ is in the image of matrix~$\mat{A}$. If $\mat{A}$ is invertible, then 
-%the system has a solution for all $\vect{b} \in \R^n$. However, if $\vect{b}$ 
-%is in the image of $\mat{A}$, then the inverse of $\mat{A}$ is well-defined 
-%and is denoted by $\pseudo{\mat{A}}$. This is called the \emph{pseudo-inverse}
-%of $\mat{D}$. 
-%\begin{proposition} \label{prop:Laplacian_systems} {\textrm{\cite{ST08,Vis13}}}
-%	There is an algorithm which takes a graph Laplacian $\mat{L}$, a vector 
-%	$\vect{b}$, and an error parameter~$\epsilon > 0$, and returns $\vect{x}$
-%	such that:
-%		\[
-%			\norm{\vect{x} - \pseudo{\mat{L}} \vect{b}}_{\mat{L}} \leq \epsilon \norm{\pseudo{\mat{L}} \vect{b}}_{\mat{L}}, 
-%		\]
-%	where $\norm{\vect{y}}_{\mat{L}} := \sqrt{\trans{\vect{y}} \mat{L} \vect{y}}$. The algorithm runs in 
-%	time $O(m \cdot \log n \cdot \log 1 / \epsilon)$ time, where $m$ is the number of non-zero 
-%	entries in $\mat{L}$.
-%\end{proposition} 
-%This result can be generalized to linear systems $\mat{A} \vect{x} = \vect{b}$, where 
-%$\vect{b}$ is a symmetric (weakly) diagonally dominant matrix.
-
-We can use Proposition~\ref{prop:SDD_systems} to upper-bound the time taken to solve
-the linear systems, which are needed to calculate the affinity vectors defined in (\ref{eqn:belonging_vector}).
-
 \begin{theorem}\label{theorem:computing_NR}
 Given a graph~$G$, let $\mat{P}$ be the $n \times n$ transition matrix 
 defined by equation~(\ref{eqn:defining_prob}) in canonical form 
@@ -319,73 +220,6 @@ defined by equation~(\ref{eqn:defining_prob}) in canonical form
 the affinity vectors of all non-seed nodes in time $O(m \cdot \log n)$ per community, 
 where~$m$ is the number of edges in the graph~$G$.
 \end{theorem}  
-\begin{proof}
-Recall that we ordered the nodes of $G$ as $u_1, \ldots, u_{n - s}, x_1, \ldots, x_s$, 
-where $u_1, \ldots, u_{n - s}$ denote the non-seed nodes and $x_1, \ldots, x_s$ denote 
-seed nodes. Define $G_1 := G[u_1, \ldots, u_{n - s}]$, the subgraph induced by the non-seed nodes 
-of~$G$. Let $\mat{A}_1$ denote the adjacency matrix of the graph $G_1$; let 
-$\mat{D}_1$ denote the $(n - s) \times (n - s)$ diagonal matrix satisfying 
-$\mat{D}_1(u_i, u_i) = \deg_{G}(u_i)$ for all $1 \leq i \leq n - s$.  That is, the 
-entries of $\mat{D}_1$ are not the degrees of the vertices in the induced subgraph~$G_1$ 
-but in the graph~$G$. We can then express 
-$\mat{I} - \mat{Q}$ as 
-\begin{equation} \label{eqn:I-Q}
-	\mat{I}  - \mat{Q} = \inv{\mat{D}_1} (\mat{D}_1 - \mat{A}_1).
-\end{equation}
-Note that $\mat{D}_1 - \mat{A}_1$ is a symmetric and diagonally dominant matrix. 
-Let us suppose that $\mat{X}$ is an $(n - s) \times s$ matrix such that 
-\[
-	\mat{X} = (\mat{I} - \mat{Q})^{-1} \cdot \mat{R}.
-\]
 
-Fix a community~$l$. Then the affinities of the non-seed nodes 
-for community~$l$ may be written as:
-\begin{align} \label{eqn:affinity}
-	\left ( \begin{array}{c}
-		\alpha (u_1, l) \\
-		\vdots			\\
-		\alpha (u_{n - s}, l)
-	\end{array}	\right ) & = \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{X}_j \nonumber \\ 
-						 & = \sum_{j = 1}^{s} \alpha (x_j, l) \inv{(\mat{I} - \mat{Q})} \cdot \mat{R}_j \nonumber \\ 
-						 & = \inv{(\mat{I} - \mat{Q})} \cdot \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j,
-\end{align}
-where $\mat{X}_j$ and $\mat{R}_j$ denote the $j\th$ columns of $\mat{X}$ and $\mat{R}$, respectively. 
-Using equation~(\ref{eqn:I-Q}), we may rewrite equation~(\ref{eqn:affinity}) as:
-\begin{align}
-	\inv{\mat{D}_1} (\mat{D}_1 - \mat{A}_1) \cdot \left ( \begin{array}{c}
-		\alpha (u_1, l) \\
-		\vdots			\\
-		\alpha (u_{n - s}, l)
-	\end{array}	\right ) & = \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j.
-\end{align}
-Finally, multiplying by $\mat{D}_1$ on both sides, we obtain
-\begin{equation}\label{eqn:final_affinity}
-	(\mat{D}_1 - \mat{A}_1) \cdot \vect{\alpha}_l = \mat{D}_1 \cdot \sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j,
-\end{equation}
-where we used $\vect{\alpha}_l$ to denote the vector $\trans{\left ( \alpha (u_1, l), \ldots, \alpha (u_{n-s}, l) \right )}$.
 
-Note that computing $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ takes time $O(\tilde{m})$, where $\tilde{m}$ 
-denotes the number of non-zero entries\footnote{This is almost the same as the 
-number~$m$ of edges in $G$, but not quite, since while constructing $\mat{P}$ from the graph $G$, 
-we add self-loops on seed nodes and delete edges between adjacent seed nodes, if any. However what is true is 
-that $\tilde{m} \leq m + s \leq m + n$.} in \mat{P}. 
-Computing the product of $\mat{D}_1$ and $\sum_{j = 1}^{s} \alpha (x_j, l) \cdot \mat{R}_j$ 
-takes time $O(\tilde{m})$ so that the right hand side of equation~(\ref{eqn:final_affinity}) can 
-be computed in time $O(\tilde{m})$. We now have a symmetric diagonally dominant system of linear equations 
-which by Proposition~\ref{prop:SDD_systems} can be solved in time $O(\tilde{m} \cdot \log n)$. Therefore,
-the time taken to compute the affinity to a fixed community is $O(\tilde{m} \cdot \log n) = O(m \log n)$,
-which is what was claimed. Since we assume our networks to be sparse, $m = O(n)$, and 
-the time taken is $O(n \cdot \log n)$ per community.  
-%
-%Then $(\mat{I} - \mat{Q}) \mat{X} = \mat{R}$, which may be rewritten as
-%$(\mat{D}_1 - \mat{A}_1) \mat{X} = \mat{D}_1 \cdot \mat{R}$. The latter 
-%equation may be written as a set of linear equation systems:
-%\begin{equation}\label{eqn:laplacian_linear_eqn}
-%	(\mat{D}_1 - \mat{A}_1) \cdot \vect{x}_i = \mat{D}_1 \cdot \vect{r}_i  \quad (\mbox{for } 1 \leq i \leq s),
-%\end{equation} 
-%where $\vect{x}_i$ and $\vect{r}_i$ are the $i\th$ columns of $\mat{X}$ and $\mat{R}$, respectively. 
-%By Proposition~\ref{prop:SDD_systems}, the time taken to solve each of these systems 
-%is $O(m \log n)$. Together, they can be solved in time $O(s \cdot m \cdot \log n)$, which
-%is what was claimed.  
-\end{proof}
 
