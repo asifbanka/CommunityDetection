@@ -1,0 +1,195 @@
+Our experimental setup consists of five parts (see Figure~\ref{fig:pipeline}) but the 
+respective parts differ slightly depending on whether we test non-overlapping or overlapping 
+communities. We use the LFR benchmark graph generator developed by Lancichinetti, 
+Fortunato, and Radicchi~\cite{LFR08,LF09}, which outputs graphs where the community 
+information of each node is known. From each community in the graph thus generated, 
+we pick a fixed number of seed nodes per community and give these as input to our algorithm. 
+Once the algorithm outputs the affinities of all non-seed nodes, we classify them into 
+communities and finally compare the output with the ground truth using 
+normalized mutual information (NMI) as a metric~\cite{DDDA05}. We implemented 
+our algorithm in \CPP\ and Python and the code is available online.\footnote{At 
+\texttt{https://github.com/somnath1077/CommunityDetection}}
+
+
+\paragraph{LFR.}
+The LFR benchmark was designed by Lancichinetti, Fortunato and Radicci~\cite{LFR08}
+generates random graphs with community structure. The intention was to establish a 
+standard benchmark suite for community detection algorithms. Using this benchmark they 
+did a comparative analysis of several well-known algorithms
+for community detection~\cite{LF09}. To the best of our knowledge, this study seems to be the 
+first where standardized tests were carried out on such a range of community detection algorithms. 
+Subsequently, there has been another comprehensive study on overlapping community detection 
+algorithms~\cite{XKS13} which also uses (among others) the LFR benchmark. As such, we chose this 
+benchmark for our experiments and set the parameters in the same fashion as in~\cite{LF09}. 
+
+We briefly describe the major parameters that the user has to supply 
+for generating benchmark graphs in the LFR suite. The node degrees and the 
+community sizes are distributed according to power law, with different exponents. 
+An important parameter is the \emph{mixing parameter~$\mu$} which is the fraction of neighbors 
+of a node that do not belong to any community that the node belongs to, averaged over all nodes.
+The other parameters include maximum node degree, average node degree, 
+minimum and maximum community sizes. For generating networks with overlapping communities, 
+one can specify what fraction of nodes are present in multiple communities.
+
+
+In what follows, we describe tests for non-overlapping and overlapping communities separately, since 
+there are several small differences in out setup for these two cases. 
+
+\subsection{Non-overlapping communities}
+The networks we test have either 1000 nodes or 5000 nodes. The average node degree
+was set at 20 and the maximum node degree set at 50. The parameter controlling the 
+distribution of node degrees was set at~2 and that for the community size distribution was 
+set at~1. Moreover, we distinguished between big and small communities: small communities have 
+10--50 nodes and large communities have 20--100 nodes. 
+For each of the four combinations of network and community size, we generated graphs with the 
+above parameters and with varying mixing parameters. For each of these graphs, we tested the 
+community information output by our algorithm and compared it against the ground truth 
+using the normalized mutual information as a metric. The plots in the next section 
+show how the performance varies as the mixing parameter was changed. Each data point in 
+these plots is the average over 100 iterations using the same parameters. 
+
+\paragraph{Seed node generation.} 
+To use our algorithm, we expect that users pick seed nodes from 
+every community that they wish to identify in the network. 
+We simulate this by picking a fixed fraction of nodes from each community as seed nodes.
+One of our assumptions is that the user knows the more important members of each community. 
+To replicate this phenomenon in our experiments, we picked a node as seed node
+with a probability that is proportional to its degree.
+That is, nodes with a higher degree were picked in preference to those with a lower degree.
+For those nodes which were picked as seed nodes, we set the affinity to a community to be 1 if 
+and only if the node belongs to that community and 0~otherwise.
+%We note that the actual manner of picking seed nodes did not 
+%affect the results too much. 
+%If we picked seed nodes uniformly at random from each community, our results are marginally worse.
+
+\paragraph{Classification into communities.}
+The input to the algorithm consists of the network, the set of seed nodes together with their 
+affinities. Once the algorithm calculates the affinities of all non-seed nodes, we classify 
+them into their respective communities. This is quite easy for non-overlapping 
+communities where we simply assign each node to the community to which it has the 
+highest affinity, breaking ties arbitrarily.
+
+\paragraph{Iteration.}
+We extended the algorithm to iteratively improve the goodness of the detected communities.
+The idea is that after running the algorithm once, there are certain nodes which can be classified 
+into their communities with a high degree of certitude. We add these nodes to the seed node 
+set of the respective community and iterate the procedure. To be precise, in the $j\th$ round, 
+let $C^j_A$ be the set of nodes that were classified as community $A$ and $S^j_A$ 
+be the seed nodes of community $A$. We create $S^{j+1}_A$ as follows: For a fixed $\varepsilon > 0$, 
+choose $\varepsilon \cdot |C^j_A|$ nodes of $C^j_A$ that have the highest affinity to community $A$, 
+and add them to $S^j_A$ to obtain $S^{j + 1}_A$. 
+The factor $\varepsilon$ declares by how much the set of seed nodes is allowed to grow in each iteration. 
+Choosing $\varepsilon = 0.1$ gives good results. Repeating this procedure several times significantly 
+improves the quality of the communities detected as measured by the NMI. Each iteration takes 
+$O(k \cdot m \cdot \log n)$ time and hence the cost of running the iterative algorithm is 
+the number of iterations times the cost of running it once. 
+
+\subsection{Overlapping Communities.}
+The LFR benchmark suite can generate networks with an overlapping community structure. 
+In addition to the parameters mentioned for the non-overlapping case, there is an additional 
+parameter that controls what fraction of nodes of the network are in multiple communities. 
+As in the non-overlapping case, we generated graphs with 1000 and 5000 nodes with the average
+node degree set at 20 and maximum node degree set at 50. We generated graphs with two types 
+of community sizes: small communities with 10--50 nodes and large communities with 20--100 nodes.
+Moreover, as in~\cite{LF09}, we chose two values for the mixing factor: $0.1$ and $0.3$ 
+and we plot the quality of the community structure output by the algorithm 
+(measured by the NMI) against the fraction of overlapping nodes in the network.
+
+
+\paragraph{Seed Generation.}
+As in the case for non-overlapping communities, we experimented with a non-iterative 
+and an iterative version of our approach. For the non-iterative version, the percentage 
+of seed nodes that we picked were 5, 10, 15 and 20$\%$ per community, with the probability
+of picking a node being proportional to its degree. For the iterative version, we used 
+2, 4, 6, 8 and 10$\%$ seed nodes per community. 
+
+\paragraph{Classification into communities.} For the overlapping case, we cannot
+use the naive strategy of classifying a node to a community to which it has 
+maximum affinity, since we do not even know the \emph{number} of communities a node belongs to. 
+We need a way to infer this information from a node's affinity vector.
+
+For each node, we expect the algorithm to assign high affinities to the communities 
+it belongs to and lower affinities to the communities it does not belong to. 
+We tried assigning a node to all communities to which it has an affinity that 
+exceeds a certain threshold. This, however, did not give good results.
+The following strategy worked better. 
+
+Sort the affinities of a node in descending order and let this 
+sequence be $a_1, \ldots, a_k$. Calculate the differences 
+$\Delta_{1}, \ldots, \Delta_{k-1}$ with $\Delta_{j-1} := a_{j - 1} - a_j$;
+let $\Delta_{\mathrm{max}}$ denote the maximum difference 
+and let $i$ be the smallest index for which $\Delta_i = \Delta_{\mathrm{max}}$. We then associate 
+the node with the communities to which it has the affinities $a_1, \ldots, a_i$. 
+The intuition is that, while the node can have a varying affinity to the communities it belongs to, 
+there is likely to be a sharp decrease in affinities for the communities that the node does 
+not belong to. This is what is captured by computing the difference in affinities and then finding 
+out where the first big drop in affinities occurs.
+
+\paragraph{Iteration.}
+For overlapping communities, we need to extend our strategy for iteratively improving the quality 
+of the communities found. As in the non-overlapping case, after $j$ rounds, we increase the 
+size of the seed node set of community~$A$ by a factor~$\varepsilon$ by adding those nodes 
+which were classified to be in community~$A$ and have the highest affinity to this community. 
+Let $v$ be a such a node. The classification strategy explained above might have classified~$v$ 
+to be in multiple communities, say, $A_1, \dots, A_l$. In this case, we assign $v$ 
+to be a seed node for communities $A, A_1, \ldots, A_l$. The running time is the number of 
+iterations times the cost of running the algorithm once.
+
+\subsection{Normalized Mutual Information}
+This is an information-theoretic measure that allows us the 
+compare the ``distance'' between two partitions of a finite set. Let $V$ be a finite set 
+with $n$ elements and let $\mathcal{A}$ and $\mathcal{B}$ be two partitions of $V$. The probability that an 
+element chosen uniformly at random belongs to a partite set $A \in \mathcal{A}$ is $n_A/n$, where $n_A$ 
+is the number of elements in $A$. The Shannon entropy of the partition $\mathcal{A}$ 
+is defined as:
+\begin{equation}\label{eqn:shannon_entropy}
+H(\mathcal{A}) = - \sum_{A \in \mathcal{A}} \frac{n_A}{n} \log_2 \frac{n_A}{n}.
+\end{equation}
+
+The mutual information of two random variables is a measure of their mutual dependence. For random 
+variables $X$ and $Y$ with probability mass functions $p(x)$ and $p(y)$, respectively, and 
+with a joint probability mass function $p(x, y)$, the \emph{mutual information $I(X, Y)$} 
+is defined as:
+\begin{equation}\label{eqn:mutual_information_rv}
+I(X, Y) = \sum_{x \in \Omega(X)} \sum_{y \in \Omega(Y)} p(x, y) \log \frac{p(x, y)}{p(x) p(y)},
+\end{equation}
+where $\Omega(X)$ is the event space of the random variable $X$.
+The mutual information of two partitions $\mathcal{A}$ and $\mathcal{B}$ 
+of the node set of a graph is calculated by using the so-called ``confusion matrix'' 
+$\mat{N}$ whose rows correspond to ``real'' communities and whose columns correspond 
+to ``found'' communities. The entry $\mat{N}(A, B)$ is the number of nodes of community 
+$A$ in partition $\mathcal{A}$ that are classified into community $B$ in partition $\mathcal{B}$. 
+The mutual information is defined as:
+\begin{equation}\label{eqn:mutual_information_graphs}
+I(\mathcal{A}, \mathcal{B}) = 
+	\sum_{A \in \mathcal{A}} \sum_{B \in \mathcal{B}} \frac{n_{A, B}}{n} 
+		\log \frac{n_{A, B} / n}{ (n_A / n) \cdot (n_B / n) }.  
+\end{equation}
+
+Danon \etal~\cite{DDDA05} suggested to use a normalized variant of this measure. The 
+normalized mutual information $I_N(\mathcal{A}, \mathcal{B})$ between partitions 
+$\mathcal{A}$ and $\mathcal{B}$ is defined as:
+\begin{equation} \label{eqn:normalized_mutual_information}
+I_N(\mathcal{A}, \mathcal{B}) =  \frac{2 I(\mathcal{A}, \mathcal{B})}{H(\mathcal{A}) + H(\mathcal{B})}.
+\end{equation}
+The normalized mutual information takes the value~1 when both partitions are identical. If both partitions 
+are independent of each other, then $I_N(\mathcal{A}, \mathcal{B}) = 0$. 
+
+The classical notion of normalized mutual information measures the distance  between 
+two \emph{partitions} and hence cannot be used for overlapping community detection. 
+Lancichinetti, Fortunato, and Kert\'{e}sz~\cite{LFK09} proposed a definition of the measure for 
+evaluating the similarity of covers, where a \emph{cover} of the node set of a graph 
+is a collection of node subsets such that every node of the graph is in at least one set. 
+Their definition of normalized mutual information is:
+\begin{equation} \label{eqn:nmi_LFK}
+\NMI_{\mathrm{LFK}} := 1 - \frac{1}{2} 
+		\left ( \frac{H(\mathcal{A} | \mathcal{B})}{H(\mathcal{A})} + \frac{H(\mathcal{B}
+				| \mathcal{A})}{H(\mathcal{B})}\right ).
+\end{equation}
+This definition is not exactly an extension of normalized mutual information in that the values
+obtained by evaluating it on two partitions is different from what is given by normalized mutual 
+information evaluated on the same pair of partitions. However in this paper we use this definition 
+of NMI to evaluate the quality of the overlapping communities discovered by our algorithm. 
+
+We note that McDaid \etal~\cite{MGH11} have extended the definition of normalized mutual 
+information to covers and that for partitions, their definition corresponds to the usual definition of NMI. 

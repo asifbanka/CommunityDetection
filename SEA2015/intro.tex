@@ -1,0 +1,113 @@
+Many real-world graphs that model complex systems exhibit an organization 
+into subgraphs, or \textit{communities} that are more densely connected on the inside than between each other. 
+Social networks such as Facebook and LinkedIn divide into groups of friends 
+or coworkers, or business partners; scientific collaboration networks divide 
+themselves into research communities; the World Wide Web divides into groups 
+of related webpages. The nature and number of communities provide 
+a useful insight into the structure and organization of networks. 
+
+Discovering the community structure of networks is an 
+important problem in network science and is the subject 
+of intensive research~\cite{GN02,GN04,CNM04,RCC04,DM04,PDFV05,NL07,BGLL08,RB08,RN09}. 
+Existing community detection algorithms are 
+distinguished by whether they find partitions of the node set 
+(non-overlapping communities) or node covers (overlapping communities). 
+Typically finding overlapping communities is a much harder problem and most of the 
+earlier community detection algorithms focused on finding disjoint 
+communities. A comparative analysis of several community detection algorithms 
+(both non-overlapping and overlapping) was presented by Lancichinetti and Fortunato 
+in~\cite{LF09}. In this paper we closely follow their test framework, 
+also called the LFR-benchmark.
+
+The notion of a community is a loose one and currently there is no 
+well-accepted definition of this concept. A typical approach is to define an 
+objective function on the partitions of the node set of the network 
+in terms of two sets of edge densities: the density of the 
+edges within a partite set (intra-community edges) and the density of edges across partitions 
+(inter-community edges). The ``correct'' partition is the one that maximizes this 
+function. Various community detection algorithms formalize this
+informal idea differently. One of the very first algorithms by
+Girvan and Newman~\cite{GN02} introduced a measure known as \textit{modularity}
+which, given a partition of the nodes of the network, compares the fraction of 
+inter-community edges with the edges that would be present had they been 
+rewired randomly preserving the node degrees. Other authors such as Palla 
+\etal~\cite{PDFV05} declare communities as node sets that formed 
+by overlapping maximal cliques. Rosvall and Bergstrom~\cite{RB08} 
+define the goodness of a partition in terms of the number of bits required to 
+describe per step of an infinite random walk in the network, the intuition being 
+that in a ``correct'' partition, a random walker is likely to spend more time 
+within communities rather than between communities, thereby decreasing the 
+description of the walk.  
+
+A severe restriction of many existing community detection algorithms 
+is that they are too slow. Algorithms that optimize modularity typically 
+take $O(n^2)$, even on sparse networks. The overlapping clique finding 
+algorithm of Palla \etal~\cite{PDFV05} take exponential time in the worst case.
+In other cases, derivation of worst-case running time bounds are ignored. 
+
+\paragraph{Our contribution.}
+Given that it is unlikely that users of community detection algorithms 
+would unanimously settle on one definition of what constitutes a community, 
+we feel that existing approaches ignore the \emph{user perspective}.
+To this end, we chose to design an algorithm that takes the network structure 
+as well as user preferences into account. 
+The user is expected to classify a small set of nodes of the network 
+into communities (which may be 6--8\% of the nodes of each community).
+Obviously this is possible only when the user has some 
+information about the network, such as its semantics, which nodes 
+are important and into which communities they are classified. 
+
+Such situations are actually quite common. The user might have data only 
+on the leading scientific authors in a co-authorship network 
+and would like to find out the research areas of the remaining members of the network. 
+He may either be interested in a broad partition of the network into into its main fields
+or a fine grained decomposition into various subfields.
+By labeling the known authors accordingly,
+the user can specify which kind of partition he is interested in.
+Another example would be the detection of trends in a social network.
+Consider the case where one knows the political affiliations of some people 
+and aims to discover political spectrum of the whole network, 
+for example, to predict the outcome of an election. 
+
+
+Another scenario where this may be applicable is in recommendation systems. 
+One might know the preferences of some of the users of an online retail 
+merchant possibly because they purchase items much more frequently than others. 
+One could then use this in the network whose nodes consist of users, with two 
+nodes connected by an edge if they represent users that had purchased similar products in the past. 
+The idea now would be to use the knowledge of the preferences of a few to 
+predict the preferences of everyone in the network. 
+
+
+
+An important characteristic of algorithms surveyed in~\cite{LF09} 
+is that the algorithms either find disjoint communities or overlapping 
+ones. Most algorithms solve the easier problem of finding disjoint communities. 
+The ones that are designed to find overlapping communities such as the overlapping clique finding 
+algorithm of Palla \etal~\cite{PDFV05} do not seem to yield very good results (see~\cite{LF09}).
+Our algorithm naturally extends to the overlapping case. Of course, there is a higher 
+price that has to be paid in that the number of nodes that need to be classified by the user 
+typically is larger (5\% to 10\% of the nodes per community). The algorithm, however,
+does not need any major changes and we view this is as an aesthetically pleasing 
+feature of our approach. 
+
+Thirdly, in many other approaches, the worst-case running time of the algorithms 
+is neither stated nor analyzed. We show that our algorithm runs in time $O(k \cdot m \cdot \log n)$, 
+where $k$ is the number of communities to be discovered (which is supplied by the user), 
+$n$ and $m$ are the number of nodes and edges in the network. In the case of sparse graphs 
+and a constant number of communities, the running time is $O(n \cdot \log n)$. Given that even 
+an $O(n^2)$ time algorithm is too computationally expensive on many real world graphs, 
+a nearly linear time algorithm often is the only feasible solution.   
+
+Finally, we provide an extensive experimental evaluation of our algorithm on the 
+LFR benchmark. In order to ensure a fair comparison with other algorithms 
+reviewed in~\cite{LF09}, we choose all parameters of the benchmark as in the original paper.
+
+
+This paper is organized as follows. In Section~\ref{sec:algorithm}, we 
+describe our algorithm and analyze its running time. In Sections~\ref{sec:experiment_setup} 
+and~\ref{sec:experiment_results}, we present our experimental results. Finally we conclude 
+in Section~\ref{sec:conclusions} with possibilities of how our approach might be extended. 
+
+
+

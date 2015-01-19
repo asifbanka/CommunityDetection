@@ -71,8 +71,8 @@ adjacent $k$-cliques. Two $k$-cliques are defined to be adjacent if they share $
 
 The algorithm first finds out all maximal cliques in the graph, which takes exponential-time
 in the worst case. It then creates a symmetric clique-clique overlap matrix $\mat{C}$ which is a square matrix whose 
-rows and columns are indexed by the set of maximal cliques in the graph and whose $(i, j)\th$ entry
-is the number of vertices that are in both the $i\th$ and $j\th$ clique. This matrix is then modified into 
+rows and columns are indexed by the set of maximal cliques in the graph and whose $(i, j)^{\mathrm{th}}$ entry
+is the number of vertices that are in both the $i^{\mathrm{th}}$ and $j^{\mathrm{th}}$ clique. This matrix is then modified into 
 a binary matrix by replacing all those entries with value less than $k - 1$ by a $0$ and the remaining entries by 
 a $1$. The final step is to find the connected components of the graph represented by this binary symmetric matrix
 which the algorithm reports as the communities of the network. 
