@@ -104,14 +104,9 @@ The computational complexity of calculating these affinity values
 depends on how efficiently we can calculate the entries of $\mat{X}$, 
 i.e., solve $(\mat{I} - \mat{Q})^{-1}$. 
 
-We can reduce this problem to that of solving a system of linear equations 
-of a special type which takes time $O(m \cdot \log n)$, where $m$
+We can reduce this problem to that of solving a symmetric diagonally dominant 
+system of linear equations which takes time $O(m \cdot \log n)$, where $m$
 is the number of edges in $G$. For a proof of this see Appendix.  
- 
-In the next subsection, we show 
-how to reduce this problem to that of solving a system of linear equations 
-of a special type which takes time $O(m \cdot \log n)$, where $m$
-is the number of edges in $G$.
 \begin{theorem}\label{theorem:computing_NR}
 Given a graph~$G$, let $\mat{P}$ be the $n \times n$ transition matrix 
 defined by equation~(\ref{eqn:defining_prob}) in canonical form 
