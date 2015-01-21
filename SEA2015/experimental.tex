@@ -12,16 +12,6 @@ our algorithm in \CPP\ and Python and the code is available online.\footnote{At
 
 
 \paragraph{LFR.}
-%The LFR benchmark was designed by Lancichinetti, Fortunato and Radicci~\cite{LFR08}
-%generates random graphs with community structure. The intention was to establish a 
-%standard benchmark suite for community detection algorithms. Using this benchmark they 
-%did a comparative analysis of several well-known algorithms
-%for community detection~\cite{LF09}. To the best of our knowledge, this study seems to be the 
-%first where standardized tests were carried out on such a range of community detection algorithms. 
-%Subsequently, there has been another comprehensive study on overlapping community detection 
-%algorithms~\cite{XKS13} which also uses (among others) the LFR benchmark. As such, we chose this 
-%benchmark for our experiments and set the parameters in the same fashion as in~\cite{LF09}. 
-%
 We briefly describe the major parameters that the user has to supply 
 for generating benchmark graphs in the LFR suite. The node degrees and the 
 community sizes are distributed according to power law, with different exponents. 
@@ -46,43 +36,9 @@ above parameters and with varying mixing parameters. For each of these graphs, w
 community information output by our algorithm and compared it against the ground truth 
 using the normalized mutual information as a metric. The plots in the next section 
 show how the performance varies as the mixing parameter was changed. Each data point in 
-these plots is the average over 100 iterations using the same parameters. 
-
-\paragraph{Seed node generation.} 
-To use our algorithm, we expect that users pick seed nodes from 
-every community that they wish to identify in the network. 
-We simulate this by picking a fixed fraction of nodes from each community as seed nodes.
-One of our assumptions is that the user knows the more important members of each community. 
-To replicate this phenomenon in our experiments, we picked a node as seed node
-with a probability that is proportional to its degree.
-That is, nodes with a higher degree were picked in preference to those with a lower degree.
-For those nodes which were picked as seed nodes, we set the affinity to a community to be 1 if 
-and only if the node belongs to that community and 0~otherwise.
-%We note that the actual manner of picking seed nodes did not 
-%affect the results too much. 
-%If we picked seed nodes uniformly at random from each community, our results are marginally worse.
-
-\paragraph{Classification into communities.}
-The input to the algorithm consists of the network, the set of seed nodes together with their 
-affinities. Once the algorithm calculates the affinities of all non-seed nodes, we classify 
-them into their respective communities. This is quite easy for non-overlapping 
-communities where we simply assign each node to the community to which it has the 
-highest affinity, breaking ties arbitrarily.
-
-\paragraph{Iteration.}
-We extended the algorithm to iteratively improve the goodness of the detected communities.
-The idea is that after running the algorithm once, there are certain nodes which can be classified 
-into their communities with a high degree of certitude. We add these nodes to the seed node 
-set of the respective community and iterate the procedure. To be precise, in the $j\th$ round, 
-let $C^j_A$ be the set of nodes that were classified as community $A$ and $S^j_A$ 
-be the seed nodes of community $A$. We create $S^{j+1}_A$ as follows: For a fixed $\varepsilon > 0$, 
-choose $\varepsilon \cdot |C^j_A|$ nodes of $C^j_A$ that have the highest affinity to community $A$, 
-and add them to $S^j_A$ to obtain $S^{j + 1}_A$. 
-The factor $\varepsilon$ declares by how much the set of seed nodes is allowed to grow in each iteration. 
-Choosing $\varepsilon = 0.1$ gives good results. Repeating this procedure several times significantly 
-improves the quality of the communities detected as measured by the NMI. Each iteration takes 
-$O(k \cdot m \cdot \log n)$ time and hence the cost of running the iterative algorithm is 
-the number of iterations times the cost of running it once. 
+these plots is the average over 100 iterations using the same parameters. Due to 
+lack of space, the exact details of how we generate seed nodes, classify nodes into 
+communities and iteratively improve the classification is relegated to the appendix. 
 
 \subsection{Overlapping Communities.}
 The LFR benchmark suite can generate networks with an overlapping community structure. 
@@ -95,44 +51,5 @@ Moreover, as in~\cite{LF09}, we chose two values for the mixing factor: $0.1$ an
 and we plot the quality of the community structure output by the algorithm 
 (measured by the NMI) against the fraction of overlapping nodes in the network.
 
-
-\paragraph{Seed Generation.}
-As in the case for non-overlapping communities, we experimented with a non-iterative 
-and an iterative version of our approach. For the non-iterative version, the percentage 
-of seed nodes that we picked were 5, 10, 15 and 20$\%$ per community, with the probability
-of picking a node being proportional to its degree. For the iterative version, we used 
-2, 4, 6, 8 and 10$\%$ seed nodes per community. 
-
-\paragraph{Classification into communities.} For the overlapping case, we cannot
-use the naive strategy of classifying a node to a community to which it has 
-maximum affinity, since we do not even know the \emph{number} of communities a node belongs to. 
-We need a way to infer this information from a node's affinity vector.
-
-For each node, we expect the algorithm to assign high affinities to the communities 
-it belongs to and lower affinities to the communities it does not belong to. 
-We tried assigning a node to all communities to which it has an affinity that 
-exceeds a certain threshold. This, however, did not give good results.
-The following strategy worked better. 
-
-Sort the affinities of a node in descending order and let this 
-sequence be $a_1, \ldots, a_k$. Calculate the differences 
-$\Delta_{1}, \ldots, \Delta_{k-1}$ with $\Delta_{j-1} := a_{j - 1} - a_j$;
-let $\Delta_{\mathrm{max}}$ denote the maximum difference 
-and let $i$ be the smallest index for which $\Delta_i = \Delta_{\mathrm{max}}$. We then associate 
-the node with the communities to which it has the affinities $a_1, \ldots, a_i$. 
-The intuition is that, while the node can have a varying affinity to the communities it belongs to, 
-there is likely to be a sharp decrease in affinities for the communities that the node does 
-not belong to. This is what is captured by computing the difference in affinities and then finding 
-out where the first big drop in affinities occurs.
-
-\paragraph{Iteration.}
-For overlapping communities, we need to extend our strategy for iteratively improving the quality 
-of the communities found. As in the non-overlapping case, after $j$ rounds, we increase the 
-size of the seed node set of community~$A$ by a factor~$\varepsilon$ by adding those nodes 
-which were classified to be in community~$A$ and have the highest affinity to this community. 
-Let $v$ be a such a node. The classification strategy explained above might have classified~$v$ 
-to be in multiple communities, say, $A_1, \dots, A_l$. In this case, we assign $v$ 
-to be a seed node for communities $A, A_1, \ldots, A_l$. The running time is the number of 
-iterations times the cost of running the algorithm once.
 
 
