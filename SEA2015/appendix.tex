@@ -224,7 +224,7 @@ iterations times the cost of running the algorithm once.
 \section{Experimental Results}
 %width of the three types of plots
 \newcommand{\appplotwidth}{\linewidth}
-%\newcommand{\cfinderwidth}{0.96\linewidth}
+\newcommand{\appcfinderwidth}{\linewidth}
 %\newcommand{\otherplotswidth}{0.76\linewidth}
 
 Here we give the complete results of our experiments, first for the non-overlapping case and then for the overlapping communities.
@@ -443,21 +443,25 @@ of up to $0.5$).
 %    \caption{Comparison between the iterative and non-iterative method for overlapping communities.}\label{fig:compare_iter_overlap}
 %\end{figure}
 %
-\begin{figure}[h!]
+
+\begin{figure}
     \centering
-    \begin{subfigure}{0.5\textwidth}
-    \centering
-    \includegraphics[width=\cfinderwidth]{lfrpaper/fig6.pdf}
-    \end{subfigure}%
-    \begin{subfigure}{0.5\textwidth}
-    \centering
-    \includegraphics[width=\cfinderwidth]{lfrpaper/fig7.pdf}
-    \end{subfigure}%
-    \caption{
-        Plots for CFinder on the LFR benchmark on graphs with 1000 and 5000 nodes 
+    \includegraphics[width=\appcfinderwidth]{lfrpaper/fig6.pdf}
+\caption{
+        Plots for CFinder on the LFR benchmark on graphs with 1000 nodes 
 		with overlapping communities. Reproduced from~\cite{LF09}.
-    }\label{fig:CFinder_overlapping}
+    }\label{fig:CFinder_overlapping1000}
 \end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\appcfinderwidth]{lfrpaper/fig7.pdf}
+	\caption{
+        Plots for CFinder on the LFR benchmark on graphs with 5000 nodes 
+		with overlapping communities. Reproduced from~\cite{LF09}.
+    }\label{fig:CFinder_overlapping5000}
+\end{figure}
+    
+
 
 
 
@@ -486,6 +490,24 @@ The percentage of seed nodes per community required in the
 iterative approach with a mixing factor of $0.3$ is around 8$\%$. 
 
 \section{Concluding Remarks}
+We now consider possibilities to extend our approach. 
+An obvious question is whether it is possible to avoid the semi-supervised 
+step completely, that is, avoid having the user to specify seed nodes 
+for every community. One possibility is to initially use a clustering 
+algorithm to obtain a first approximation of the communities in the network. 
+The next step would be to pick seed nodes from among the communities thus found 
+(without user intervention) and use our algorithm to obtain a refinement of the 
+community structure. 
+
+
+A possible extension of our algorithm would be to allow the user to interactively 
+specify the seed nodes. The user initially supplies a set of seed nodes 
+and allows the algorithm to find communities. The user then checks the 
+quality of the output and, if dissatisfied with the results, can prompt the algorithm 
+to correctly classify some more nodes that it had incorrectly classified in the current round. 
+In effect, at the end of each round, the user supplies an additional set of seed nodes until the 
+communities found out by the algorithm are accurate enough for the user. Such a tool 
+might be useful for visualization.
 
 We wish to point out that while the running time of our algorithm is 
 $O(k \cdot m \cdot \log n)$, we do not know of any commercial solvers 
