@@ -136,8 +136,7 @@ The details of how we generate seed nodes, classify non-seed nodes into communit
 improve upon the classification is covered here.
 
 \subsection{Non-overlapping communities}
-.
-
+We deal with the non-overlapping case first because this is the simpler situation. 
 
 \paragraph{Seed node generation.} 
 To use our algorithm, we expect that users pick seed nodes from 
@@ -149,9 +148,6 @@ with a probability that is proportional to its degree.
 That is, nodes with a higher degree were picked in preference to those with a lower degree.
 For those nodes which were picked as seed nodes, we set the affinity to a community to be 1 if 
 and only if the node belongs to that community and 0~otherwise.
-%We note that the actual manner of picking seed nodes did not 
-%affect the results too much. 
-%If we picked seed nodes uniformly at random from each community, our results are marginally worse.
 
 \paragraph{Classification into communities.}
 The input to the algorithm consists of the network, the set of seed nodes together with their 
@@ -176,6 +172,11 @@ $O(k \cdot m \cdot \log n)$ time and hence the cost of running the iterative alg
 the number of iterations times the cost of running it once. 
 
 \subsection{Overlapping Communities.}
+
+The overlapping case is complicated by the fact that a node might belong to several 
+communities and the algorithm has to deduce this solely from the affinity information. 
+The affinities to each community a node belongs to need not be the same, however. This 
+makes the classification procedure trickier. 
 
 \paragraph{Seed Generation.}
 As in the case for non-overlapping communities, we experimented with a non-iterative 
