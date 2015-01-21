@@ -533,5 +533,21 @@ plots for the iterative method (with 10 iterations).
 The percentage of seed nodes per community required in the 
 iterative approach with a mixing factor of $0.3$ is around 8$\%$. 
 
+\section{Concluding Remarks}
+
+We wish to point out that while the running time of our algorithm is 
+$O(k \cdot m \cdot \log n)$, we do not know of any commercial solvers 
+for SDD systems that run in $O(m \cdot \log n)$ time. Since we use the Cholesky 
+factorization method from the \CPP\ Eigen Library, it is unlikely that our 
+implementation would be able to handle very large networks. Recall that 
+in Cholesky factorization, the matrix of coefficients $\mat{A}$ is decomposed 
+as $\mat{L} \mat{D} \trans{\mat{L}}$, where $\mat{L}$ is lower triangular 
+and $\mat{D}$ is diagonal, all of which takes $n^3/3$ operations making it 
+prohibitively expensive for large networks (see, for instance~\cite{GvL13}). 
+This is not a serious disadvantage since we expect that in the near future 
+we would have commercial SDD solvers implementing the Speilman-Teng algorithm. 
+It would then be interesting to see the size range of real networks our algorithm 
+can handle. 
+
 
 
