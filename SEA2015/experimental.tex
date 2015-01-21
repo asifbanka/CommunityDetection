@@ -36,8 +36,9 @@ above parameters and with varying mixing parameters. For each of these graphs, w
 community information output by our algorithm and compared it against the ground truth 
 using the normalized mutual information as a metric. The plots in the next section 
 show how the performance varies as the mixing parameter was changed. Each data point in 
-these plots is the average over 100 iterations using the same parameters. Due to 
-lack of space, the exact details of how we generate seed nodes, classify nodes into 
+these plots is the average over 100 iterations using the same parameters. 
+
+Due to lack of space, the exact details of how we generate seed nodes, classify nodes into 
 communities and iteratively improve the classification is relegated to the appendix. 
 
 \subsection{Overlapping Communities.}
@@ -51,5 +52,7 @@ Moreover, as in~\cite{LF09}, we chose two values for the mixing factor: $0.1$ an
 and we plot the quality of the community structure output by the algorithm 
 (measured by the NMI) against the fraction of overlapping nodes in the network.
 
+As in the non-overlapping case, the details of seed node generation, community classification 
+and the iterative technique to improve the classification are dealt with in the appendix.
 
 
