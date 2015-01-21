@@ -534,6 +534,24 @@ The percentage of seed nodes per community required in the
 iterative approach with a mixing factor of $0.3$ is around 8$\%$. 
 
 \section{Concluding Remarks}
+We now consider possibilities to extend our approach. 
+An obvious question is whether it is possible to avoid the semi-supervised 
+step completely, that is, avoid having the user to specify seed nodes 
+for every community. One possibility is to initially use a clustering 
+algorithm to obtain a first approximation of the communities in the network. 
+The next step would be to pick seed nodes from among the communities thus found 
+(without user intervention) and use our algorithm to obtain a refinement of the 
+community structure. 
+
+
+A possible extension of our algorithm would be to allow the user to interactively 
+specify the seed nodes. The user initially supplies a set of seed nodes 
+and allows the algorithm to find communities. The user then checks the 
+quality of the output and, if dissatisfied with the results, can prompt the algorithm 
+to correctly classify some more nodes that it had incorrectly classified in the current round. 
+In effect, at the end of each round, the user supplies an additional set of seed nodes until the 
+communities found out by the algorithm are accurate enough for the user. Such a tool 
+might be useful for visualization.
 
 We wish to point out that while the running time of our algorithm is 
 $O(k \cdot m \cdot \log n)$, we do not know of any commercial solvers 
