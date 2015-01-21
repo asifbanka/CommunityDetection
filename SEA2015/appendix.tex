@@ -224,7 +224,7 @@ iterations times the cost of running the algorithm once.
 \section{Experimental Results}
 %width of the three types of plots
 \newcommand{\appplotwidth}{\linewidth}
-%\newcommand{\cfinderwidth}{0.96\linewidth}
+\newcommand{\appcfinderwidth}{\linewidth}
 %\newcommand{\otherplotswidth}{0.76\linewidth}
 
 Here we give the complete results of our experiments, first for the non-overlapping case and then for the overlapping communities.
@@ -443,21 +443,25 @@ of up to $0.5$).
 %    \caption{Comparison between the iterative and non-iterative method for overlapping communities.}\label{fig:compare_iter_overlap}
 %\end{figure}
 %
-\begin{figure}[h!]
+
+\begin{figure}
     \centering
-    \begin{subfigure}{0.5\textwidth}
-    \centering
-    \includegraphics[width=\cfinderwidth]{lfrpaper/fig6.pdf}
-    \end{subfigure}%
-    \begin{subfigure}{0.5\textwidth}
-    \centering
-    \includegraphics[width=\cfinderwidth]{lfrpaper/fig7.pdf}
-    \end{subfigure}%
-    \caption{
-        Plots for CFinder on the LFR benchmark on graphs with 1000 and 5000 nodes 
+    \includegraphics[width=\appcfinderwidth]{lfrpaper/fig6.pdf}
+\caption{
+        Plots for CFinder on the LFR benchmark on graphs with 1000 nodes 
 		with overlapping communities. Reproduced from~\cite{LF09}.
-    }\label{fig:CFinder_overlapping}
+    }\label{fig:CFinder_overlapping1000}
 \end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\appcfinderwidth]{lfrpaper/fig7.pdf}
+	\caption{
+        Plots for CFinder on the LFR benchmark on graphs with 5000 nodes 
+		with overlapping communities. Reproduced from~\cite{LF09}.
+    }\label{fig:CFinder_overlapping5000}
+\end{figure}
+    
+
 
 
 
