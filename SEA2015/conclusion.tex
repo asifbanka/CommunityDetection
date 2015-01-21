@@ -1,0 +1,46 @@
+Our algorithm seems to work very well with around 6$\%$ seed nodes for the 
+non-overlapping case and around 8$\%$ seed nodes for the overlapping case. 
+For the non-overlapping case, we can work with a mixing factor of up 
+to~$0.5$, whereas in the overlapping case a mixing factor of $0.3$ 
+and with the overlapping fraction of around $20\%$. This of course 
+suggests that our algorithm has a higher tolerance while detecting 
+non-overlapping communities and needs either a ``well-structured''
+network or a high seed node percentage for overlapping communities. 
+None of this is really surprising. What is surprising is that such 
+a simple algorithm manages to do so well at all.
+
+An obvious question is whether it is possible to avoid the semi-supervised 
+step completely, that is, avoid having the user to specify seed nodes 
+for every community. One possibility is to initially use a clustering 
+algorithm to obtain a first approximation of the communities in the network. 
+The next step would be to pick seed nodes from among the communities thus found 
+(without user intervention) and use our algorithm to obtain a refinement of the 
+community structure. 
+
+
+A possible extension of our algorithm would be to allow the user to interactively 
+specify the seed nodes. The user initially supplies a set of seed nodes 
+and allows the algorithm to find communities. The user then checks the 
+quality of the output and, if dissatisfied with the results, can prompt the algorithm 
+to correctly classify some more nodes that it had incorrectly classified in the current round. 
+In effect, at the end of each round, the user supplies an additional set of seed nodes until the 
+communities found out by the algorithm are accurate enough for the user. Such a tool 
+might be useful for visualization.
+
+
+
+We wish to point out that while the running time of our algorithm is 
+$O(k \cdot m \cdot \log n)$, we do not know of any commercial solvers 
+for SDD systems that run in $O(m \cdot \log n)$ time. Since we use the Cholesky 
+factorization method from the \CPP\ Eigen Library, it is unlikely that our 
+implementation would be able to handle very large networks. Recall that 
+in Cholesky factorization, the matrix of coefficients $\mat{A}$ is decomposed 
+as $\mat{L} \mat{D} \trans{\mat{L}}$, where $\mat{L}$ is lower triangular 
+and $\mat{D}$ is diagonal, all of which takes $n^3/3$ operations making it 
+prohibitively expensive for large networks (see, for instance~\cite{GvL13}). 
+This is not a serious disadvantage since we expect that in the near future 
+we would have commercial SDD solvers implementing the Speilman-Teng algorithm. 
+It would then be interesting to see the size range of real networks our algorithm 
+can handle. 
+
+
