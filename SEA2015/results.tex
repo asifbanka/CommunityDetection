@@ -7,8 +7,10 @@ As in the last section, we first discuss our results for the non-overlapping cas
 the ones for the overlapping case.
 
 \subsection{Non-overlapping communities}
-Figure~\ref{fig:main_iter_no_overlap} shows the plots that we obtained for non-overlapping communities using the iterative technique with 2, 4, 6, and 8$\%$ seed nodes per 
-community on graphs with 1000 and 5000 nodes. The obtained NMI values are always after ten iterations of our algorithm.
+Figure~\ref{fig:main_iter_no_overlap} shows the plots that we obtained for non-overlapping 
+communities using the iterative technique with 2, 4, 6, and 8$\%$ seed nodes per 
+community on graphs with 1000 and 5000 nodes. The obtained NMI values are calculated 
+after ten iterations of our algorithm.
 
 As can be seen, with a seed node percentage of 6$\%$ or more and 
 a mixing factor below~$0.5$ we achieve an NMI above $0.9$ and can compete with \textit{Infomap}, 
@@ -19,7 +21,7 @@ $0.6$ after which its performance drops steeply. The drop in the performance of 
 begins earlier but is not as steep. See Figure~\ref{fig:main_Infomap_etal} for the performance 
 of Infomap and other algorithms.
 
-For more more detailed results including the non iterative method we refer to the Appendix
+For more more detailed results including the non-iterative method we refer to the Appendix.
  
  
 
@@ -112,26 +114,37 @@ For more more detailed results including the non iterative method we refer to th
     \includegraphics[width=\cfinderwidth]{lfrpaper/fig7.pdf}
     \end{subfigure}%
     \caption{
-        Plots for CFinder on the LFR benchmark on graphs with 1000 and 5000 nodes 
-		with overlapping communities. The parameters of the above row correspond to our \textit{small} and those of the bottom row to our \textit{big} communities Reproduced from Lancichinetti and Fortunato~\cite{LF09}.
-    }\label{fig:main_CFinder_overlapping}
+		Plots for CFinder on the LFR benchmark on graphs with 1000 and 5000
+		nodes with overlapping communities. The parameters of the above row
+		correspond to our \textit{small} and those of the bottom row to our
+		\textit{big} communities Reproduced from Lancichinetti and
+		Fortunato~\cite{LF09}.  }\label{fig:main_CFinder_overlapping}
 \end{figure}
 
 
 
 \subsection{Overlapping communities}
-Figure~\ref{fig:main_iter_overlap_5000N} shows our results for the overlapping case using the iterative method on graphs with 5000 nodes. Again, the results are obtained after ten iterations.
+Figure~\ref{fig:main_iter_overlap_5000N} shows our results for the overlapping
+case using the iterative method on graphs with 5000 nodes. Again, the results
+are obtained after ten iterations.
 
-The main difference with the non-overlapping case is that typically our algorithm needs a larger 
-seed node percentage per community. This is not surprising since in the overlapping case, we would need seed nodes from the various overlaps as well as from the non-overlapping portions of communities to make a good-enough calculation of the affinities. The percentage of seed nodes per community required in the iterative approach with a mixing factor of $0.3$ is around 8$\%$.  
+The main difference with the non-overlapping case is that typically our
+algorithm needs a larger seed node percentage per community. This is not
+surprising since in the overlapping case, we would need seed nodes from the
+various overlaps as well as from the non-overlapping portions of communities to
+make a good-enough calculation of the affinities. The percentage of seed nodes
+per community required in the iterative approach with a mixing factor of $0.3$
+is around 8$\%$.  
 
-In the study of Lancichinetti and Fortunato~\cite{LF09}, 
-only one algorithm (\emph{Cfinder}~\cite{PDFV05}) for overlapping communities was benchmarked 
-(see Figure~\ref{fig:main_CFinder_overlapping}). 
+In the study of Lancichinetti and Fortunato~\cite{LF09}, only one algorithm
+(\emph{Cfinder}~\cite{PDFV05}) for overlapping communities was benchmarked (see
+Figure~\ref{fig:main_CFinder_overlapping}). 
 
 For graphs of both 1000 and 5000 nodes, our algorithm performs better 
-than Cfinder up to an overlapping fraction of $0.4$. We stress that Cfinder 
-has an exponential worst-case running time and would be infeasible on larger graphs. More detailed results can again be found in the Appendix. 
+than Cfinder up to an overlapping fraction of $0.4$ (see Appendix for 
+the results on 1000 nodes). We stress that Cfinder 
+has an exponential worst-case running time and would be infeasible on 
+larger graphs. A comprehensive set of results can be found in the Appendix. 
 
 
 
