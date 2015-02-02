@@ -3,16 +3,17 @@ more densely connected on the inside than outside. Discovering this ``community
 structure'' is an important step in studying the large-scale structure of
 networks. Many algorithms have been proposed for community detection and
 benchmarks have been created to evaluate their performance. Typically algorithms
-for community detection either find a partition of the node set of the graph 
-(non-overlapping communities) or find node covers (overlapping communities). 
+for community detection either find a partition of the node set of the graph
+(non-overlapping communities) or find a collection of sets that cover the entire
+node set (overlapping communities). 
 
 In this paper, we propose a particularly simple semi-supervised learning
 algorithm for finding out communities. In essence, given the community
-information of a small number of ``seed nodes'', the method uses random walks
-from the seed nodes to uncover the community information of the remaining network.
-The algorithm runs in time $O(k \cdot m \cdot \log n)$, where $m$ is the number
-of edges; $n$ the number of nodes; and $k$ the number of communities in the
-network.  In sparse networks with $m = O(n)$ and a constant number of
+information of a small number of \emph{seed nodes}, the method uses random walks
+from the seed nodes to uncover the community information of the remaining
+network.  The algorithm runs in time $O(k \cdot m \cdot \log n)$, where $m$ is
+the number of edges; $n$ the number of nodes; and $k$ the number of communities
+in the network.  In sparse networks with $m = O(n)$ and a constant number of
 communities, this running time is almost linear in the size of the network.
 Another important feature of our algorithm is that it can be used for either
 non-overlapping or overlapping communities. 
@@ -21,4 +22,10 @@ We test our algorithm using the LFR benchmark created by Lancichinetti,
 Fortunato, and Radicchi~\cite{LFR08} specifically for the purpose of evaluating
 such algorithms. Our algorithm can compete with the best of algorithms for both
 non-overlapping and overlapping communities as found in the comprehensive study
-of Lancichinetti and Fortunato~\cite{LF09}.
+of Lancichinetti and Fortunato~\cite{LF09}. Some of the algorithms in that study
+include several variants of the well-known modularity maximization approach,
+which takes $O(n^2)$ time on sparse graphs~\cite{RCC04}; clique detection
+algorithms such as Cfinder which takes exponential time in the worst
+case~\cite{PDFV05}; techniques based on random walks such as the Infomap method
+which reportedly perform well in practice but whose  worst-case running times
+have not been reported~\cite{RB08}. 
