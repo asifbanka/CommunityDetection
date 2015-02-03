@@ -1,58 +1,66 @@
-Our experimental setup consists of five parts (see Figure~\ref{fig:pipeline}) but the 
-respective parts differ slightly depending on whether we test non-overlapping or overlapping 
-communities. We use the LFR benchmark graph generator developed by Lancichinetti, 
-Fortunato, and Radicchi~\cite{LFR08,LF09}, which outputs graphs where the community 
-information of each node is known. From each community in the graph thus generated, 
-we pick a fixed number of seed nodes per community and give these as input to our algorithm. 
-Once the algorithm outputs the affinities of all non-seed nodes, we classify them into 
-communities and finally compare the output with the ground truth using 
-normalized mutual information (NMI) as a metric~\cite{DDDA05}. We implemented 
-our algorithm in \CPP\ and Python and the code is available online.\footnote{At 
+Our experimental setup consists of five parts (see Figure~\ref{fig:pipeline})
+but the respective parts differ slightly depending on whether we test
+non-overlapping or overlapping communities. We use the LFR benchmark graph
+generator developed by Lancichinetti, Fortunato, and Radicchi~\cite{LFR08,LF09},
+which outputs graphs where the community information of each node is known. From
+each community in the graph thus generated, we pick a fixed number of seed nodes
+per community and give these as input to our algorithm.  Once the algorithm
+outputs the affinities of all non-seed nodes, we classify them into communities
+and finally compare the output with the ground truth using normalized mutual
+information (NMI) as a metric~\cite{DDDA05}. We implemented our algorithm in
+\CPP\ and Python and the code is available online.\footnote{At
 \texttt{https://github.com/somnath1077/CommunityDetection}}
 
 
 \paragraph{LFR.}
-We briefly describe the major parameters that the user has to supply 
-for generating benchmark graphs in the LFR suite. The node degrees and the 
-community sizes are distributed according to power law, with different exponents. 
-An important parameter is the \emph{mixing parameter~$\mu$} which is the fraction of neighbors 
-of a node that do not belong to any community that the node belongs to, averaged over all nodes.
-The other parameters include maximum node degree, average node degree, 
-minimum and maximum community sizes. For generating networks with overlapping communities, 
-one can specify what fraction of nodes are present in multiple communities.
+We briefly describe the major parameters that the user has to supply for
+generating benchmark graphs in the LFR suite. The node degrees and the community
+sizes are distributed according to a power law, with different exponents.  An
+important parameter is the \emph{mixing parameter~$\mu$} which is the fraction
+of neighbors of a node that do not belong to any community that the node belongs
+to, averaged over all nodes.  The other parameters include maximum node degree,
+average node degree, minimum and maximum community sizes. For generating
+networks with overlapping communities, one can specify what fraction of nodes
+are present in multiple communities.
 
 
-In what follows, we describe tests for non-overlapping and overlapping communities separately, since 
-there are several small differences in our setup for these two cases. 
+In what follows, we describe tests for non-overlapping and overlapping
+communities separately, since there are several small differences in our setup
+for these two cases. 
 
 \subsection{Non-overlapping communities}
-The networks we test have either 1000 nodes or 5000 nodes. The average node degree
-was set at 20 and the maximum node degree set at 50. The parameter controlling the 
-distribution of node degrees was set at~2 and that for the community size distribution was 
-set at~1. Moreover, we distinguished between big and small communities: small communities have 
-10--50 nodes and large communities have 20--100 nodes. 
-For each of the four combinations of network and community size, we generated graphs with the 
-above parameters and with varying mixing parameters. For each of these graphs, we tested the 
-community information output by our algorithm and compared it against the ground truth 
-using the normalized mutual information as a metric. The plots in the next section 
-show how the performance varies as the mixing parameter was changed. Each data point in 
-these plots is the average over 100 iterations using the same parameters. 
+The networks we test have either 1000 nodes or 5000 nodes. The average node
+degree was set at 20 and the maximum node degree at 50. The parameter
+controlling the distribution of node degrees was set at~2 and that for the
+community size distribution was set at~1. Moreover, we distinguished between big
+and small communities: small communities have 10--50 nodes and large communities
+have 20--100 nodes.  For each of the four combinations of network and community
+size, we generated graphs with the above parameters and with varying mixing
+parameters. For each of these graphs, we tested the community information output
+by our algorithm and compared it against the ground truth using the normalized
+mutual information as a metric. The plots in the next section show how the
+performance varies as the mixing parameter was changed. Each data point in these
+plots is the average over 100 iterations using the same parameters. 
 
-Due to lack of space, the exact details of how we generate seed nodes, classify nodes into 
-communities and iteratively improve the classification is relegated to the appendix. 
+Due to lack of space, the exact details of how we generate seed nodes, classify
+nodes into communities and iteratively improve the classification is relegated
+to the appendix. 
 
 \subsection{Overlapping Communities.}
-The LFR benchmark suite can generate networks with an overlapping community structure. 
-In addition to the parameters mentioned for the non-overlapping case, there is an additional 
-parameter that controls what fraction of nodes of the network are in multiple communities. 
-As in the non-overlapping case, we generated graphs with 1000 and 5000 nodes with the average
-node degree set at 20 and maximum node degree set at 50. We generated graphs with two types 
-of community sizes: small communities with 10--50 nodes and large communities with 20--100 nodes.
-Moreover, as Lancichinetti and Fortunato~\cite{LF09}, we chose two values for the mixing factor: $0.1$ and $0.3$ 
-and we plot the quality of the community structure output by the algorithm 
-(measured by the NMI) against the fraction of overlapping nodes in the network.
+The LFR benchmark suite can generate networks with an overlapping community
+structure.  In addition to the parameters mentioned for the non-overlapping
+case, there is an additional parameter that controls what fraction of nodes of
+the network are in multiple communities.  As in the non-overlapping case, we
+generated graphs with 1000 and 5000 nodes with the average node degree set at 20
+and maximum node degree set at 50. We generated graphs with two types of
+community sizes: small communities with 10--50 nodes and large communities with
+20--100 nodes.  Moreover, as Lancichinetti and Fortunato~\cite{LF09}, we chose
+two values for the mixing factor: $0.1$ and $0.3$ and we plot the quality of the
+community structure output by the algorithm (measured by the NMI) against the
+fraction of overlapping nodes in the network.
 
-As in the non-overlapping case, the details of seed node generation, community classification 
-and the iterative technique to improve the classification are dealt with in the appendix.
+As in the non-overlapping case, the details of seed node generation, community
+classification and the iterative technique to improve the classification are
+dealt with in the appendix.
 
 
