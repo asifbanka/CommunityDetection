@@ -1,5 +1,5 @@
-Complex networks can be typically broken down into sets of vertices that are
-more densely connected on the inside than outside. Discovering this ``community
+Complex networks can be typically broken down into clusters that are
+more densely connected on the inside than between each other. Discovering this ``community
 structure'' is an important step in studying the large-scale structure of
 networks. Many algorithms have been proposed for community detection and
 benchmarks have been created to evaluate their performance. Typically algorithms
@@ -11,12 +11,11 @@ In this paper, we propose a particularly simple semi-supervised learning
 algorithm for finding out communities. In essence, given the community
 information of a small number of \emph{seed nodes}, the method uses random walks
 from the seed nodes to uncover the community information of the remaining
-network.  The algorithm runs in time $O(k \cdot m \cdot \log n)$, where $m$ is
-the number of edges; $n$ the number of nodes; and $k$ the number of communities
-in the network.  In sparse networks with $m = O(n)$ and a constant number of
-communities, this running time is almost linear in the size of the network.
-Another important feature of our algorithm is that it can be used for either
-non-overlapping or overlapping communities. 
+network.  Not only does our approach provide a uniform method to deal with both the 
+non-overlapping and overlapping case, but it runs in almost linear time on sparse 
+networks. More specifically, the algorithm runs in time $O(k \cdot m \cdot \log n)$, 
+where $m$ is the number of edges; $n$ the number of nodes; and $k$ the number of communities
+in the network.  
 
 We test our algorithm using the LFR benchmark created by Lancichinetti,
 Fortunato, and Radicchi~\cite{LFR08} specifically for the purpose of evaluating

@@ -30,11 +30,16 @@ Girvan and Newman~\cite{GN02} introduced a measure known as \textit{modularity}
 which, given a partition of the nodes of the network, compares the fraction of 
 inter-community edges with the edges that would be present had they been 
 rewired randomly preserving the node degrees. Other authors such as Palla 
-\etal~\cite{PDFV05} declare communities as node sets that formed 
+\etal~\cite{PDFV05} declare communities as node sets that are formed 
 by overlapping maximal cliques. Rosvall and Bergstrom~\cite{RB08} 
-define the goodness of a partition in terms of how information flows within a network: 
+define the quality of a partition in terms of how information flows within a network: 
 a group of nodes among which information flows quickly and easily is identified 
 as a community and the information flow itself is modeled by random walks.
+Moreover, these algorithms were evaluated on different data sets and as such 
+a qualitative comparison is difficult. We therefore evaluate our algorithms 
+on the LFR benchmark~\cite{LF09} designed independently the above-mentioned algorithms. 
+In order to ensure a fair comparison with other algorithms reviewed in~\cite{LF09}, 
+we used the same parameters of the benchmark as in the original paper.
 
 
 \paragraph{Our contribution.}
@@ -45,20 +50,15 @@ To this end, we chose to design an algorithm that takes the network structure
 as well as user preferences into account. 
 The user is expected to classify a small set of nodes of the network 
 into communities (which may be 6--8\% of the nodes of each community).
-Obviously this is possible only when the user has some 
-information about the network, such as its semantics, which nodes 
-are important and into which communities they are classified. 
 
 Such situations are actually quite common. The user might have data only on the
 leading scientific authors in a co-authorship network and would like to find out
-the research areas of the remaining members of the network.  He may either be
+the research areas of the remaining members of the network.  They may either be
 interested in a broad partition of the network into its main fields or a fine
 grained decomposition into various subfields.  By labeling the known authors
-accordingly, the user can specify which kind of partition he is interested in.
-Another example would be the detection of trends in a social network.  Consider
-the case where one knows the political affiliations of some people and aims to
-discover the political spectrum of the whole network, for example, to predict
-the outcome of an election. 
+accordingly, the user can specify which kinds of partition are of interest.
+Other examples include detection of trends in social networks, i.e.~political 
+orientation or consumer preferences.
 
 There are two main advantages of our approach: Firstly, it can be used to find
 not only non-overlapping communities, but overlapping communities as well. Of
@@ -66,19 +66,21 @@ course, there is a higher price that has to be paid in the overlapping
 communities case in that the number of nodes that needs to be classified by the
 user is typically larger (5\% to 10\% of the nodes per community). The
 algorithm, however, does not require any major changes and we view this is as an
-aesthetically pleasing feature of our approach.  Secondly, our algorithm runs in
-time $O(k \cdot m \cdot \log n)$, where $k$ is the number of communities to be
+aesthetically pleasing feature of our approach.  
+
+Secondly, our algorithm runs in time $O(k \cdot m \cdot \log n)$, where $k$ is 
+the number of communities to be
 discovered (supplied by the user), $n$ and $m$ are the number of nodes and edges
 in the network. In the case of sparse graphs with a linear number of edges and a
 constant number of communities, the running time is $O(n \cdot \log n)$.
 Compare this with algorithms that optimize modularity which take $O(n^2)$ time
 even on sparse networks. The overlapping clique finding algorithm of Palla
-\etal~\cite{PDFV05} takes exponential time in the worst case. We evaluate our
-algorithms on the LFR benchmark and in order to ensure a fair comparison with
-other algorithms reviewed in the study of Lancichinetti and
-Fortunato~\cite{LF09}, we choose all parameters of the benchmark as in the
-original paper.
+\etal~\cite{PDFV05} takes exponential time in the worst case.
 
+Thirdly, our algorithm can work interactively by integrating user feedback  
+to progressively improve on the quality of the communities discovered. In this sense, 
+our algorithm takes into account the users' notion of a community rather than 
+relying on a rigid structural notion.  
 
 This paper is organized as follows. In Section~\ref{sec:algorithm}, we describe
 our algorithm and analyze its running time. In
